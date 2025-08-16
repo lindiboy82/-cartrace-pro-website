@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarTrace Pro - Loading...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .loading-container {
+            text-align: center;
+            color: white;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="logo">🚗</div>
+        <h1>CarTrace Pro</h1>
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <script type="module">
+        import { auth, checkAuthState } from './firebase-config.js';
+
+        // Check if user is authenticated
+        checkAuthState((user) => {
+            if (user) {
+                // User is logged in, go to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                // User is not logged in, go to homepage
+                window.location.href = 'cartrace_homepage.html';
+            }
+        });
+
+        // Fallback redirect after 3 seconds if Firebase doesn't respond
+        setTimeout(() => {
+            if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+                window.location.href = 'cartrace_homepage.html';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

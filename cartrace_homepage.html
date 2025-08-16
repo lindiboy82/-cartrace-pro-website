@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarTrace Pro - Community-Powered Vehicle Recovery</title>
+    <meta name="description" content="Free community-driven app that helps find stolen cars while rewarding helpers. Join thousands protecting their neighborhoods.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><radialGradient id="globeGrad" cx="50%" cy="40%" r="70%"><stop offset="0%" style="stop-color:%23a8c8ec"/><stop offset="100%" style="stop-color:%232563eb"/></radialGradient></defs><circle cx="200" cy="220" r="140" fill="url(%23globeGrad)"/><g stroke="white" stroke-width="3" fill="none"><circle cx="200" cy="220" r="140"/><ellipse cx="200" cy="220" rx="140" ry="70"/><ellipse cx="200" cy="220" rx="70" ry="140"/><line x1="60" y1="220" x2="340" y2="220"/><line x1="200" y1="80" x2="200" y2="360"/></g><path d="M200 80 L230 160 L200 200 Z" fill="%23dc2626"/><ellipse cx="210" cy="130" rx="18" ry="18" fill="white"/></svg>') center/contain no-repeat;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #4f46e5;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .cta-buttons {
+            margin-top: 3rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 0;
+            background: #f8fafc;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #4f46e5;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+        }
+
+        .step-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .step h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #4f46e5;
+        }
+
+        .step p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Free vs Protected */
+        .pricing {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .pricing-card.featured {
+            border-color: #4f46e5;
+            border-width: 3px;
+        }
+
+        .pricing-card.featured::before {
+            content: "MOST POPULAR";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4f46e5;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .pricing-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #4f46e5;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-period {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            color: #374151;
+        }
+
+        .pricing-features li::before {
+            content: "✅ ";
+            margin-right: 0.5rem;
+        }
+
+        .pricing-features li.disabled {
+            color: #9ca3af;
+        }
+
+        .pricing-features li.disabled::before {
+            content: "❌ ";
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .warning-title {
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning-text {
+            color: #92400e;
+            font-size: 0.9rem;
+        }
+
+        /* Founder Story */
+        .founder-story {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .story-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .founder-image {
+            text-align: center;
+        }
+
+        .founder-avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            margin: 0 auto 1rem;
+        }
+
+        .founder-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4f46e5;
+        }
+
+        .founder-title {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .story-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #374151;
+        }
+
+        .story-quote {
+            font-style: italic;
+            font-size: 1.2rem;
+            color: #4f46e5;
+            margin: 1.5rem 0;
+            padding-left: 1rem;
+            border-left: 4px solid #4f46e5;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 80px 0;
+            background: #4f46e5;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+        }
+
+        .stat-item .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* CTA Section */
+        .final-cta {
+            padding: 80px 0;
+            background: white;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #4f46e5;
+        }
+
+        .cta-text {
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1f2937;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: #d1d5db;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .story-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                CarTrace Pro
+            </div>
+            <ul class="nav-links">
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#pricing">Plans</a></li>
+                <li><a href="#story">Our Story</a></li>
+                <li><a href="#stats">Results</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <a href="auth.html" class="btn btn-secondary">Sign In</a>
+                <a href="auth.html" class="btn btn-primary">Join Free</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <h1>🚗 Never Search Alone</h1>
+            <p class="hero-subtitle">
+                Community-powered vehicle recovery that puts money in your neighbors' pockets for helping find stolen cars.
+            </p>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">96.1%</span>
+                    <span class="stat-label">Recovery Rate</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">47K+</span>
+                    <span class="stat-label">Community Members</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">$1.2M</span>
+                    <span class="stat-label">Rewards Paid</span>
+                </div>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
+                <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How CarTrace Pro Works</h2>
+            <p class="section-subtitle">
+                Simple, community-driven vehicle recovery that benefits everyone
+            </p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-icon">📱</div>
+                    <h3>1. Join for Free</h3>
+                    <p>Download the app and become part of our community. It's completely free to join and help others find their stolen vehicles.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">🚨</div>
+                    <h3>2. Report or Spot</h3>
+                    <p>Report your stolen vehicle or help spot others' stolen cars while you're driving around your neighborhood.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">💰</div>
+                    <h3>3. Earn Rewards</h3>
+                    <p>Get paid for successfully helping recover stolen vehicles. Community members have earned over $1.2M in rewards!</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">🤝</div>
+                    <h3>4. Protect Each Other</h3>
+                    <p>Choose a protection plan to activate the community when YOUR vehicle is stolen. Registration takes 3 days to prevent fraud.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Free Community + Optional Protection</h2>
+            <p class="section-subtitle">
+                Join the community for free, upgrade for personal protection when you're ready
+            </p>
+
+            <div class="warning-box">
+                <div class="warning-title">⚠️ Important: 3-Day Waiting Period</div>
+                <div class="warning-text">
+                    Protection plan registrations take 3 days to activate. This prevents people from signing up only after their car is stolen. Plan ahead to ensure you're covered!
+                </div>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="pricing-title">🆓 Free Community</h3>
+                    <div class="pricing-price">$0</div>
+                    <div class="pricing-period">Forever</div>
+                    <ul class="pricing-features">
+                        <li>Help find stolen vehicles</li>
+                        <li>Earn money for successful finds</li>
+                        <li>Access to community alerts</li>
+                        <li>Report stolen vehicles</li>
+                        <li class="disabled">Personal protection coverage</li>
+                        <li class="disabled">Priority community response</li>
+                        <li class="disabled">Recovery team dispatch</li>
+                    </ul>
+                    <a href="auth.html" class="btn btn-primary btn-large">Join Free</a>
+                </div>
+
+                <div class="pricing-card featured">
+                    <h3 class="pricing-title">🛡️ Gold Protection</h3>
+                    <div class="pricing-price">$9.99</div>
+                    <div class="pricing-period">per month</div>
+                    <ul class="pricing-features">
+                        <li>Everything in Free Community</li>
+                        <li>Personal vehicle protection</li>
+                        <li>Priority community alerts</li>
+                        <li>$300 finder rewards for your car</li>
+                        <li>Professional recovery team</li>
+                        <li>Insurance claim assistance</li>
+                        <li>24/7 support hotline</li>
+                    </ul>
+                    <a href="auth.html" class="btn btn-success btn-large">Start Protection</a>
+                    <div style="margin-top: 1rem; font-size: 0.9rem; color: #6b7280;">
+                        *3-day waiting period applies
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Founder Story -->
+    <section class="founder-story" id="story">
+        <div class="container">
+            <h2 class="section-title">Built from Personal Experience</h2>
+            
+            <div class="story-content">
+                <div class="founder-image">
+                    <div class="founder-avatar">👤</div>
+                    <div class="founder-name">Lindi</div>
+                    <div class="founder-title">Founder & CEO</div>
+                </div>
+                
+                <div class="story-text">
+                    <p>Ten years ago, my car was stolen and police couldn't help me find it. Worse yet, it was used in an armed robbery. I had to find my own vehicle by driving around the city myself.</p>
+                    
+                    <div class="story-quote">
+                        "I realized that if I could find my car, imagine what an entire community could accomplish working together."
+                    </div>
+                    
+                    <p>That experience inspired me to spend the next decade creating CarTrace Pro – a community-powered vehicle recovery network that helps people find their stolen cars by crowdsourcing the search to thousands of community members who earn rewards for helping.</p>
+                    
+                    <p>Today, we've achieved a 96.1% recovery rate with most vehicles found within hours, and we've paid over $1.2M in community rewards. <strong>At CarTrace Pro, you never search alone.</strong></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-section" id="stats">
+        <div class="container">
+            <h2 class="section-title">Community Impact</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">47,892</span>
+                    <span class="stat-label">Active Community Members</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">2,847</span>
+                    <span class="stat-label">Vehicles Successfully Recovered</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">$1.2M</span>
+                    <span class="stat-label">Paid to Community Helpers</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">96.1%</span>
+                    <span class="stat-label">Recovery Success Rate</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Protect Your Community?</h2>
+                <p class="cta-text">
+                    Join thousands of neighbors who are making their communities safer while earning money for helping others.
+                </p>
+                <div class="cta-buttons">
+                    <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Today</a>
+                    <a href="auth.html" class="btn btn-primary btn-large">🛡️ Get Protection</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#contact">Contact</a>
+                <a href="#help">Help Center</a>
+            </div>
+            <p>&copy; 2024 CarTrace Pro. All rights reserved. Community-powered vehicle recovery.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(79, 70, 229, 0.95)';
+            } else {
+                header.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+        });
+    </script>
+</body>
+</html>

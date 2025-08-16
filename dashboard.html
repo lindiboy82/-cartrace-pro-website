@@ -1,0 +1,2520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarTrace Pro - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #2196F3;
+            --danger: #F44336;
+            --warning: #FF9800;
+            --success: #4CAF50;
+            --info: #2196F3;
+            --dark: #212121;
+            --light: #F5F5F5;
+            --white: #FFFFFF;
+            --surface: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --nav-selected: rgba(76, 175, 80, 0.1);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .header .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: var(--danger);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row-triple {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Protection Plan Styles */
+        .plan-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .plan-option {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .plan-option:hover {
+            border-color: var(--primary);
+            background: var(--nav-selected);
+        }
+
+        .plan-option.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .plan-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .plan-reward {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .stat-box:hover {
+            background: var(--nav-selected);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-trend {
+            font-size: 0.8rem;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .chart-visual {
+            text-align: center;
+            font-size: 1.2rem;
+            padding: 2rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-info { background: var(--info); color: white; }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        /* Button Groups */
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        /* Coming Soon Banner */
+        .coming-soon-banner {
+            background: var(--warning);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        /* Emergency Card */
+        .emergency-card {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .emergency-card .card-title {
+            color: white;
+        }
+
+        /* Live Updates */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Navigation */
+        .bottom-nav {
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            padding: 0.5rem 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-around;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--nav-selected);
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Alert Items */
+        .alert-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: background 0.2s ease;
+        }
+
+        .alert-item:hover {
+            background: var(--nav-selected);
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        /* Vehicle Cards */
+        .vehicle-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: white;
+        }
+
+        .vehicle-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .vehicle-details {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            white-space: pre-line;
+        }
+
+        /* Progress Bars */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.3s ease;
+        }
+
+        /* Feature Lists */
+        .feature-list {
+            margin: 1rem 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .feature-item::before {
+            content: "✅";
+            margin-right: 0.5rem;
+        }
+
+        /* Vehicle Recovery Modal Styles */
+        .recovery-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+        }
+
+        .recovery-modal-content {
+            background-color: var(--white);
+            margin: 3% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .recovery-step-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .safety-warning {
+            background: var(--danger);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+
+        .vehicle-info {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: left;
+        }
+
+        .step-instructions {
+            text-align: left;
+            margin: 1.5rem 0;
+            line-height: 1.6;
+        }
+
+        .step-status {
+            background: var(--success);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+
+        .step-status.pending {
+            background: var(--warning);
+        }
+
+        .recovery-btn {
+            padding: 1rem 2rem;
+            margin: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .recovery-btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .recovery-btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .recovery-btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .recovery-btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .recovery-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        .progress-step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 0.5rem;
+            position: relative;
+        }
+
+        .progress-step.completed {
+            background: var(--success);
+            color: white;
+        }
+
+        .progress-step.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 30px;
+            height: 3px;
+            background: #e0e0e0;
+            transform: translateY(-50%);
+        }
+
+        .progress-step.completed:not(:last-child)::after {
+            background: var(--success);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .form-row,
+            .form-row-triple {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 2% auto;
+                padding: 1.5rem;
+            }
+
+            .plan-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🚗 CarTrace Pro Dashboard</h1>
+            <div class="subtitle">Professional Vehicle Security & Recovery System</div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Content -->
+            <div id="dashboard-content" class="content-section active">
+                <!-- Live Analytics Dashboard -->
+                <div class="card">
+                    <h2 class="card-title">📊 Live Analytics Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-icon">📡</div>
+                            <div class="stat-value" id="network-uptime">99.97%</div>
+                            <div class="stat-label">Network Uptime</div>
+                            <div class="stat-trend">↗ +0.02%</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-value" id="response-time">0.8ms</div>
+                            <div class="stat-label">Response Time</div>
+                            <div class="stat-trend">↗ Improving</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🛡️</div>
+                            <div class="stat-value" id="security-score">95</div>
+                            <div class="stat-label">Security Score</div>
+                            <div class="stat-trend">↗ +2 pts</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-value" id="data-points">1,247</div>
+                            <div class="stat-label">Data Points</div>
+                            <div class="stat-trend">↗ Live</div>
+                        </div>
+                    </div>
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        <span>Live updates every 3 seconds • Last: <span id="last-update">Just now</span> • Analytics AI: ACTIVE</span>
+                    </div>
+                </div>
+
+                <!-- Real-time Analytics Charts -->
+                <div class="card">
+                    <h2 class="card-title">📈 Real-time Analytics Charts</h2>
+                    <div class="chart-container">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <h4>🔵 Security Events</h4>
+                                <div class="chart-visual">📊 ▁▃▅▇█▇▅▃▁ 📈</div>
+                                <small>24hr trend: ↗ +12%</small>
+                            </div>
+                            <div>
+                                <h4>🟢 Network Performance</h4>
+                                <div class="chart-visual">📊 ▂▄▆█▆▄▂▄▆ 📈</div>
+                                <small>Uptime: 99.97%</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <div>📊 Live Data Trends (Analytics AI):</div>
+                        <div class="feature-item">Security scans: ▲ 15% increase (excellent)</div>
+                        <div class="feature-item">Response times: ▼ 8% faster (improving)</div>
+                        <div class="feature-item">Network stability: ▲ 99.97% uptime (peak performance)</div>
+                        <div class="feature-item">Community activity: ▲ 23% more active users</div>
+                        <div class="feature-item">Threat detection: ▼ 0 active threats (secure)</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-info" onclick="showDetailedAnalytics()">📊 View Detailed Analytics</button>
+                    </div>
+                </div>
+
+                <!-- Performance Intelligence -->
+                <div class="card">
+                    <h2 class="card-title">🎯 Performance Intelligence</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-value" id="system-efficiency">97%</div>
+                            <div class="stat-label">System Efficiency</div>
+                            <div class="stat-trend">Peak Performance</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-value" id="recovery-rate">96.1%</div>
+                            <div class="stat-label">Recovery Rate</div>
+                            <div class="stat-trend">Industry Leading</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">😊</div>
+                            <div class="stat-value" id="satisfaction">98%</div>
+                            <div class="stat-label">User Satisfaction</div>
+                            <div class="stat-trend">Excellent</div>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <div>🤖 AI Performance Insights:</div>
+                        <div class="feature-item">Your vehicles are performing 23% above network average</div>
+                        <div class="feature-item">Security optimization suggestions: All implemented ✅</div>
+                        <div class="feature-item">Predicted maintenance: No issues forecast for next 30 days</div>
+                        <div class="feature-item">Recovery time optimization: Currently at maximum efficiency</div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Intelligence Analytics -->
+                <div class="card">
+                    <h2 class="card-title">🚗 Vehicle Intelligence Analytics</h2>
+                    <div class="feature-list">
+                        <div>📊 Vehicle Usage Analytics (Last 30 Days):</div>
+                        <div class="feature-item">Total Protected Vehicles: <span id="vehicle-count">0</span></div>
+                        <div class="feature-item">Average Daily Usage: 2.4 hours per vehicle</div>
+                        <div class="feature-item">Most Active Hours: 7-9 AM, 5-7 PM</div>
+                        <div class="feature-item">Weekend vs Weekday: 65% weekday usage</div>
+                    </div>
+                    <div class="feature-list">
+                        <div>🛡️ Security Analytics:</div>
+                        <div class="feature-item">Security Events: 0 threats detected</div>
+                        <div class="feature-item">Community Coverage: 99.8% area protection</div>
+                        <div class="feature-item">Network Health: All systems optimal</div>
+                        <div class="feature-item">Push Notifications: 100% delivery rate</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-success" onclick="generateAnalyticsReport()">📊 Generate Detailed Report</button>
+                    </div>
+                </div>
+
+                <!-- Cloud Sync & Collaboration -->
+                <div class="card">
+                    <h2 class="card-title">☁️ Cloud Sync & Collaboration</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-icon">☁️</div>
+                            <div class="stat-value">99.8%</div>
+                            <div class="stat-label">Sync Accuracy</div>
+                            <div class="stat-trend">🟢 Excellent</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">📱</div>
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Devices Synced</div>
+                            <div class="stat-trend">🔄 Real-time</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">⏰</div>
+                            <div class="stat-value">2m ago</div>
+                            <div class="stat-label">Last Sync</div>
+                            <div class="stat-trend">📊 Auto</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">💾</div>
+                            <div class="stat-value">87%</div>
+                            <div class="stat-label">Cloud Storage</div>
+                            <div class="stat-trend">📈 Optimal</div>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <div>🌐 Enterprise Cloud Synchronization Status:</div>
+                        <div class="feature-item">Mobile App: ✅ Connected (this device)</div>
+                        <div class="feature-item">Web Dashboard: ✅ Synced (last active 2m ago)</div>
+                        <div class="feature-item">Tablet App: ✅ Connected (family member)</div>
+                        <div class="feature-item">API Integration: ✅ Active (insurance partner)</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-info" onclick="performCloudSync()">🔄 Force Sync</button>
+                        <button class="btn btn-success" onclick="showCloudSettings()">☁️ Cloud Settings</button>
+                    </div>
+                </div>
+
+                <!-- AI Photo Evidence Center -->
+                <div class="card">
+                    <h2 class="card-title">📸 AI Photo Evidence Center</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-icon">📸</div>
+                            <div class="stat-value">23</div>
+                            <div class="stat-label">Photos Stored</div>
+                            <div class="stat-trend">🔒 Encrypted</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🤖</div>
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">AI Analyzed</div>
+                            <div class="stat-trend">⚡ Real-time</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">⚠️</div>
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Damage Detected</div>
+                            <div class="stat-trend">🟢 None</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Reports Generated</div>
+                            <div class="stat-trend">📧 Auto-sent</div>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <div>🤖 Advanced AI Photo Analysis Capabilities:</div>
+                        <div class="feature-item">Computer vision damage detection (99.3% accuracy)</div>
+                        <div class="feature-item">License plate OCR (supports 50+ countries)</div>
+                        <div class="feature-item">Automatic photo categorization by incident type</div>
+                        <div class="feature-item">Insurance claim auto-generation</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="startPhotoCapture()">📸 Capture Evidence</button>
+                        <button class="btn btn-info" onclick="showPhotoGallery()">🖼️ View Gallery</button>
+                        <button class="btn btn-success" onclick="showAIAnalysis()">🤖 AI Analysis</button>
+                    </div>
+                </div>
+
+                <!-- Smart Insurance Hub -->
+                <div class="card">
+                    <h2 class="card-title">🛡️ Smart Insurance Hub</h2>
+                    <div class="coming-soon-banner">
+                        🚧 COMING SOON 🚧
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Active Policies</div>
+                            <div class="stat-trend">🛡️ GEICO + State Farm</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Claims This Year</div>
+                            <div class="stat-trend">🟢 None</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-value">2.1h</div>
+                            <div class="stat-label">Avg Process Time</div>
+                            <div class="stat-trend">🚀 Instant</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">23%</div>
+                            <div class="stat-label">Annual Savings</div>
+                            <div class="stat-trend">📉 vs Manual</div>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <div>🤖 AI-Powered Insurance Automation Status:</div>
+                        <div class="feature-item">GEICO: ✅ Real-time API integration (Primary)</div>
+                        <div class="feature-item">State Farm: ✅ Claims processing active</div>
+                        <div class="feature-item">Progressive: ✅ Quote comparison enabled</div>
+                        <div class="feature-item">Photo evidence auto-submission: ACTIVE</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-danger" onclick="startAutomaticClaim()">🚨 File Claim</button>
+                        <button class="btn btn-info" onclick="showClaimTracking()">📊 Track Claims</button>
+                        <button class="btn btn-success" onclick="showPolicyManagement()">🛡️ Manage Policies</button>
+                    </div>
+                </div>
+
+                <!-- Emergency Response Center -->
+                <div class="card emergency-card">
+                    <h2 class="card-title">🚨 Emergency Response Center</h2>
+                    <div class="feature-list">
+                        <div>Professional vehicle recovery services with insurance integration and community network support.</div>
+                        <div class="feature-item">Average Response Time: 4.3 minutes</div>
+                        <div class="feature-item">Recovery Success Rate: 96.1%</div>
+                        <div class="feature-item">Active Community Network: 47,892 users</div>
+                        <div class="feature-item">24/7 Professional Support Available</div>
+                        <div class="feature-item">Community Push Notifications: Real-time alerts to all users</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-large" style="background: #fff; color: #ee5a24; font-weight: bold;" onclick="reportVehicleStolen()">🚨 REPORT VEHICLE STOLEN</button>
+                        <button class="btn btn-large" style="background: #fff; color: #00b894;" onclick="foundStolenVehicle()">🔍 I FOUND A STOLEN VEHICLE</button>
+                    </div>
+                    <div style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
+                        🆘 For immediate emergencies, always contact local authorities (911) first.
+                    </div>
+                </div>
+
+                <!-- Community Analytics & Impact -->
+                <div class="card">
+                    <h2 class="card-title">🌍 Community Analytics & Impact</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-value" id="active-users">47,892</div>
+                            <div class="stat-label">Active Users</div>
+                            <div class="stat-trend">↗ +127 today</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🚗</div>
+                            <div class="stat-value" id="cars-recovered">2,847</div>
+                            <div class="stat-label">Cars Recovered</div>
+                            <div class="stat-trend">↗ +4 today</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-value">$1.2M</div>
+                            <div class="stat-label">Rewards Paid</div>
+                            <div class="stat-trend">↗ +$2.4K today</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🎯</div>
+                            <div class="stat-value">96.1%</div>
+                            <div class="stat-label">Success Rate</div>
+                            <div class="stat-trend">↗ Peak Performance</div>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <div>🤖 AI-Powered Community Intelligence:</div>
+                        <div class="feature-item">Community Growth Rate: +2.3% weekly (accelerating)</div>
+                        <div class="feature-item">Network Response Efficiency: 98.7% optimal</div>
+                        <div class="feature-item">Geographic Coverage: 99.2% of protected areas</div>
+                        <div class="feature-item">Your Network Participation Score: 98/100 (excellent citizen)</div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Maintenance Hub -->
+                <div class="card">
+                    <h2 class="card-title">🔧 Vehicle Maintenance Hub</h2>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-icon" id="carcare-status-icon">🔗</div>
+                            <div class="stat-value" id="carcare-status">Not Connected</div>
+                            <div class="stat-label">CarCare Status</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🚗</div>
+                            <div class="stat-value" id="maintenance-vehicles">0</div>
+                            <div class="stat-label">Vehicles</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-value" id="service-records">0</div>
+                            <div class="stat-label">Service Records</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🔔</div>
+                            <div class="stat-value" id="maintenance-alerts">0</div>
+                            <div class="stat-label">Active Alerts</div>
+                        </div>
+                    </div>
+                    <div class="feature-list">
+                        <div>🆓 Powered by FREE Carfax CarCare:</div>
+                        <div class="feature-item">Complete service history tracking</div>
+                        <div class="feature-item">Maintenance reminders and alerts</div>
+                        <div class="feature-item">Service cost monitoring</div>
+                        <div class="feature-item">Recall notifications and safety updates</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="showCarCareConnection()">🔗 Connect CarCare Account</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Content Sections (Vehicles, Recovery, Alerts, Settings) -->
+            <div id="vehicles-content" class="content-section">
+                <div class="card">
+                    <h2 class="card-title">🚗 My Vehicles</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-large" onclick="openAddVehicleModal()">➕ Add New Vehicle</button>
+                    </div>
+                    <div id="vehicles-list">
+                        <!-- Vehicles will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="recovery-content" class="content-section">
+                <div class="card emergency-card">
+                    <h2 class="card-title">🚨 Professional Recovery Center</h2>
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">24/7 Emergency Response • Insurance Integration • Community Network</div>
+                        <div style="opacity: 0.9;">🟢 ALL SYSTEMS OPERATIONAL</div>
+                    </div>
+                    <div class="feature-list">
+                        <div>📱 Community-Powered Recovery Protocol:</div>
+                        <div class="feature-item">1️⃣ Contact 911 FIRST (Required by law)</div>
+                        <div class="feature-item">2️⃣ Use CarTrace Pro emergency reporting</div>
+                        <div class="feature-item">3️⃣ Insurance claim auto-filed</div>
+                        <div class="feature-item">4️⃣ Community network alerted (47,892 users)</div>
+                        <div class="feature-item">5️⃣ Push notifications sent to all app users</div>
+                        <div class="feature-item">6️⃣ Recovery team dispatched</div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-large" style="background: #fff; color: #ee5a24;" onclick="reportVehicleStolen()">🚨 REPORT VEHICLE STOLEN</button>
+                        <button class="btn btn-large" style="background: #fff; color: #00b894;" onclick="foundStolenVehicle()">🔍 I FOUND A STOLEN VEHICLE</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="alerts-content" class="content-section">
+                <div class="card">
+                    <h2 class="card-title">🔔 Security Operations Center</h2>
+                    <div style="text-align: center; margin-bottom: 1.5rem; color: var(--success);">
+                        🟢 ALL SYSTEMS SECURE • Real-time Monitoring Active
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-icon">🟢</div>
+                            <div class="stat-value">0</div>
+                            <div class="stat-label">Active Threats</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Alerts Today</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-value">23</div>
+                            <div class="stat-label">This Week</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-icon">🛡️</div>
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">System Health</div>
+                        </div>
+                    </div>
+                    <div id="alerts-list">
+                        <!-- Alert items will be added here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings-content" class="content-section">
+                <div class="card">
+                    <h2 class="card-title">⚙️ Settings & Profile</h2>
+                    <div style="margin-bottom: 2rem;">
+                        <h3>👤 Profile Information:</h3>
+                        <div style="margin: 1rem 0;">
+                            <strong>Name:</strong> CarTrace User<br>
+                            <strong>Email:</strong> user@example.com<br>
+                            <strong>Plan:</strong> CarTrace Pro Premium
+                        </div>
+                        
+                        <h3>🔧 App Settings:</h3>
+                        <div class="feature-list">
+                            <div class="feature-item">Notifications: Enabled</div>
+                            <div class="feature-item">Auto-Lock: 30 seconds</div>
+                            <div class="feature-item">Biometric Login: Enabled</div>
+                            <div class="feature-item">Emergency Contacts: 3 configured</div>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-large" onclick="manageSubscription()">💎 Manage Subscription Plans</button>
+                        <button class="btn btn-secondary" onclick="logout()">🚪 Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-container">
+                <div class="nav-item active" onclick="showContent('dashboard')">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-label">Dashboard</div>
+                </div>
+                <div class="nav-item" onclick="showContent('vehicles')">
+                    <div class="nav-icon">🚗</div>
+                    <div class="nav-label">Vehicles</div>
+                </div>
+                <div class="nav-item" onclick="showContent('recovery')">
+                    <div class="nav-icon">🚨</div>
+                    <div class="nav-label">Recovery</div>
+                </div>
+                <div class="nav-item" onclick="showContent('alerts')">
+                    <div class="nav-icon">🔔</div>
+                    <div class="nav-label">Alerts</div>
+                </div>
+                <div class="nav-item" onclick="showContent('settings')">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Settings</div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Add Vehicle Modal -->
+    <div id="addVehicleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddVehicleModal()">&times;</span>
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">➕ Add New Vehicle</h2>
+            
+            <form id="addVehicleForm">
+                <!-- Basic Vehicle Information -->
+                <div class="form-row-triple">
+                    <div class="form-group">
+                        <label class="form-label" for="vehicleYear">Year *</label>
+                        <select class="form-select" id="vehicleYear" required>
+                            <option value="">Select Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="vehicleMake">Make *</label>
+                        <select class="form-select" id="vehicleMake" required>
+                            <option value="">Select Make</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="vehicleModel">Model *</label>
+                        <select class="form-select" id="vehicleModel" required>
+                            <option value="">Select Model</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Color and License -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="vehicleColor">Color *</label>
+                        <select class="form-select" id="vehicleColor" required>
+                            <option value="">Select Color</option>
+                            <option value="Black">Black</option>
+                            <option value="White">White</option>
+                            <option value="Silver">Silver</option>
+                            <option value="Gray">Gray</option>
+                            <option value="Red">Red</option>
+                            <option value="Blue">Blue</option>
+                            <option value="Green">Green</option>
+                            <option value="Yellow">Yellow</option>
+                            <option value="Orange">Orange</option>
+                            <option value="Purple">Purple</option>
+                            <option value="Brown">Brown</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Beige">Beige</option>
+                            <option value="Pink">Pink</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="vehicleLicense">License Plate *</label>
+                        <input type="text" class="form-input" id="vehicleLicense" placeholder="ABC123" style="text-transform: uppercase;" required>
+                    </div>
+                </div>
+
+                <!-- VIN Number -->
+                <div class="form-group">
+                    <label class="form-label" for="vehicleVin">VIN Number</label>
+                    <input type="text" class="form-input" id="vehicleVin" placeholder="17-character VIN (optional)" maxlength="17" style="text-transform: uppercase;">
+                    <small style="color: var(--text-secondary); font-size: 0.85rem;">VIN helps with insurance claims and verification</small>
+                </div>
+
+                <!-- Distinguishing Features -->
+                <div class="form-group">
+                    <label class="form-label" for="vehicleFeatures">Distinguishing Features</label>
+                    <textarea class="form-textarea" id="vehicleFeatures" placeholder="Describe any unique features that make your vehicle stand out (e.g., custom wheels, spoiler, bumper stickers, dents, scratches, tinted windows, etc.)"></textarea>
+                    <small style="color: var(--text-secondary); font-size: 0.85rem;">These details help the community identify your vehicle more easily</small>
+                </div>
+
+                <!-- Protection Plan Selection -->
+                <div class="form-group">
+                    <label class="form-label">Protection Plan *</label>
+                    <div class="plan-selector">
+                        <div class="plan-option" data-plan="BASIC" onclick="selectPlan('BASIC')">
+                            <div class="plan-icon">🥉</div>
+                            <div class="plan-name">BASIC</div>
+                            <div class="plan-reward">$200 reward</div>
+                        </div>
+                        <div class="plan-option" data-plan="GOLD" onclick="selectPlan('GOLD')">
+                            <div class="plan-icon">🥈</div>
+                            <div class="plan-name">GOLD</div>
+                            <div class="plan-reward">$300 reward</div>
+                        </div>
+                        <div class="plan-option" data-plan="PLATINUM" onclick="selectPlan('PLATINUM')">
+                            <div class="plan-icon">🥇</div>
+                            <div class="plan-name">PLATINUM</div>
+                            <div class="plan-reward">$500 reward</div>
+                        </div>
+                        <div class="plan-option" data-plan="DIAMOND" onclick="selectPlan('DIAMOND')">
+                            <div class="plan-icon">💎</div>
+                            <div class="plan-name">DIAMOND</div>
+                            <div class="plan-reward">$750 reward</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedPlan" required>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="btn-group" style="margin-top: 2rem;">
+                    <button type="submit" class="btn btn-success btn-large" id="submitBtn">
+                        🚗 Add Vehicle
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-large" onclick="closeAddVehicleModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Vehicle Recovery Process Modal -->
+    <div id="recoveryModal" class="recovery-modal">
+        <div class="recovery-modal-content">
+            <span class="close" onclick="closeRecoveryModal()" style="float: right; font-size: 2rem; cursor: pointer;">&times;</span>
+            <div id="recoveryContent">
+                <!-- Recovery steps will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Car data
+        const carData = {
+            "Acura": ["ILX", "MDX", "NSX", "RDX", "RLX", "TL", "TLX", "TSX", "ZDX"],
+            "Alfa Romeo": ["4C", "Giulia", "Stelvio", "Tonale"],
+            "Aston Martin": ["DB11", "DBS", "DBX", "Vantage", "Vanquish"],
+            "Audi": ["A3", "A4", "A5", "A6", "A7", "A8", "Q3", "Q5", "Q7", "Q8", "R8", "RS3", "RS4", "RS5", "RS6", "RS7", "S3", "S4", "S5", "S6", "S7", "S8", "TT", "e-tron"],
+            "Bentley": ["Bentayga", "Continental", "Flying Spur", "Mulsanne"],
+            "BMW": ["1 Series", "2 Series", "3 Series", "4 Series", "5 Series", "6 Series", "7 Series", "8 Series", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "Z4", "i3", "i4", "i8", "iX"],
+            "Buick": ["Enclave", "Encore", "Envision", "LaCrosse", "Regal", "Verano"],
+            "Cadillac": ["ATS", "CT4", "CT5", "CT6", "CTS", "Escalade", "SRX", "XT4", "XT5", "XT6", "XTS"],
+            "Chevrolet": ["Blazer", "Camaro", "Colorado", "Corvette", "Cruze", "Equinox", "Express", "Impala", "Malibu", "Silverado", "Sonic", "Spark", "Suburban", "Tahoe", "Traverse", "Trax", "Volt"],
+            "Chrysler": ["200", "300", "Pacifica", "Voyager"],
+            "Dodge": ["Challenger", "Charger", "Durango", "Grand Caravan", "Journey", "Ram"],
+            "Ferrari": ["488", "812", "F8", "Portofino", "Roma", "SF90"],
+            "Fiat": ["124 Spider", "500", "500L", "500X"],
+            "Ford": ["Bronco", "EcoSport", "Edge", "Escape", "Expedition", "Explorer", "F-150", "Fiesta", "Flex", "Focus", "Fusion", "Mustang", "Ranger", "Taurus", "Transit"],
+            "Genesis": ["G70", "G80", "G90", "GV60", "GV70", "GV80"],
+            "GMC": ["Acadia", "Canyon", "Sierra", "Terrain", "Yukon"],
+            "Honda": ["Accord", "Civic", "CR-V", "CR-Z", "Fit", "HR-V", "Insight", "Odyssey", "Passport", "Pilot", "Ridgeline"],
+            "Hyundai": ["Accent", "Elantra", "Genesis", "Ioniq", "Kona", "Nexo", "Palisade", "Santa Fe", "Sonata", "Tucson", "Veloster", "Venue"],
+            "Infiniti": ["Q50", "Q60", "Q70", "QX30", "QX50", "QX60", "QX80"],
+            "Jaguar": ["E-PACE", "F-PACE", "F-TYPE", "I-PACE", "XE", "XF", "XJ"],
+            "Jeep": ["Cherokee", "Compass", "Gladiator", "Grand Cherokee", "Patriot", "Renegade", "Wrangler"],
+            "Kia": ["Cadenza", "Forte", "K5", "Niro", "Optima", "Rio", "Sedona", "Seltos", "Sorento", "Soul", "Sportage", "Stinger", "Telluride"],
+            "Lamborghini": ["Aventador", "Huracán", "Urus"],
+            "Land Rover": ["Defender", "Discovery", "Range Rover", "Range Rover Evoque", "Range Rover Sport", "Range Rover Velar"],
+            "Lexus": ["CT", "ES", "GS", "GX", "IS", "LC", "LS", "LX", "NX", "RC", "RX", "UX"],
+            "Lincoln": ["Aviator", "Continental", "Corsair", "MKC", "MKT", "MKX", "MKZ", "Navigator", "Nautilus"],
+            "Maserati": ["Ghibli", "GranTurismo", "Levante", "Quattroporte"],
+            "Mazda": ["CX-3", "CX-30", "CX-5", "CX-9", "Mazda3", "Mazda6", "MX-5 Miata"],
+            "McLaren": ["570S", "600LT", "720S", "Artura", "GT"],
+            "Mercedes-Benz": ["A-Class", "C-Class", "CLA", "CLS", "E-Class", "G-Class", "GLA", "GLB", "GLC", "GLE", "GLS", "S-Class", "SL", "SLC"],
+            "Mini": ["Clubman", "Convertible", "Countryman", "Hardtop"],
+            "Mitsubishi": ["Eclipse Cross", "Lancer", "Mirage", "Outlander", "Outlander Sport"],
+            "Nissan": ["370Z", "Altima", "Armada", "Frontier", "GT-R", "Kicks", "Leaf", "Maxima", "Murano", "Pathfinder", "Rogue", "Sentra", "Titan", "Versa"],
+            "Porsche": ["718 Boxster", "718 Cayman", "911", "Cayenne", "Macan", "Panamera", "Taycan"],
+            "Ram": ["1500", "2500", "3500", "ProMaster"],
+            "Rolls-Royce": ["Cullinan", "Dawn", "Ghost", "Phantom", "Wraith"],
+            "Subaru": ["Ascent", "BRZ", "Crosstrek", "Forester", "Impreza", "Legacy", "Outback", "WRX"],
+            "Tesla": ["Model 3", "Model S", "Model X", "Model Y", "Cybertruck", "Roadster"],
+            "Toyota": ["4Runner", "86", "Avalon", "Camry", "C-HR", "Corolla", "GR Supra", "Highlander", "Land Cruiser", "Prius", "RAV4", "Sequoia", "Sienna", "Tacoma", "Tundra", "Venza", "Yaris"],
+            "Volkswagen": ["Arteon", "Atlas", "Beetle", "Golf", "Jetta", "Passat", "Tiguan", "Touareg"],
+            "Volvo": ["S60", "S90", "V60", "V90", "XC40", "XC60", "XC90"]
+        };
+
+        // Real-time data variables
+        let batteryLevel = 87;
+        let currentSpeed = 0;
+        let isMoving = false;
+        let securityScans = 1247;
+        let networkUptime = 99.97;
+        let responseTime = 0.8;
+        let securityScore = 95;
+        let dataPoints = 1247;
+
+        // Store user's vehicles data - starts empty, vehicles added through form
+        let userVehicles = [];
+
+        // Vehicle Recovery Process State
+        let recoveryProcess = {
+            currentStep: 1,
+            photoTaken: false,
+            policeContacted: false,
+            reportPhotoTaken: false,
+            vehicleData: null,
+            caseId: null
+        };
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            populateYears();
+            populateMakes();
+            loadVehicles();
+            loadAlerts();
+            startRealTimeUpdates();
+        });
+
+        // Navigation
+        function showContent(contentId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(contentId + '-content').classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        // Modal functions
+        function openAddVehicleModal() {
+            document.getElementById('addVehicleModal').style.display = 'block';
+        }
+
+        function closeAddVehicleModal() {
+            document.getElementById('addVehicleModal').style.display = 'none';
+            resetForm();
+        }
+
+        // Populate years (2000-2025)
+        function populateYears() {
+            const yearSelect = document.getElementById('vehicleYear');
+            const currentYear = new Date().getFullYear();
+            
+            for (let year = currentYear + 1; year >= 2000; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // Populate makes
+        function populateMakes() {
+            const makeSelect = document.getElementById('vehicleMake');
+            const makes = Object.keys(carData).sort();
+            
+            makes.forEach(make => {
+                const option = document.createElement('option');
+                option.value = make;
+                option.textContent = make;
+                makeSelect.appendChild(option);
+            });
+        }
+
+        // Populate models based on selected make
+        function populateModels() {
+            const makeSelect = document.getElementById('vehicleMake');
+            const modelSelect = document.getElementById('vehicleModel');
+            const selectedMake = makeSelect.value;
+            
+            // Clear existing models
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            
+            if (selectedMake && carData[selectedMake]) {
+                carData[selectedMake].forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Event listener for make selection
+        document.getElementById('vehicleMake').addEventListener('change', populateModels);
+
+        // Protection plan selection
+        function selectPlan(planType) {
+            // Remove selection from all plans
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Select the clicked plan
+            document.querySelector(`[data-plan="${planType}"]`).classList.add('selected');
+            document.getElementById('selectedPlan').value = planType;
+        }
+
+        // Form submission
+        document.getElementById('addVehicleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<span class="spinner"></span>Adding Vehicle...';
+            submitBtn.disabled = true;
+            
+            // Get form data
+            const vehicleData = {
+                year: document.getElementById('vehicleYear').value,
+                make: document.getElementById('vehicleMake').value,
+                model: document.getElementById('vehicleModel').value,
+                color: document.getElementById('vehicleColor').value,
+                license: document.getElementById('vehicleLicense').value.toUpperCase(),
+                vin: document.getElementById('vehicleVin').value.toUpperCase(),
+                features: document.getElementById('vehicleFeatures').value,
+                plan: document.getElementById('selectedPlan').value,
+                id: 'vehicle_' + Date.now(),
+                createdAt: new Date().toISOString()
+            };
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Add to local storage/database
+                userVehicles.push(vehicleData);
+                
+                // Update display
+                loadVehicles();
+                
+                // Reset form and close modal
+                resetForm();
+                closeAddVehicleModal();
+                
+                // Show success message
+                alert(`✅ Vehicle Added Successfully!\n\n🚗 ${vehicleData.year} ${vehicleData.make} ${vehicleData.model}\n🎨 Color: ${vehicleData.color}\n🏷️ License: ${vehicleData.license}\n🛡️ Plan: ${vehicleData.plan}\n\n✅ Your vehicle is now protected by the CarTrace Pro community!`);
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        });
+
+        // Reset form
+        function resetForm() {
+            document.getElementById('addVehicleForm').reset();
+            document.getElementById('vehicleModel').innerHTML = '<option value="">Select Model</option>';
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
+
+        // Real-time updates
+        function startRealTimeUpdates() {
+            setInterval(updateLiveData, 3000); // Update every 3 seconds
+        }
+
+        function updateLiveData() {
+            // Simulate real data changes
+            const random = Math.random();
+            
+            if (random < 0.4) {
+                networkUptime = Math.max(99.90, Math.min(99.99, networkUptime + (Math.random() - 0.5) * 0.02));
+                responseTime = Math.max(0.5, Math.min(1.2, responseTime + (Math.random() - 0.5) * 0.1));
+                securityScore = Math.max(90, Math.min(100, securityScore + Math.floor((Math.random() - 0.5) * 3)));
+                dataPoints += Math.floor(Math.random() * 10);
+            }
+
+            // Update display
+            document.getElementById('network-uptime').textContent = networkUptime.toFixed(2) + '%';
+            document.getElementById('response-time').textContent = responseTime.toFixed(1) + 'ms';
+            document.getElementById('security-score').textContent = securityScore;
+            document.getElementById('data-points').textContent = dataPoints.toLocaleString();
+            
+            // Update community stats
+            document.getElementById('active-users').textContent = (47892 + Math.floor(Math.random() * 100)).toLocaleString();
+            document.getElementById('cars-recovered').textContent = (2847 + Math.floor(Math.random() * 10)).toLocaleString();
+            
+            // Update timestamp
+            const now = new Date();
+            document.getElementById('last-update').textContent = now.toLocaleTimeString();
+        }
+
+        // Vehicle Management
+        function loadVehicles() {
+            const vehiclesList = document.getElementById('vehicles-list');
+
+            if (vehiclesList) {
+                vehiclesList.innerHTML = '';
+                
+                if (userVehicles.length === 0) {
+                    vehiclesList.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🚗</div>
+                            <h3>No Vehicles Added</h3>
+                            <p>Add your first vehicle to start protecting it with our community network.</p>
+                            <button class="btn btn-primary" onclick="openAddVehicleModal()" style="margin-top: 1rem;">
+                                ➕ Add Your First Vehicle
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    userVehicles.forEach(vehicle => {
+                        const vehicleCard = createVehicleCard(vehicle);
+                        vehiclesList.appendChild(vehicleCard);
+                    });
+                }
+            }
+
+            // Update vehicle count
+            document.getElementById('vehicle-count').textContent = userVehicles.length;
+            document.getElementById('maintenance-vehicles').textContent = userVehicles.length;
+        }
+
+        function createVehicleCard(vehicle) {
+            const card = document.createElement('div');
+            card.className = 'vehicle-card';
+            
+            const planEmoji = {
+                'BASIC': '🥉',
+                'GOLD': '🥈', 
+                'PLATINUM': '🥇',
+                'DIAMOND': '💎'
+            }[vehicle.plan] || '🚗';
+
+            const rewardAmount = {
+                'BASIC': '$200',
+                'GOLD': '$300',
+                'PLATINUM': '$500', 
+                'DIAMOND': '$750'
+            }[vehicle.plan] || '$200';
+
+            card.innerHTML = `
+                <div class="vehicle-title">${planEmoji} ${vehicle.year} ${vehicle.make} ${vehicle.model}</div>
+                <div class="vehicle-details">🎨 Color: ${vehicle.color}
+🏷️ License: ${vehicle.license}
+${vehicle.vin ? `🔢 VIN: ${vehicle.vin}\n` : ''}${vehicle.features ? `✨ Features: ${vehicle.features}\n` : ''}${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
+📍 Status: ACTIVE</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showVehicleDetails('${vehicle.id}')">📋 Details</button>
+                    <button class="btn btn-warning" onclick="editVehicle('${vehicle.id}')">✏️ Edit</button>
+                    <button class="btn btn-danger" onclick="removeVehicle('${vehicle.id}')">🗑️ Remove</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Alert Management
+        function loadAlerts() {
+            const alertsList = document.getElementById('alerts-list');
+            const sampleAlerts = [
+                {
+                    icon: '🟢',
+                    title: 'Security Scan Complete',
+                    description: 'All vehicles - No threats detected',
+                    time: '2 min ago',
+                    type: 'success'
+                },
+                {
+                    icon: '🔄',
+                    title: 'System Update',
+                    description: 'CarTrace Pro v3.1 installed successfully',
+                    time: '15 min ago',
+                    type: 'info'
+                },
+                {
+                    icon: '🛡️',
+                    title: 'Network Security Check',
+                    description: 'Community network scanned - All secure',
+                    time: '1 hour ago',
+                    type: 'success'
+                },
+                {
+                    icon: '📡',
+                    title: 'GPS Signal Check',
+                    description: 'All vehicle trackers responding normally',
+                    time: '2 hours ago',
+                    type: 'success'
+                },
+                {
+                    icon: '🔔',
+                    title: 'Weekly Security Report',
+                    description: 'Your protection summary is ready',
+                    time: '1 day ago',
+                    type: 'info'
+                }
+            ];
+
+            if (alertsList) {
+                alertsList.innerHTML = '';
+                sampleAlerts.forEach(alert => {
+                    const alertItem = createAlertItem(alert);
+                    alertsList.appendChild(alertItem);
+                });
+            }
+        }
+
+        function createAlertItem(alert) {
+            const item = document.createElement('div');
+            item.className = 'alert-item';
+            item.innerHTML = `
+                <div class="alert-icon">${alert.icon}</div>
+                <div class="alert-content">
+                    <div class="alert-title">${alert.title}</div>
+                    <div class="alert-desc">${alert.description}</div>
+                    <div class="alert-time">${alert.time}</div>
+                </div>
+                <button class="btn btn-info" onclick="showAlertDetails('${alert.title}', '${alert.description}', '${alert.time}')">📋</button>
+            `;
+            return item;
+        }
+
+        // Updated addVehicle function to open modal instead of alert
+        function addVehicle() {
+            openAddVehicleModal();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const addVehicleModal = document.getElementById('addVehicleModal');
+            const recoveryModal = document.getElementById('recoveryModal');
+            
+            if (event.target === addVehicleModal) {
+                closeAddVehicleModal();
+            } else if (event.target === recoveryModal) {
+                closeRecoveryModal();
+            }
+        }
+
+        // License plate formatting
+        document.getElementById('vehicleLicense').addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+
+        // VIN formatting
+        document.getElementById('vehicleVin').addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        });
+
+        // Interactive Functions (keeping all your existing functions)
+        function showDetailedAnalytics() {
+            alert('📊 DETAILED ANALYTICS REPORT\n\n' +
+                  '🎯 Real-time Performance Metrics:\n' +
+                  '• System Response Time: 0.8ms (98% faster than industry average)\n' +
+                  '• Data Processing Rate: 15,847 events/minute\n' +
+                  '• Network Latency: <5ms globally\n' +
+                  '• Uptime SLA: 99.97% (exceeding 99.9% target)\n\n' +
+                  '🤖 AI Recommendations:\n' +
+                  '✅ System configuration: Optimal\n' +
+                  '✅ Security settings: Maximum efficiency\n' +
+                  '✅ Network utilization: Peak performance');
+        }
+
+        function generateAnalyticsReport() {
+            alert('📋 Generating comprehensive vehicle analytics report...\n\n' +
+                  '📊 Report will include:\n' +
+                  '• Usage patterns and optimization insights\n' +
+                  '• Security performance metrics\n' +
+                  '• Maintenance predictions and recommendations\n' +
+                  '• Cost savings analysis and ROI\n\n' +
+                  '📧 Report will be emailed when complete!');
+        }
+
+        function performCloudSync() {
+            alert('🔄 CLOUD SYNCHRONIZATION\n\n' +
+                  '☁️ Initiating sync process...\n\n' +
+                  '✅ Device data upload: Complete\n' +
+                  '✅ Cloud data download: Complete\n' +
+                  '✅ Multi-device sync: Updated\n' +
+                  '✅ Security verification: Passed\n\n' +
+                  '⏱️ Sync completed in 1.3 seconds\n' +
+                  '📊 Data integrity: 100% verified');
+        }
+
+        function showCloudSettings() {
+            alert('☁️ CLOUD & SYNC SETTINGS\n\n' +
+                  '🌐 Enterprise Cloud Configuration:\n\n' +
+                  '✅ Automatic backup: Every 5 minutes\n' +
+                  '✅ Data retention: 7 years (premium)\n' +
+                  '✅ Geographic redundancy: 15 data centers\n' +
+                  '✅ Real-time sync: Enabled\n' +
+                  '✅ Multi-device management: 3/5 slots used\n\n' +
+                  '🛡️ Security: Zero-knowledge encryption active');
+        }
+
+        function startPhotoCapture() {
+            alert('📸 AI PHOTO EVIDENCE CAPTURE\n\n' +
+                  '🤖 Smart Evidence Collection System:\n\n' +
+                  '📸 Available capture modes:\n' +
+                  '• Vehicle damage documentation\n' +
+                  '• Document capture (OCR enabled)\n' +
+                  '• Scene documentation\n\n' +
+                  '🎯 AI features:\n' +
+                  '• Real-time quality assessment\n' +
+                  '• Automatic lighting optimization\n' +
+                  '• Metadata verification');
+        }
+
+        function showPhotoGallery() {
+            alert('🖼️ EVIDENCE PHOTO GALLERY\n\n' +
+                  '📸 Digital Evidence Vault:\n\n' +
+                  '📂 Evidence Categories (23 photos total):\n' +
+                  '• Vehicle Damage Evidence: 8 photos\n' +
+                  '• Document Archives: 7 photos\n' +
+                  '• Scene Documentation: 5 photos\n' +
+                  '• Theft Evidence: 3 photos\n\n' +
+                  '🤖 AI Analysis: 100% verified authentic\n' +
+                  '🔒 Security: End-to-end encrypted');
+        }
+
+        function showAIAnalysis() {
+            alert('🤖 AI EVIDENCE ANALYSIS CENTER\n\n' +
+                  '🧠 Artificial Intelligence Analysis Engine:\n\n' +
+                  '🔍 Computer Vision Results:\n' +
+                  '• Damage type: Surface scratches (minor)\n' +
+                  '• Severity: Level 1/5 (cosmetic)\n' +
+                  '• Cost estimate: $347 ± $50 (93% confidence)\n\n' +
+                  '📊 AI Confidence Metrics:\n' +
+                  '• Damage detection: 99.7% confidence\n' +
+                  '• Classification accuracy: 97.3%\n' +
+                  '• Overall score: 98.7/100 (Excellent)');
+        }
+
+        function startAutomaticClaim() {
+            alert('🚨 SMART CLAIM FILING SYSTEM\n\n' +
+                  '🤖 Automated Insurance Claim Process:\n\n' +
+                  '📋 Evidence Package:\n' +
+                  '✅ Photo evidence: 8 images processed\n' +
+                  '✅ AI damage assessment: $347 estimate\n' +
+                  '✅ Vehicle data: VIN verified\n' +
+                  '✅ GPS location: Confirmed\n\n' +
+                  '🛡️ GEICO Integration:\n' +
+                  '✅ Policy validation: Active coverage\n' +
+                  '✅ Deductible: $500\n' +
+                  '🎯 Recommendation: Pay out-of-pocket ($347)\n' +
+                  '💡 Preserve claim-free discount: $187/year saved');
+        }
+
+        function showClaimTracking() {
+            alert('📊 REAL-TIME CLAIM TRACKING\n\n' +
+                  '📈 Live Claim Status Dashboard:\n\n' +
+                  '📋 Active Claims: 0 current\n' +
+                  '🟢 No active claims - All resolved successfully\n\n' +
+                  '📅 Recent History:\n' +
+                  '🟢 CLM-2024-0089: RESOLVED\n' +
+                  '• Date: January 15, 2024\n' +
+                  '• Amount: $347\n' +
+                  '• Processing time: 1.8 hours\n' +
+                  '• Satisfaction: 5/5 stars\n\n' +
+                  '📊 Performance: 100% success rate');
+        }
+
+        function showPolicyManagement() {
+            alert('🛡️ SMART POLICY MANAGEMENT\n\n' +
+                  '💼 Intelligent Policy Portfolio:\n\n' +
+                  '📋 GEICO Auto Policy (PRIMARY):\n' +
+                  '• Premium: $147/month\n' +
+                  '• Vehicles: 2 covered\n' +
+                  '• Deductible: $500\n' +
+                  '• Status: ACTIVE\n\n' +
+                  '💰 Current Savings: $1,033/year\n' +
+                  '• Multi-policy discount: $312/year\n' +
+                  '• Safe driver bonus: $280/year\n' +
+                  '• Claim-free discount: $187/year\n\n' +
+                  '🎯 Coverage Score: 94/100 (Excellent)');
+        }
+
+        function showCarCareConnection() {
+            alert('🔗 CARCARE CONNECTION\n\n' +
+                  '🆓 FREE Carfax CarCare Integration:\n\n' +
+                  '🔧 What you get:\n' +
+                  '• Complete service history tracking\n' +
+                  '• Maintenance reminders and alerts\n' +
+                  '• Service cost monitoring\n' +
+                  '• Recall notifications\n\n' +
+                  '📱 Connection Options:\n' +
+                  '1️⃣ Create New Account (FREE)\n' +
+                  '2️⃣ Connect Existing Account\n\n' +
+                  '🔒 Your data stays secure and private');
+        }
+
+        function reportVehicleStolen() {
+            // Step 1: Check if user has vehicles
+            if (userVehicles.length === 0) {
+                alert('🚗 NO VEHICLES FOUND\n\n' +
+                      'You need to add a vehicle to your account before you can report it stolen.\n\n' +
+                      'Adding a vehicle enables:\n' +
+                      '• Theft reporting and recovery\n' +
+                      '• Community network protection\n' +
+                      '• Insurance integration\n' +
+                      '• Professional recovery services\n\n' +
+                      'Please go to the Vehicles tab to add your vehicle first.');
+                
+                // Automatically switch to vehicles tab
+                showContent('vehicles');
+                return;
+            }
+
+            // Step 2: Confirm 911 call first - CRITICAL STEP
+            if (!confirm('🚨 EMERGENCY PROTOCOL - REQUIRED\n\n' +
+                        '⚠️ CRITICAL: Have you called 911 and filed a police report?\n\n' +
+                        '🚔 By law, you MUST report stolen vehicles to police FIRST before using any recovery service.\n\n' +
+                        '✅ Click OK ONLY if you have ALREADY:\n' +
+                        '• Called 911 or local police\n' +
+                        '• Filed an official police report\n' +
+                        '• Received a police report number\n' +
+                        '• Been told to proceed with additional recovery methods\n\n' +
+                        '❌ If you have NOT done this yet, click Cancel and call 911 immediately.\n\n' +
+                        'CarTrace Pro assists law enforcement - we do not replace it.')) {
+                
+                alert('📞 CALL 911 IMMEDIATELY\n\n' +
+                      '🚔 You must contact law enforcement first:\n\n' +
+                      '1️⃣ Call 911 or your local police department\n' +
+                      '2️⃣ Report your vehicle as stolen\n' +
+                      '3️⃣ Get an official police report number\n' +
+                      '4️⃣ Follow their instructions\n' +
+                      '5️⃣ THEN return to CarTrace Pro for community assistance\n\n' +
+                      '⚖️ This is required by law and ensures proper coordination with authorities.\n\n' +
+                      'CarTrace Pro works WITH police, never instead of them.');
+                return;
+            }
+
+            // Step 3: Vehicle Selection
+            if (userVehicles.length === 1) {
+                // Single vehicle - confirm it's the stolen one
+                const vehicle = userVehicles[0];
+                showSingleVehicleConfirmation(vehicle);
+            } else {
+                // Multiple vehicles - let user select
+                showVehicleSelectionDialog();
+            }
+        }
+
+        function showVehicleSelectionDialog() {
+            let selectionMessage = '🚨 SELECT STOLEN VEHICLE\n\n' +
+                                  '📋 Which of your registered vehicles was stolen?\n\n' +
+                                  '🚗 Your Vehicles:\n';
+            
+            userVehicles.forEach((vehicle, index) => {
+                const planEmoji = {
+                    'BASIC': '🥉',
+                    'GOLD': '🥈', 
+                    'PLATINUM': '🥇',
+                    'DIAMOND': '💎'
+                }[vehicle.plan] || '🚗';
+
+                const rewardAmount = {
+                    'BASIC': '$200',
+                    'GOLD': '$300',
+                    'PLATINUM': '$500', 
+                    'DIAMOND': '$750'
+                }[vehicle.plan] || '$200';
+
+                selectionMessage += `\n${index + 1}️⃣ ${planEmoji} ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
+                                   `    🎨 Color: ${vehicle.color}\n` +
+                                   `    🏷️ License: ${vehicle.license}\n` +
+                                   `    📋 Plan: ${vehicle.plan} (${rewardAmount} recovery reward)\n`;
+                
+                if (vehicle.features) {
+                    selectionMessage += `    ✨ Features: ${vehicle.features}\n`;
+                }
+            });
+
+            selectionMessage += `\n📱 Enter the number (1-${userVehicles.length}) of the stolen vehicle:`;
+
+            const selection = prompt(selectionMessage);
+            
+            if (selection === null) {
+                // User cancelled
+                return;
+            }
+            
+            const vehicleIndex = parseInt(selection) - 1;
+
+            if (vehicleIndex >= 0 && vehicleIndex < userVehicles.length) {
+                const selectedVehicle = userVehicles[vehicleIndex];
+                showSingleVehicleConfirmation(selectedVehicle);
+            } else {
+                alert('❌ INVALID SELECTION\n\n' +
+                      `Please enter a number between 1 and ${userVehicles.length}.\n\n` +
+                      'Click "Report Vehicle Stolen" again to try again.');
+            }
+        }
+
+        function showSingleVehicleConfirmation(vehicle) {
+            const planEmoji = {
+                'BASIC': '🥉',
+                'GOLD': '🥈', 
+                'PLATINUM': '🥇',
+                'DIAMOND': '💎'
+            }[vehicle.plan] || '🚗';
+
+            const rewardAmount = {
+                'BASIC': '$200',
+                'GOLD': '$300',
+                'PLATINUM': '$500', 
+                'DIAMOND': '$750'
+            }[vehicle.plan] || '$200';
+
+            let confirmMessage = '🚨 CONFIRM STOLEN VEHICLE REPORT\n\n' +
+                               '✅ Please verify this is the correct stolen vehicle:\n\n' +
+                               `${planEmoji} ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
+                               `🎨 Color: ${vehicle.color}\n` +
+                               `🏷️ License: ${vehicle.license}\n`;
+            
+            if (vehicle.vin) {
+                confirmMessage += `🔢 VIN: ${vehicle.vin}\n`;
+            }
+            
+            if (vehicle.features) {
+                confirmMessage += `✨ Features: ${vehicle.features}\n`;
+            }
+            
+            confirmMessage += `📋 Plan: ${vehicle.plan} (${rewardAmount} community reward)\n\n` +
+                            '🚨 EMERGENCY ACTIVATION - This will immediately:\n\n' +
+                            '📢 COMMUNITY ALERTS:\n' +
+                            '• Notify all 47,892 CarTrace Pro users\n' +
+                            '• Send push notifications to nearby community members\n' +
+                            '• Post alerts on community social networks\n' +
+                            '• Activate reward system for tips\n\n' +
+                            '🏢 PROFESSIONAL RESPONSE:\n' +
+                            '• File automatic insurance claim\n' +
+                            '• Notify law enforcement partners\n' +
+                            '• Dispatch professional recovery team\n' +
+                            '• Begin GPS tracking protocols\n\n' +
+                            '⚖️ LEGAL CONFIRMATION:\n' +
+                            'By proceeding, you confirm you have filed an official police report.\n\n' +
+                            'Proceed with community theft alert?';
+
+            if (confirm(confirmMessage)) {
+                startStolenVehicleProcess(vehicle);
+            }
+        }
+
+        function startStolenVehicleProcess(vehicle) {
+            const caseId = 'CVR-' + Date.now();
+            
+            alert('🚨 COMMUNITY ALERT SYSTEM ACTIVATED\n\n' +
+                  '✅ Community network alerted (47,892 users)\n' +
+                  '✅ Push notifications sent to all app users\n' +
+                  '✅ Insurance claim auto-filed\n' +
+                  '✅ Law enforcement partners notified\n' +
+                  '✅ Recovery team dispatched\n\n' +
+                  `🎯 Case ID: ${caseId}\n` +
+                  `🚗 Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
+                  `🏷️ License: ${vehicle.license}\n\n` +
+                  '📱 COMMUNITY POWER:\n' +
+                  '• 47,892 users now watching for your vehicle\n' +
+                  '• Real-time push notifications when spotted\n' +
+                  '• Community members earning rewards for tips\n' +
+                  '• Average recovery time: 4.3 minutes\n\n' +
+                  '📧 Confirmation email sent\n' +
+                  '📱 You will receive real-time SMS updates');
+
+            // Show follow-up with case tracking
+            setTimeout(() => {
+                alert('📱 LIVE CASE TRACKING ACTIVE\n\n' +
+                      `Case ${caseId} is now live!\n\n` +
+                      '🔔 Community Alerts Status:\n' +
+                      '• Push notifications: SENT to 47,892 users\n' +
+                      '• Local area coverage: 15-mile radius\n' +
+                      '• Real-time updates: ACTIVE\n\n' +
+                      '📊 Expected Response:\n' +
+                      '• First sighting report: 2-8 minutes\n' +
+                      '• Recovery coordination: Immediate\n' +
+                      '• Success rate: 96.1%\n\n' +
+                      'Check your phone for SMS updates!');
+            }, 2000);
+        }
+
+        function foundStolenVehicle() {
+            // Get vehicle info from user
+            const licensePlate = prompt('🏷️ Enter the license plate of the found vehicle:');
+            if (!licensePlate) return;
+            
+            const location = prompt('📍 Enter the current location/address:');
+            if (!location) return;
+
+            // Set up recovery process
+            recoveryProcess = {
+                currentStep: 1,
+                photoTaken: false,
+                policeContacted: false,
+                reportPhotoTaken: false,
+                vehicleData: {
+                    licensePlate: licensePlate.toUpperCase(),
+                    location: location,
+                    make: 'Tesla', // This would come from the stolen vehicle database
+                    model: 'Model S',
+                    color: 'Black',
+                    reward: '$500'
+                },
+                caseId: 'VRF-' + Date.now()
+            };
+
+            openRecoveryModal();
+            showRecoveryStep();
+        }
+
+        function openRecoveryModal() {
+            document.getElementById('recoveryModal').style.display = 'block';
+        }
+
+        function closeRecoveryModal() {
+            document.getElementById('recoveryModal').style.display = 'none';
+            // Reset process
+            recoveryProcess = {
+                currentStep: 1,
+                photoTaken: false,
+                policeContacted: false,
+                reportPhotoTaken: false,
+                vehicleData: null,
+                caseId: null
+            };
+        }
+
+        function showRecoveryStep() {
+            const content = document.getElementById('recoveryContent');
+            
+            switch (recoveryProcess.currentStep) {
+                case 1:
+                    showStep1_TakePhoto();
+                    break;
+                case 2:
+                    showStep2_ContactPolice();
+                    break;
+                case 3:
+                    showStep3_TakeReportPhoto();
+                    break;
+                case 4:
+                    showStep4_SubmitReward();
+                    break;
+            }
+        }
+
+        function showStep1_TakePhoto() {
+            const content = document.getElementById('recoveryContent');
+            const vehicle = recoveryProcess.vehicleData;
+            
+            content.innerHTML = `
+                <div class="recovery-step-header">
+                    VEHICLE RECOVERY PROCESS<br>STEP 1 of 4
+                </div>
+                
+                <div class="progress-indicator">
+                    <div class="progress-step active">1</div>
+                    <div class="progress-step">2</div>
+                    <div class="progress-step">3</div>
+                    <div class="progress-step">4</div>
+                </div>
+
+                <div class="safety-warning">
+                    ⚠️ SAFETY FIRST: Do NOT approach the vehicle or engage with anyone near it. Keep a safe distance and wait for police.
+                </div>
+
+                <div class="vehicle-info">
+                    <strong>🚗 Vehicle Found:</strong> ${vehicle.make} ${vehicle.model}<br>
+                    <strong>🏷️ License Plate:</strong> ${vehicle.licensePlate}<br>
+                    <strong>🎨 Color:</strong> ${vehicle.color}<br>
+                    <strong>💰 Reward:</strong> ${vehicle.reward}<br>
+                    <strong>📍 Location:</strong> ${vehicle.location}
+                </div>
+
+                <div class="step-instructions">
+                    <h3>📸 STEP 1: Take Photo of Vehicle</h3>
+                    
+                    <strong>IMPORTANT SAFETY INSTRUCTIONS:</strong>
+                    <ul style="text-align: left; margin: 1rem 0;">
+                        <li>Stay at least 50 feet away from the vehicle</li>
+                        <li>Do NOT approach or touch the vehicle</li>
+                        <li>Do NOT confront anyone near the vehicle</li>
+                        <li>Take photos from a safe distance</li>
+                        <li>Be ready to leave immediately if anyone approaches</li>
+                    </ul>
+
+                    <strong>Take a clear photo showing:</strong>
+                    <ul style="text-align: left; margin: 1rem 0;">
+                        <li>✓ License plate (if visible)</li>
+                        <li>✓ Vehicle make/model</li>
+                        <li>✓ Current location/surroundings</li>
+                    </ul>
+                </div>
+
+                <div class="step-status ${recoveryProcess.photoTaken ? '' : 'pending'}">
+                    ${recoveryProcess.photoTaken ? '✅ Vehicle photo taken!' : '📸 Photo required to continue'}
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button class="recovery-btn recovery-btn-primary" onclick="takeVehiclePhoto()">
+                        ${recoveryProcess.photoTaken ? '📸 RETAKE PHOTO' : '📸 TAKE PHOTO OF VEHICLE'}
+                    </button>
+                    
+                    ${recoveryProcess.photoTaken ? `
+                        <br><button class="recovery-btn recovery-btn-success" onclick="nextStep()" style="margin-top: 1rem;">
+                            ▶️ NEXT STEP: CONTACT POLICE
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function takeVehiclePhoto() {
+            // Simulate camera functionality for web
+            if (confirm('📸 Camera Simulation\n\nIn a real app, this would open your device camera.\n\nFor this demo, click OK to simulate taking a photo of the vehicle.')) {
+                recoveryProcess.photoTaken = true;
+                alert('✅ Vehicle photo captured successfully!');
+                showRecoveryStep(); // Refresh the view
+            }
+        }
+
+        function showStep2_ContactPolice() {
+            const content = document.getElementById('recoveryContent');
+            const vehicle = recoveryProcess.vehicleData;
+            
+            content.innerHTML = `
+                <div class="recovery-step-header">
+                    VEHICLE RECOVERY PROCESS<br>STEP 2 of 4
+                </div>
+                
+                <div class="progress-indicator">
+                    <div class="progress-step completed">1</div>
+                    <div class="progress-step active">2</div>
+                    <div class="progress-step">3</div>
+                    <div class="progress-step">4</div>
+                </div>
+
+                <div class="step-instructions">
+                    <h3>👮 STEP 2: Contact Police</h3>
+                    
+                    <div class="step-status">✅ Photo of vehicle taken successfully!</div>
+
+                    <p><strong>Now you must:</strong></p>
+                    <ol style="text-align: left; margin: 1rem 0;">
+                        <li>1️⃣ Call 911 or local police immediately</li>
+                        <li>2️⃣ Report the stolen vehicle found</li>
+                        <li>3️⃣ Provide the license plate: ${vehicle.licensePlate}</li>
+                        <li>4️⃣ Give your current location: ${vehicle.location}</li>
+                        <li>5️⃣ Wait for police to arrive</li>
+                        <li>6️⃣ Get a police report number</li>
+                    </ol>
+
+                    <div class="safety-warning">
+                        DO NOT leave the area until police arrive and give you a report number.<br><br>
+                        Your safety is the priority. Stay in your vehicle and keep doors locked.
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button class="recovery-btn recovery-btn-danger" onclick="callPolice()">
+                        📞 CALL 911 NOW
+                    </button>
+                    <br>
+                    <button class="recovery-btn recovery-btn-success" onclick="policeContacted()" style="margin-top: 1rem;">
+                        ✅ I CONTACTED POLICE - NEXT STEP
+                    </button>
+                </div>
+            `;
+        }
+
+        function callPolice() {
+            if (confirm('📞 CALLING 911\n\nThis will open your phone dialer to call 911.\n\nProceed?')) {
+                // In a real app, this would use tel: protocol
+                window.open('tel:911', '_self');
+            }
+        }
+
+        function policeContacted() {
+            recoveryProcess.policeContacted = true;
+            recoveryProcess.currentStep = 3;
+            showRecoveryStep();
+        }
+
+        function showStep3_TakeReportPhoto() {
+            const content = document.getElementById('recoveryContent');
+            const vehicle = recoveryProcess.vehicleData;
+            
+            content.innerHTML = `
+                <div class="recovery-step-header">
+                    VEHICLE RECOVERY PROCESS<br>STEP 3 of 4
+                </div>
+                
+                <div class="progress-indicator">
+                    <div class="progress-step completed">1</div>
+                    <div class="progress-step completed">2</div>
+                    <div class="progress-step active">3</div>
+                    <div class="progress-step">4</div>
+                </div>
+
+                <div class="step-instructions">
+                    <h3>📋 STEP 3: Police Report Documentation</h3>
+                    
+                    <div class="step-status">✅ Vehicle photo taken</div>
+                    <div class="step-status">✅ Police contacted</div>
+
+                    <p><strong>Now you need:</strong></p>
+                    <ol style="text-align: left; margin: 1rem 0;">
+                        <li>1️⃣ Wait for police to complete their report</li>
+                        <li>2️⃣ Get the police report number from officer</li>
+                        <li>3️⃣ Take a photo of the police report or receipt</li>
+                        <li>4️⃣ Make sure the report number is clearly visible</li>
+                    </ol>
+
+                    <p><strong>This documentation is required for your ${vehicle.reward} reward.</strong></p>
+
+                    <div class="vehicle-info">
+                        <strong>IMPORTANT: The police report must show:</strong><br>
+                        • Report number<br>
+                        • Date and time<br>
+                        • Officer information<br>
+                        • Vehicle details (License: ${vehicle.licensePlate})
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button class="recovery-btn recovery-btn-info" onclick="takeReportPhoto()">
+                        📸 TAKE PHOTO OF POLICE REPORT
+                    </button>
+                </div>
+            `;
+        }
+
+        function takeReportPhoto() {
+            if (confirm('📸 Police Report Photo\n\nIn a real app, this would open your device camera to photograph the police report.\n\nFor this demo, click OK to simulate taking the photo.')) {
+                recoveryProcess.reportPhotoTaken = true;
+                recoveryProcess.currentStep = 4;
+                alert('✅ Police report photo captured!');
+                showRecoveryStep();
+            }
+        }
+
+        function showStep4_SubmitReward() {
+            const content = document.getElementById('recoveryContent');
+            const vehicle = recoveryProcess.vehicleData;
+            
+            content.innerHTML = `
+                <div class="recovery-step-header">
+                    VEHICLE RECOVERY PROCESS<br>STEP 4 of 4
+                </div>
+                
+                <div class="progress-indicator">
+                    <div class="progress-step completed">1</div>
+                    <div class="progress-step completed">2</div>
+                    <div class="progress-step completed">3</div>
+                    <div class="progress-step completed">4</div>
+                </div>
+
+                <div style="font-size: 1.2rem; margin: 2rem 0;">
+                    <h2>🎉 CONGRATULATIONS!</h2>
+                    
+                    <div style="margin: 1.5rem 0;">
+                        <div class="step-status">✅ Vehicle photo taken</div>
+                        <div class="step-status">✅ Police contacted</div>
+                        <div class="step-status">✅ Police report documented</div>
+                        <div class="step-status">✅ All requirements completed</div>
+                    </div>
+
+                    <p><strong>You have successfully helped recover a stolen vehicle!</strong></p>
+
+                    <div class="vehicle-info" style="text-align: center; margin: 2rem 0;">
+                        <strong>💰 Reward: ${vehicle.reward}</strong><br>
+                        📧 Payment details will be sent to your email<br>
+                        ⏱️ Processing time: 24-48 hours<br><br>
+                        <strong>Case ID: ${recoveryProcess.caseId}</strong>
+                    </div>
+
+                    <p style="font-size: 1.1rem; color: var(--primary);">
+                        <strong>Thank you for being part of the CarTrace Pro community!</strong>
+                    </p>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button class="recovery-btn recovery-btn-success" onclick="submitReward()" style="font-size: 1.2rem; padding: 1.5rem 2rem;">
+                        💰 SUBMIT FOR ${vehicle.reward} REWARD
+                    </button>
+                </div>
+            `;
+        }
+
+        function submitReward() {
+            alert('🎉 Reward submitted successfully!\n\n' +
+                  '💰 Your ' + recoveryProcess.vehicleData.reward + ' reward has been submitted for processing.\n\n' +
+                  '📧 You will receive payment details via email within 24-48 hours.\n\n' +
+                  'Case ID: ' + recoveryProcess.caseId + '\n\n' +
+                  'Thank you for helping make our community safer!');
+            
+            closeRecoveryModal();
+        }
+
+        function nextStep() {
+            recoveryProcess.currentStep++;
+            showRecoveryStep();
+        }
+
+        function showVehicleDetails(vehicleId) {
+            const vehicle = userVehicles.find(v => v.id === vehicleId);
+            if (vehicle) {
+                let detailsMessage = '📋 VEHICLE DETAILS\n\n' +
+                      `🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
+                      `🎨 Color: ${vehicle.color}\n` +
+                      `🏷️ License: ${vehicle.license}\n`;
+                
+                if (vehicle.vin) {
+                    detailsMessage += `🔢 VIN: ${vehicle.vin}\n`;
+                }
+                
+                if (vehicle.features) {
+                    detailsMessage += `✨ Features: ${vehicle.features}\n`;
+                }
+                
+                detailsMessage += `📋 Plan: ${vehicle.plan}\n` +
+                      `📅 Added: ${new Date(vehicle.createdAt).toLocaleDateString()}\n\n` +
+                      '🛡️ Protection Status: ACTIVE\n' +
+                      '📱 Community Network: CONNECTED\n' +
+                      '🔔 Push Notifications: ENABLED\n' +
+                      '🏷️ Insurance Integration: ACTIVE\n\n' +
+                      '📊 Security Status:\n' +
+                      '• Last scan: 2 minutes ago\n' +
+                      '• Threats detected: 0\n' +
+                      '• Community coverage: 47,892 users\n' +
+                      '• Alert radius: 15-mile coverage';
+                
+                alert(detailsMessage);
+            }
+        }
+
+        function editVehicle(vehicleId) {
+            const vehicle = userVehicles.find(v => v.id === vehicleId);
+            if (vehicle) {
+                alert('✏️ EDIT VEHICLE\n\n' +
+                      `🚗 Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
+                      `🏷️ License: ${vehicle.license}\n\n` +
+                      '📝 Edit functionality coming soon!\n\n' +
+                      'Available fields for editing:\n' +
+                      '• Vehicle details (year, make, model)\n' +
+                      '• Color and license plate\n' +
+                      '• VIN number\n' +
+                      '• Distinguishing features\n' +
+                      '• Protection plan\n\n' +
+                      '💾 For now, you can remove and re-add the vehicle if changes are needed.');
+            }
+        }
+
+        function removeVehicle(vehicleId) {
+            const vehicle = userVehicles.find(v => v.id === vehicleId);
+            if (vehicle && confirm('🗑️ REMOVE VEHICLE\n\n' +
+                       'Are you sure you want to remove this vehicle?\n\n' +
+                       `🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
+                       `🏷️ License: ${vehicle.license}\n\n` +
+                       '⚠️ This will:\n' +
+                       '• Cancel theft protection\n' +
+                       '• Stop community monitoring\n' +
+                       '• Remove from your account\n' +
+                       '• Remove insurance integration\n\n' +
+                       'This action cannot be undone.')) {
+                
+                // Remove vehicle from array
+                userVehicles = userVehicles.filter(v => v.id !== vehicleId);
+                
+                // Update display
+                loadVehicles();
+                
+                alert('✅ VEHICLE REMOVED\n\n' +
+                      '🚗 Vehicle successfully removed from protection\n' +
+                      '📧 Confirmation email sent\n' +
+                      '🔄 Dashboard updated');
+            }
+        }
+
+        function showAlertDetails(title, description, time) {
+            alert('📋 ALERT DETAILS\n\n' +
+                  '🚨 Alert: ' + title + '\n' +
+                  '📝 Description: ' + description + '\n' +
+                  '⏰ Time: ' + time + '\n\n' +
+                  '📍 Location: Auto-detected from GPS\n' +
+                  '🎯 Priority: NORMAL\n' +
+                  '📝 Alert ID: ALT-' + Date.now() + '\n' +
+                  '📱 Device: CarTrace Pro Web\n\n' +
+                  '✅ This alert has been logged in your security history');
+        }
+
+        function manageSubscription() {
+            alert('💎 SUBSCRIPTION MANAGEMENT\n\n' +
+                  '📋 Current Plan: CarTrace Pro Premium\n' +
+                  '💰 Cost: $29.99/month\n' +
+                  '📅 Next billing: March 15, 2025\n' +
+                  '🔄 Status: ACTIVE\n\n' +
+                  '✨ Premium Features:\n' +
+                  '• Unlimited vehicles\n' +
+                  '• Priority recovery\n' +
+                  '• Insurance integration\n' +
+                  '• 24/7 support\n' +
+                  '• Advanced analytics\n\n' +
+                  '🎯 You are getting excellent value!');
+        }
+
+        function logout() {
+            if (confirm('🚪 SIGN OUT\n\n' +
+                       'Are you sure you want to sign out?\n\n' +
+                       'You will need to sign in again to access your account.')) {
+                alert('👋 Signed out successfully\n\n' +
+                      'Thank you for using CarTrace Pro!\n' +
+                      'Your vehicles remain protected.');
+                // In a real app, this would redirect to login page
+            }
+        }
+    </script>
+</body>
+</html>
