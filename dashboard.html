@@ -1129,11 +1129,34 @@
 
         // Initialize the dashboard
         document.addEventListener('DOMContentLoaded', function() {
-            populateYears();
-            populateMakes();
-            loadVehicles();
-            loadAlerts();
-            startRealTimeUpdates();
+            initializeDashboard();
+        });
+
+        async function initializeDashboard() {
+            try {
+                // Import Firebase functions
+                const { requireAuth, logout } = await import('./firebase_config.js');
+                
+                // Check if user is authenticated
+                const user = await requireAuth();
+                console.log('User authenticated:', user.email);
+                
+                // Initialize dashboard components
+                populateYears();
+                populateMakes();
+                loadVehicles();
+                loadAlerts();
+                startRealTimeUpdates();
+                
+                // Make logout function available globally
+                window.logout = logout;
+                
+            } catch (error) {
+                console.error('Dashboard initialization failed:', error);
+                // Redirect to login if auth fails
+                window.location.href = 'auth.html';
+            }
+        }
         });
 
         // Navigation
@@ -1151,17 +1174,10 @@
         }
 
         // Home navigation function
-function goToHome() {
-    // Pass session info to homepage
-    const isLoggedIn = localStorage.getItem('isLoggedIn') || sessionStorage.getItem('userSession') || 'true';
-    
-    // Set session flag
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userSession', 'active');
-    
-    // Go to homepage with session parameter
-    window.location.href = 'cartrace_homepage.html?session=active';
-}
+        function goToHome() {
+            // Simply go to homepage - auth state will be checked there
+            window.location.href = 'cartrace_homepage.html';
+        }
 
         // Modal functions
         function openAddVehicleModal() {
