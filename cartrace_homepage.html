@@ -771,7 +771,140 @@
         </div>
     </footer>
 
-    <script>
+       <script type="module">
+        // Import Firebase auth functions
+        import { checkAuthState, logout } from './firebase_config.js';
+
+        // Check auth state and update UI accordingly
+        checkAuthState((user) => {
+            if (user) {
+                showLoggedInHomepage(user);
+            } else {
+                showPublicHomepage();
+            }
+        });
+
+        function showLoggedInHomepage(user) {
+            console.log('User is logged in - showing personalized homepage');
+            
+            // Add "Back to Dashboard" button
+            addBackToDashboardButton();
+            
+            // Show personalized content
+            addWelcomeMessage(user);
+            
+            // Hide login/signup buttons
+            hideAuthButtons();
+            
+            // Show user menu
+            showUserMenu(user);
+        }
+
+        function showPublicHomepage() {
+            console.log('User not logged in - showing public homepage');
+            
+            // Show login/signup buttons
+            showAuthButtons();
+            
+            // Hide user-specific content
+            hideUserContent();
+        }
+
+        function addBackToDashboardButton() {
+            // Create a prominent "Back to Dashboard" button
+            const dashboardBtn = document.createElement('button');
+            dashboardBtn.innerHTML = '📊 Back to Dashboard';
+            dashboardBtn.className = 'btn btn-primary btn-large';
+            dashboardBtn.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                background: #4CAF50;
+                color: white;
+                padding: 1rem 2rem;
+                border: none;
+                border-radius: 8px;
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            `;
+            dashboardBtn.onclick = function() {
+                window.location.href = 'dashboard.html';
+            };
+            
+            document.body.appendChild(dashboardBtn);
+        }
+
+        function addWelcomeMessage(user) {
+            // Add welcome back message
+            const header = document.querySelector('header, .header, h1');
+            if (header) {
+                const welcomeMsg = document.createElement('div');
+                welcomeMsg.innerHTML = `
+                    <div style="background: #4CAF50; color: white; padding: 1rem; text-align: center; margin: 1rem 0; border-radius: 8px;">
+                        👋 Welcome back, ${user.displayName || user.email}! Your vehicles are protected by CarTrace Pro.
+                        <button onclick="window.location.href='dashboard.html'" style="margin-left: 1rem; padding: 0.5rem 1rem; background: white; color: #4CAF50; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                            View Dashboard
+                        </button>
+                    </div>
+                `;
+                header.parentNode.insertBefore(welcomeMsg, header.nextSibling);
+            }
+        }
+
+        function hideAuthButtons() {
+            // Hide login/signup buttons
+            const authButtons = document.querySelectorAll('[href*="auth.html"], .auth-buttons');
+            authButtons.forEach(btn => {
+                btn.style.display = 'none';
+            });
+            
+            // Hide any elements with class 'auth-only' or 'login-only'
+            const authElements = document.querySelectorAll('.auth-only, .login-only, .guest-only');
+            authElements.forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+
+        function showAuthButtons() {
+            // Show login/signup buttons for guests
+            const authButtons = document.querySelectorAll('[href*="auth.html"], .auth-buttons');
+            authButtons.forEach(btn => {
+                btn.style.display = 'block';
+            });
+        }
+
+        function hideUserContent() {
+            // Hide user-specific content for guests
+            const userElements = document.querySelectorAll('.user-only, .logged-in-only');
+            userElements.forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+
+        function showUserMenu(user) {
+            // Add user menu or profile info
+            const userMenu = document.createElement('div');
+            userMenu.innerHTML = `
+                <div style="position: fixed; top: 20px; left: 20px; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 1000;">
+                    <strong>🚗 ${user.displayName || 'CarTrace Pro User'}</strong><br>
+                    <small style="color: #666;">${user.email}</small><br>
+                    <button onclick="signOut()" style="margin-top: 0.5rem; padding: 0.5rem; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        Sign Out
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(userMenu);
+        }
+
+        // Global logout function
+        window.signOut = function() {
+            if (confirm('Are you sure you want to sign out?')) {
+                logout();
+            }
+        };
+
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
