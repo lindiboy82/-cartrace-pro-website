@@ -15,7 +15,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
+            display: none; /* Hidden initially until auth check completes */
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -489,10 +489,13 @@
         document.getElementById('signupForm').addEventListener('submit', handleSignup);
 
         // Check if user is already logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in, redirect to dashboard
-                window.location.href = 'dashboard.html';
+        import { redirectIfAuthenticated } from './firebase_config.js';
+        
+        // Wait for auth state before showing the page
+        redirectIfAuthenticated().then(() => {
+            // User is not logged in, show the auth page
+            document.body.style.display = 'flex';
+        });
             }
         });
     </script>
