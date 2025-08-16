@@ -53,6 +53,14 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .error-message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -61,28 +69,80 @@
         <h1>CarTrace Pro</h1>
         <div class="spinner"></div>
         <p>Loading...</p>
+        <div class="error-message" id="errorMessage">
+            <p>Taking longer than expected...</p>
+            <button onclick="forceRedirect()" style="background: white; color: #667eea; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                Continue to Homepage
+            </button>
+        </div>
     </div>
 
     <script type="module">
-        import { auth, checkAuthState } from './firebase-config.js';
-
-        // Check if user is authenticated
-        checkAuthState((user) => {
-            if (user) {
-                // User is logged in, go to dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                // User is not logged in, go to homepage
+        let redirected = false;
+        
+        // Force redirect function
+        window.forceRedirect = function() {
+            if (!redirected) {
+                redirected = true;
                 window.location.href = 'cartrace_homepage.html';
             }
-        });
+        };
 
-        // Fallback redirect after 3 seconds if Firebase doesn't respond
+        // Immediate fallback - go to homepage after 2 seconds if nothing happens
         setTimeout(() => {
-            if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+            if (!redirected) {
+                redirected = true;
                 window.location.href = 'cartrace_homepage.html';
+            }
+        }, 2000);
+
+        // Show error message after 3 seconds
+        setTimeout(() => {
+            if (!redirected) {
+                document.getElementById('errorMessage').style.display = 'block';
             }
         }, 3000);
+
+        // Try Firebase auth check (this might fail, but won't block the redirect)
+        try {
+            import('./firebase_config.js').then(({ auth, checkAuthState }) => {
+                if (redirected) return;
+                
+                // Quick auth check with timeout
+                const authTimeout = setTimeout(() => {
+                    if (!redirected) {
+                        redirected = true;
+                        window.location.href = 'cartrace_homepage.html';
+                    }
+                }, 1500);
+
+                checkAuthState((user) => {
+                    clearTimeout(authTimeout);
+                    if (redirected) return;
+                    
+                    redirected = true;
+                    if (user) {
+                        // User is logged in, go to dashboard
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        // User is not logged in, go to homepage
+                        window.location.href = 'cartrace_homepage.html';
+                    }
+                });
+            }).catch(error => {
+                console.log('Firebase import failed, redirecting to homepage:', error);
+                if (!redirected) {
+                    redirected = true;
+                    window.location.href = 'cartrace_homepage.html';
+                }
+            });
+        } catch (error) {
+            console.log('Firebase check failed, redirecting to homepage:', error);
+            if (!redirected) {
+                redirected = true;
+                window.location.href = 'cartrace_homepage.html';
+            }
+        }
     </script>
 </body>
 </html>
