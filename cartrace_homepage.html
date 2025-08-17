@@ -419,7 +419,7 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        console.log('🏠 LOCAL DEV: Starting homepage with embedded Firebase...');
+        console.log('🏠 FIXED: Starting homepage with proper auth handling...');
         
         let debugLog = [];
         let authResolved = false;
@@ -432,16 +432,16 @@
             
             const debugInfo = document.getElementById('debugInfo');
             if (debugInfo) {
-                debugInfo.innerHTML = debugLog.slice(-8).join('<br>');
+                debugInfo.innerHTML = debugLog.slice(-10).join('<br>');
             }
             console.log('🔍', logEntry);
         }
 
-        updateDebug('🚀 LOCAL DEV: Homepage initialization started');
+        updateDebug('🚀 FIXED: Homepage initialization started');
 
-        // EMBEDDED Firebase initialization for local development
-        async function initializeFirebaseLocally() {
-            updateDebug('📦 Initializing Firebase directly (local dev mode)...');
+        // FIXED Firebase initialization
+        async function initializeFirebaseFixed() {
+            updateDebug('📦 Starting Firebase initialization...');
             
             try {
                 // Import Firebase modules directly from CDN
@@ -468,29 +468,49 @@
                 
                 updateDebug('🔧 Firebase app initialized successfully');
                 
-                // Check immediate auth state
-                const currentUser = auth.currentUser;
-                if (currentUser) {
-                    updateDebug(`⚡ IMMEDIATE USER FOUND: ${currentUser.email}`);
-                    resolveAsUser(currentUser);
-                    return;
-                }
-                
+                // FIXED: Set up auth state listener with better error handling
                 updateDebug('🕐 Setting up auth state listener...');
                 
-                // Set up auth state listener
                 onAuthStateChanged(auth, (user) => {
-                    if (authResolved) return;
-                    authResolved = true;
+                    updateDebug(`🎯 AUTH STATE CHANGED: ${user ? user.email : 'No user'}`);
                     
-                    if (user) {
-                        updateDebug(`✅ AUTH LISTENER: User detected - ${user.email}`);
-                        resolveAsUser(user);
-                    } else {
-                        updateDebug('👻 AUTH LISTENER: No user detected');
+                    if (authResolved) {
+                        updateDebug('⚠️ Auth already resolved, ignoring duplicate call');
+                        return;
+                    }
+                    
+                    try {
+                        if (user) {
+                            updateDebug(`✅ PROCESSING USER: ${user.email}`);
+                            resolveAsUser(user);
+                        } else {
+                            updateDebug('👻 PROCESSING GUEST STATE');
+                            resolveAsGuest();
+                        }
+                    } catch (error) {
+                        updateDebug(`❌ Error in auth state handler: ${error.message}`);
+                        console.error('Auth state handler error:', error);
                         resolveAsGuest();
                     }
+                }, (error) => {
+                    updateDebug(`❌ Auth state listener error: ${error.message}`);
+                    console.error('Auth listener error:', error);
+                    resolveAsGuest();
                 });
+                
+                // Check immediate auth state as backup
+                setTimeout(() => {
+                    if (!authResolved) {
+                        const currentUser = auth.currentUser;
+                        updateDebug(`🔍 BACKUP CHECK: ${currentUser ? currentUser.email : 'No user'}`);
+                        
+                        if (currentUser) {
+                            resolveAsUser(currentUser);
+                        } else {
+                            resolveAsGuest();
+                        }
+                    }
+                }, 2000);
                 
                 // Make logout function available
                 window.firebaseSignOut = async function() {
@@ -498,104 +518,173 @@
                     try {
                         await signOut(auth);
                         updateDebug('✅ Sign out successful');
+                        // Force reload to clear all state
                         window.location.reload();
                     } catch (error) {
                         updateDebug(`❌ Sign out error: ${error.message}`);
+                        // Fallback - just go to auth page
+                        window.location.href = 'auth.html';
                     }
                 };
                 
-                // Timeout fallback
+                // Final timeout fallback
                 setTimeout(() => {
                     if (!authResolved) {
-                        updateDebug('⏰ Auth check timeout, resolving as guest');
+                        updateDebug('⏰ FINAL TIMEOUT: Forcing guest setup');
                         resolveAsGuest();
                     }
-                }, 5000);
+                }, 8000);
                 
             } catch (error) {
                 updateDebug(`❌ Firebase initialization error: ${error.message}`);
-                console.error('Local Firebase init failed:', error);
+                console.error('Firebase init failed:', error);
                 resolveAsGuest();
             }
         }
 
         function resolveAsUser(user) {
-            if (authResolved) return;
-            authResolved = true;
+            if (authResolved) {
+                updateDebug('⚠️ resolveAsUser called but already resolved');
+                return;
+            }
             
+            authResolved = true;
             updateDebug(`🎯 RESOLVING AS USER: ${user.email}`);
-            setupUserHomepage(user);
+            
+            try {
+                setupUserHomepage(user);
+                updateDebug('✅ USER RESOLUTION COMPLETE');
+            } catch (error) {
+                updateDebug(`❌ Error in resolveAsUser: ${error.message}`);
+                console.error('resolveAsUser error:', error);
+            }
         }
 
         function resolveAsGuest() {
-            if (authResolved) return;
-            authResolved = true;
+            if (authResolved) {
+                updateDebug('⚠️ resolveAsGuest called but already resolved');
+                return;
+            }
             
+            authResolved = true;
             updateDebug('🎯 RESOLVING AS GUEST');
-            setupGuestHomepage();
+            
+            try {
+                setupGuestHomepage();
+                updateDebug('✅ GUEST RESOLUTION COMPLETE');
+            } catch (error) {
+                updateDebug(`❌ Error in resolveAsGuest: ${error.message}`);
+                console.error('resolveAsGuest error:', error);
+            }
         }
 
         function setupUserHomepage(user) {
-            console.log('👤 Setting up USER homepage for:', user.email);
             updateDebug(`🎨 Setting up logged-in UI for: ${user.email}`);
 
-            // Add dashboard button
-            addDashboardButton();
+            try {
+                // Add dashboard button
+                addDashboardButton();
+                updateDebug('✅ Dashboard button added');
 
-            // Add welcome message
-            const welcomeDiv = document.getElementById('userWelcome');
-            welcomeDiv.innerHTML = `
-                <div class="user-welcome">
-                    <strong>👋 Welcome back, ${user.displayName || user.email}!</strong><br>
-                    <small>Your vehicles are protected by CarTrace Pro</small>
-                </div>
-            `;
+                // Add welcome message
+                const welcomeDiv = document.getElementById('userWelcome');
+                if (welcomeDiv) {
+                    welcomeDiv.innerHTML = `
+                        <div class="user-welcome">
+                            <strong>👋 Welcome back, ${user.displayName || user.email}!</strong><br>
+                            <small>Your vehicles are protected by CarTrace Pro</small>
+                        </div>
+                    `;
+                    updateDebug('✅ Welcome message added');
+                } else {
+                    updateDebug('⚠️ Welcome div not found');
+                }
 
-            // Update auth buttons in header
-            document.getElementById('authButtons').innerHTML = `
-                <button onclick="goToDashboard()" class="btn btn-primary">📊 Dashboard</button>
-                <button onclick="signOut()" class="btn btn-secondary">Sign Out</button>
-            `;
+                // Update auth buttons in header
+                const authButtonsDiv = document.getElementById('authButtons');
+                if (authButtonsDiv) {
+                    authButtonsDiv.innerHTML = `
+                        <button onclick="goToDashboard()" class="btn btn-primary">📊 Dashboard</button>
+                        <button onclick="signOut()" class="btn btn-secondary">Sign Out</button>
+                    `;
+                    updateDebug('✅ Auth buttons updated');
+                } else {
+                    updateDebug('⚠️ Auth buttons div not found');
+                }
 
-            // Update CTA buttons
-            document.getElementById('ctaButtons').innerHTML = `
-                <button onclick="goToDashboard()" class="btn btn-success btn-large">📊 View Dashboard</button>
-                <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
-            `;
+                // Update CTA buttons
+                const ctaButtonsDiv = document.getElementById('ctaButtons');
+                if (ctaButtonsDiv) {
+                    ctaButtonsDiv.innerHTML = `
+                        <button onclick="goToDashboard()" class="btn btn-success btn-large">📊 View Dashboard</button>
+                        <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
+                    `;
+                    updateDebug('✅ CTA buttons updated');
+                } else {
+                    updateDebug('⚠️ CTA buttons div not found');
+                }
 
-            updateDebug('✅ USER HOMEPAGE SETUP COMPLETE!');
+                updateDebug('✅ USER HOMEPAGE SETUP COMPLETE!');
+                
+            } catch (error) {
+                updateDebug(`❌ Error in setupUserHomepage: ${error.message}`);
+                console.error('setupUserHomepage error:', error);
+            }
         }
 
         function setupGuestHomepage() {
-            console.log('🌍 Setting up GUEST homepage');
             updateDebug('🎨 Setting up guest UI');
 
-            // Update auth buttons in header
-            document.getElementById('authButtons').innerHTML = `
-                <a href="auth.html" class="btn btn-secondary">Sign In</a>
-                <a href="auth.html" class="btn btn-primary">Join Free</a>
-            `;
+            try {
+                // Update auth buttons in header
+                const authButtonsDiv = document.getElementById('authButtons');
+                if (authButtonsDiv) {
+                    authButtonsDiv.innerHTML = `
+                        <a href="auth.html" class="btn btn-secondary">Sign In</a>
+                        <a href="auth.html" class="btn btn-primary">Join Free</a>
+                    `;
+                    updateDebug('✅ Guest auth buttons updated');
+                }
 
-            // Update CTA buttons
-            document.getElementById('ctaButtons').innerHTML = `
-                <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
-                <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
-            `;
+                // Update CTA buttons
+                const ctaButtonsDiv = document.getElementById('ctaButtons');
+                if (ctaButtonsDiv) {
+                    ctaButtonsDiv.innerHTML = `
+                        <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
+                        <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
+                    `;
+                    updateDebug('✅ Guest CTA buttons updated');
+                }
 
-            updateDebug('✅ GUEST HOMEPAGE SETUP COMPLETE!');
+                updateDebug('✅ GUEST HOMEPAGE SETUP COMPLETE!');
+                
+            } catch (error) {
+                updateDebug(`❌ Error in setupGuestHomepage: ${error.message}`);
+                console.error('setupGuestHomepage error:', error);
+            }
         }
 
         function addDashboardButton() {
-            // Remove existing
-            const existing = document.querySelector('.dashboard-btn');
-            if (existing) existing.remove();
+            try {
+                // Remove existing
+                const existing = document.querySelector('.dashboard-btn');
+                if (existing) {
+                    existing.remove();
+                    updateDebug('🗑️ Removed existing dashboard button');
+                }
 
-            // Add new dashboard button
-            const btn = document.createElement('button');
-            btn.className = 'dashboard-btn';
-            btn.innerHTML = '📊 Dashboard';
-            btn.onclick = goToDashboard;
-            document.body.appendChild(btn);
+                // Add new dashboard button
+                const btn = document.createElement('button');
+                btn.className = 'dashboard-btn';
+                btn.innerHTML = '📊 Dashboard';
+                btn.onclick = goToDashboard;
+                document.body.appendChild(btn);
+                updateDebug('➕ Added new dashboard button');
+                
+            } catch (error) {
+                updateDebug(`❌ Error adding dashboard button: ${error.message}`);
+                console.error('addDashboardButton error:', error);
+            }
         }
 
         // Global functions
@@ -606,12 +695,15 @@
 
         window.signOut = async function() {
             if (confirm('Are you sure you want to sign out?')) {
+                updateDebug('🚪 User confirmed sign out');
                 if (window.firebaseSignOut) {
                     window.firebaseSignOut();
                 } else {
-                    updateDebug('❌ Firebase signOut not available');
+                    updateDebug('❌ Firebase signOut not available, using fallback');
                     window.location.href = 'auth.html';
                 }
+            } else {
+                updateDebug('❌ User cancelled sign out');
             }
         };
 
@@ -632,16 +724,8 @@
         // Start Firebase initialization when page loads
         document.addEventListener('DOMContentLoaded', function() {
             updateDebug('📄 DOM loaded, starting Firebase initialization');
-            initializeFirebaseLocally();
+            initializeFirebaseFixed();
         });
-
-        // Emergency fallback
-        setTimeout(() => {
-            if (!authResolved) {
-                updateDebug('🚨 EMERGENCY FALLBACK: Forcing guest setup');
-                resolveAsGuest();
-            }
-        }, 10000);
     </script>
 </body>
 </html>
