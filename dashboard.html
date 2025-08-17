@@ -1344,6 +1344,7 @@
     <!-- Firebase and Dashboard Logic -->
     <script type="module">
         console.log('📊 MODERN DASHBOARD: Initializing with Firebase...');
+        console.log('⏰ Page loaded at:', new Date().toISOString());
 
         // Import Firebase
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -1363,9 +1364,11 @@
         };
 
         // Initialize Firebase
+        console.log('🔥 Initializing Firebase with config:', firebaseConfig.projectId);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
+        console.log('✅ Firebase initialized successfully');
 
         let currentUser = null;
         let userVehicles = [];
@@ -1378,12 +1381,21 @@
                 initializeDashboard(user);
             } else {
                 console.log('❌ No user authenticated, redirecting to login...');
-                window.location.href = 'auth.html';
+                // Give a brief delay to show any error messages
+                setTimeout(() => {
+                    window.location.href = 'auth.html';
+                }, 2000);
             }
+        }, (error) => {
+            console.error('❌ Auth state error:', error);
+            alert('Authentication error. Please try logging in again.');
+            window.location.href = 'auth.html';
         });
 
         // Initialize Dashboard
         function initializeDashboard(user) {
+            console.log('🎯 Initializing dashboard for:', user.email);
+            
             // Update user info in sidebar
             document.getElementById('sidebarUserInfo').innerHTML = `
                 👤 ${user.displayName || 'User'}<br>
@@ -1394,6 +1406,17 @@
             document.getElementById('user-name').textContent = user.displayName || 'CarTrace User';
             document.getElementById('user-email').textContent = user.email;
             document.getElementById('member-since').textContent = new Date(user.metadata.creationTime).toLocaleDateString();
+
+            // Test Firebase database connection
+            console.log('🔥 Testing Firebase database connection...');
+            const testRef = ref(database, '.info/connected');
+            onValue(testRef, (snapshot) => {
+                if (snapshot.val() === true) {
+                    console.log('✅ Firebase database connected successfully');
+                } else {
+                    console.log('⚠️ Firebase database not connected');
+                }
+            });
 
             // Load user data
             loadVehicles(user.uid);
@@ -1612,6 +1635,7 @@
 
         // Show empty states
         function showEmptyVehicles(container) {
+            if (!container) return;
             container.innerHTML = `
                 <p style="text-align: center; color: #6b7280; padding: 20px;">
                     <span style="font-size: 48px;">🚗</span><br>
@@ -1620,10 +1644,24 @@
                 <button class="btn" onclick="showAddVehicleModal()" style="width: 100%;">
                     ➕ Add Vehicle
                 </button>
+                <div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 8px; font-size: 12px;">
+                    <strong>🔧 Connection Status:</strong><br>
+                    <span id="connectionStatus">Checking Firebase connection...</span><br>
+                    <button class="btn btn-secondary" onclick="testFirebaseConnection()" style="margin-top: 10px; padding: 8px 16px; font-size: 12px;">
+                        🔄 Test Connection
+                    </button>
+                    <button class="btn btn-secondary" onclick="addTestVehicle()" style="margin-top: 10px; margin-left: 10px; padding: 8px 16px; font-size: 12px;">
+                        🧪 Add Test Vehicle
+                    </button>
+                </div>
             `;
+            
+            // Auto-test connection
+            testFirebaseConnection();
         }
 
         function showEmptyVehiclesList(container) {
+            if (!container) return;
             container.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-icon">🚗</div>
@@ -1632,6 +1670,98 @@
                     <button class="btn" onclick="showAddVehicleModal()" style="margin-top: 1rem;">Add Your First Vehicle</button>
                 </div>
             `;
+        }
+
+        // Test Firebase connection
+        window.testFirebaseConnection = async function() {
+            console.log('🔍 Testing Firebase connection...');
+            const statusEl = document.getElementById('connectionStatus');
+            
+            if (statusEl) {
+                statusEl.innerHTML = '🔄 Testing connection...';
+            }
+            
+            try {
+                // Test 1: Check if Firebase is initialized
+                if (!database) {
+                    throw new Error('Firebase database not initialized');
+                }
+                
+                // Test 2: Check connection status
+                const connectedRef = ref(database, '.info/connected');
+                const snapshot = await get(connectedRef);
+                
+                if (snapshot.val() === true) {
+                    console.log('✅ Firebase is connected');
+                    if (statusEl) {
+                        statusEl.innerHTML = '✅ Connected to Firebase';
+                    }
+                    
+                    // Test 3: Try to read user data
+                    if (currentUser) {
+                        const userTestRef = ref(database, `users/${currentUser.uid}`);
+                        try {
+                            const userSnapshot = await get(userTestRef);
+                            console.log('✅ Can read user data:', userSnapshot.exists());
+                            if (statusEl) {
+                                statusEl.innerHTML += '<br>✅ Database access OK';
+                            }
+                        } catch (dbError) {
+                            console.error('❌ Database read error:', dbError);
+                            if (statusEl) {
+                                statusEl.innerHTML += `<br>❌ Database access denied<br>
+                                    <small style="color: #ef4444;">Fix: Update Firebase Database Rules</small>`;
+                            }
+                            showDatabaseRulesHelp();
+                        }
+                    }
+                } else {
+                    console.log('❌ Firebase is not connected');
+                    if (statusEl) {
+                        statusEl.innerHTML = '❌ Not connected to Firebase<br><small>Check your internet connection</small>';
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Connection test failed:', error);
+                if (statusEl) {
+                    statusEl.innerHTML = `❌ Connection failed<br><small>${error.message}</small>`;
+                }
+            }
+        };
+
+        // Show help for database rules
+        function showDatabaseRulesHelp() {
+            console.log(`
+📚 FIX FIREBASE DATABASE RULES:
+
+1. Go to Firebase Console: https://console.firebase.google.com
+2. Select your "CartTrace Pro" project
+3. Go to Realtime Database → Rules
+4. Replace the rules with:
+
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+
+5. Click "Publish"
+6. Refresh this page
+
+This allows authenticated users to read/write data.
+            `);
+            
+            alert(`⚠️ Database Access Issue Detected!
+
+To fix this:
+1. Open Firebase Console
+2. Go to Realtime Database → Rules
+3. Set rules to allow authenticated users
+4. Publish the changes
+5. Refresh this page
+
+Check the browser console for detailed instructions.`);
         }
 
         // Start live statistics updates
@@ -1978,6 +2108,52 @@
                 }
             }, 2000); // Simulate payment processing time
         });
+
+        // Add test vehicle for debugging
+        window.addTestVehicle = async function() {
+            if (!currentUser) {
+                alert('Please wait for authentication to complete');
+                return;
+            }
+            
+            console.log('🧪 Adding test vehicle...');
+            
+            const testVehicleData = {
+                year: '2023',
+                make: 'Toyota',
+                model: 'Camry',
+                color: 'Silver',
+                licensePlate: 'TEST-' + Math.floor(Math.random() * 1000),
+                vin: '',
+                uniqueFeatures: 'This is a test vehicle for debugging',
+                status: 'ACTIVE',
+                protectionPlan: 'BASIC',
+                planDetails: {
+                    name: 'Basic Protection',
+                    price: 5.99,
+                    reward: 200,
+                    coverage: 30,
+                    coverageText: '30 miles'
+                },
+                createdAt: Date.now(),
+                lastUpdated: Date.now()
+            };
+            
+            try {
+                const vehiclesRef = ref(database, `vehicles/${currentUser.uid}`);
+                const newVehicleRef = push(vehiclesRef);
+                
+                await set(newVehicleRef, testVehicleData);
+                
+                console.log('✅ Test vehicle added successfully');
+                alert('✅ Test vehicle added! The page should update automatically.');
+                
+            } catch (error) {
+                console.error('❌ Error adding test vehicle:', error);
+                alert(`❌ Error: ${error.message}\n\nThis usually means database rules need to be updated.`);
+                showDatabaseRulesHelp();
+            }
+        };
 
         // Close modal when clicking outside
         window.addEventListener('click', function(e) {
