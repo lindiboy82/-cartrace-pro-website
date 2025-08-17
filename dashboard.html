@@ -572,6 +572,147 @@
             background: #d1d5db;
         }
 
+        /* Subscription Plans Styles */
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .plan-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.1);
+        }
+
+        .plan-card.selected {
+            border-color: #4f46e5;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(79, 70, 229, 0.1) 100%);
+        }
+
+        .plan-card.selected::after {
+            content: "✓";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4f46e5;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .plan-name {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .plan-basic { color: #4CAF50; }
+        .plan-gold { color: #FF9800; }
+        .plan-platinum { color: #9C27B0; }
+        .plan-diamond { color: #E91E63; }
+
+        .plan-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .plan-reward {
+            background: #10b981;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .plan-coverage {
+            font-weight: bold;
+            color: #4f46e5;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .plan-features {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .plan-features ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .plan-features li {
+            margin-bottom: 4px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding: 0 20px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .step.active {
+            color: #4f46e5;
+            font-weight: bold;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .step.active .step-number {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .dashboard-container {
@@ -608,6 +749,10 @@
             .modal-content {
                 width: 95%;
                 padding: 20px;
+            }
+
+            .plans-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -947,6 +1092,11 @@
                             • Network Response: Real-time alerts<br>
                             • Community Participation: 100% active<br><br>
                             
+                            💰 Subscription Analytics:<br>
+                            • Active Vehicles: <span id="analytics-active-vehicles">0</span><br>
+                            • Monthly Revenue: $<span id="analytics-monthly-revenue">0.00</span><br>
+                            • Active Plans: <span id="analytics-plan-breakdown">None</span><br><br>
+                            
                             <div class="coming-soon-banner">
                                 🚧 COMING SOON: Advanced GPS analytics and professional recovery metrics
                             </div>
@@ -1008,82 +1158,184 @@
                 </h2>
                 <button class="close-btn" onclick="closeAddVehicleModal()">&times;</button>
             </div>
+
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">
+                    <span class="step-number">1</span>
+                    Vehicle Details
+                </div>
+                <div class="step" id="step2">
+                    <span class="step-number">2</span>
+                    Protection Plan
+                </div>
+            </div>
             
             <form id="addVehicleForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Year *</label>
-                        <select class="form-select" id="vehicleYear" required>
-                            <option value="">Select Year</option>
-                        </select>
+                <!-- Step 1: Vehicle Details -->
+                <div class="form-section active" id="vehicleDetailsSection">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Year *</label>
+                            <select class="form-select" id="vehicleYear" required>
+                                <option value="">Select Year</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Make *</label>
+                            <select class="form-select" id="vehicleMake" required>
+                                <option value="">Select Make</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Model *</label>
+                            <select class="form-select" id="vehicleModel" required disabled>
+                                <option value="">Select Make First</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Color *</label>
+                            <select class="form-select" id="vehicleColor" required>
+                                <option value="">Select Color</option>
+                                <option value="Black">Black</option>
+                                <option value="White">White</option>
+                                <option value="Silver">Silver</option>
+                                <option value="Gray">Gray</option>
+                                <option value="Red">Red</option>
+                                <option value="Blue">Blue</option>
+                                <option value="Navy">Navy Blue</option>
+                                <option value="Green">Green</option>
+                                <option value="Brown">Brown</option>
+                                <option value="Beige">Beige</option>
+                                <option value="Gold">Gold</option>
+                                <option value="Orange">Orange</option>
+                                <option value="Yellow">Yellow</option>
+                                <option value="Purple">Purple</option>
+                                <option value="Maroon">Maroon</option>
+                                <option value="Burgundy">Burgundy</option>
+                                <option value="Charcoal">Charcoal</option>
+                                <option value="Pearl">Pearl</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Make *</label>
-                        <select class="form-select" id="vehicleMake" required>
-                            <option value="">Select Make</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Model *</label>
-                        <select class="form-select" id="vehicleModel" required disabled>
-                            <option value="">Select Make First</option>
-                        </select>
+                        <label class="form-label">License Plate *</label>
+                        <input type="text" class="form-input" id="vehicleLicensePlate" placeholder="Enter license plate number" required>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Color *</label>
-                        <select class="form-select" id="vehicleColor" required>
-                            <option value="">Select Color</option>
-                            <option value="Black">Black</option>
-                            <option value="White">White</option>
-                            <option value="Silver">Silver</option>
-                            <option value="Gray">Gray</option>
-                            <option value="Red">Red</option>
-                            <option value="Blue">Blue</option>
-                            <option value="Navy">Navy Blue</option>
-                            <option value="Green">Green</option>
-                            <option value="Brown">Brown</option>
-                            <option value="Beige">Beige</option>
-                            <option value="Gold">Gold</option>
-                            <option value="Orange">Orange</option>
-                            <option value="Yellow">Yellow</option>
-                            <option value="Purple">Purple</option>
-                            <option value="Maroon">Maroon</option>
-                            <option value="Burgundy">Burgundy</option>
-                            <option value="Charcoal">Charcoal</option>
-                            <option value="Pearl">Pearl</option>
-                            <option value="Other">Other</option>
-                        </select>
+                        <label class="form-label">VIN (Optional)</label>
+                        <input type="text" class="form-input" id="vehicleVIN" placeholder="Vehicle Identification Number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">🌟 Unique Features & Modifications</label>
+                        <textarea class="form-textarea" id="vehicleFeatures" placeholder="Describe unique features that make your vehicle stand out...&#10;&#10;Examples:&#10;• Custom black 20&quot; wheels&#10;• Red racing stripes&#10;• Tinted windows&#10;• Roof rack&#10;• Custom exhaust&#10;• Dents or scratches&#10;• Stickers or decals&#10;• Aftermarket spoiler"></textarea>
+                        <div class="features-hint">
+                            💡 Include any modifications, damage, or distinguishing features that would help identify your vehicle
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-cancel" onclick="closeAddVehicleModal()">Cancel</button>
+                        <button type="button" class="btn btn-success" onclick="nextStep()">
+                            Next: Choose Protection Plan →
+                        </button>
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">License Plate *</label>
-                    <input type="text" class="form-input" id="vehicleLicensePlate" placeholder="Enter license plate number" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">VIN (Optional)</label>
-                    <input type="text" class="form-input" id="vehicleVIN" placeholder="Vehicle Identification Number">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">🌟 Unique Features & Modifications</label>
-                    <textarea class="form-textarea" id="vehicleFeatures" placeholder="Describe unique features that make your vehicle stand out...&#10;&#10;Examples:&#10;• Custom black 20&quot; wheels&#10;• Red racing stripes&#10;• Tinted windows&#10;• Roof rack&#10;• Custom exhaust&#10;• Dents or scratches&#10;• Stickers or decals&#10;• Aftermarket spoiler"></textarea>
-                    <div class="features-hint">
-                        💡 Include any modifications, damage, or distinguishing features that would help identify your vehicle
+
+                <!-- Step 2: Protection Plan Selection -->
+                <div class="form-section" id="protectionPlanSection">
+                    <h3 style="color: #4f46e5; margin-bottom: 10px;">Choose Your Protection Plan</h3>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
+                        Select a plan to activate community protection and recovery rewards for your vehicle
+                    </p>
+
+                    <div class="plans-container">
+                        <!-- Basic Plan -->
+                        <div class="plan-card" onclick="selectPlan('BASIC')" data-plan="BASIC">
+                            <div class="plan-name plan-basic">🟢 Basic Protection</div>
+                            <div class="plan-price">$5.99/month</div>
+                            <div class="plan-reward">$200 REWARD</div>
+                            <div class="plan-coverage">📍 30 miles coverage</div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li>Basic Theft Alerts</li>
+                                    <li>Community Support Network</li>
+                                    <li>Standard Recovery Assistance</li>
+                                    <li>Insurance Documentation</li>
+                                    <li>24/7 Support Hotline</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Gold Plan -->
+                        <div class="plan-card" onclick="selectPlan('GOLD')" data-plan="GOLD">
+                            <div class="plan-name plan-gold">🥇 Gold Protection</div>
+                            <div class="plan-price">$9.99/month</div>
+                            <div class="plan-reward">$300 REWARD</div>
+                            <div class="plan-coverage">📍 60 miles coverage</div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li>Everything in Basic</li>
+                                    <li>Real-time Push Notifications</li>
+                                    <li>Priority Support Response</li>
+                                    <li>Enhanced Recovery Tools</li>
+                                    <li>Monthly Security Reports</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Platinum Plan -->
+                        <div class="plan-card" onclick="selectPlan('PLATINUM')" data-plan="PLATINUM">
+                            <div class="plan-name plan-platinum">💎 Platinum Protection</div>
+                            <div class="plan-price">$19.99/month</div>
+                            <div class="plan-reward">$500 REWARD</div>
+                            <div class="plan-coverage">📍 100 miles coverage</div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li>Everything in Gold</li>
+                                    <li>Personal Recovery Agent</li>
+                                    <li>Law Enforcement Liaison</li>
+                                    <li>Advanced Recovery Network</li>
+                                    <li>Quarterly Security Audits</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Diamond Plan -->
+                        <div class="plan-card" onclick="selectPlan('DIAMOND')" data-plan="DIAMOND">
+                            <div class="plan-name plan-diamond">💠 Diamond Protection</div>
+                            <div class="plan-price">$29.99/month</div>
+                            <div class="plan-reward">$750 REWARD</div>
+                            <div class="plan-coverage">📍 STATEWIDE COVERAGE</div>
+                            <div class="plan-features">
+                                <ul>
+                                    <li>Everything in Platinum</li>
+                                    <li>Dedicated Recovery Team</li>
+                                    <li>VIP Priority Response</li>
+                                    <li>Premium Insurance Assistance</li>
+                                    <li>Annual Security Assessment</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-cancel" onclick="closeAddVehicleModal()">Cancel</button>
-                    <button type="submit" class="btn btn-success">
-                        <span id="submitBtnText">➕ Add Vehicle</span>
-                    </button>
+
+                    <input type="hidden" id="selectedPlan" value="">
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-cancel" onclick="previousStep()">← Back</button>
+                        <button type="submit" class="btn btn-success" id="submitBtn" disabled>
+                            <span id="submitBtnText">Select a Plan First</span>
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -1167,11 +1419,46 @@
                     document.getElementById('analytics-vehicles').textContent = vehicleCount;
                     document.getElementById('total-vehicles-analytics').textContent = vehicleCount;
                     
+                    // Calculate subscription analytics
+                    let totalMonthlyRevenue = 0;
+                    let activePlans = { BASIC: 0, GOLD: 0, PLATINUM: 0, DIAMOND: 0 };
+                    
+                    userVehicles.forEach(([id, v]) => {
+                        if (v.planDetails) {
+                            totalMonthlyRevenue += v.planDetails.price || 0;
+                            if (v.protectionPlan) {
+                                activePlans[v.protectionPlan]++;
+                            }
+                        }
+                    });
+                    
+                    // Update analytics section
+                    document.getElementById('analytics-active-vehicles').textContent = vehicleCount;
+                    document.getElementById('analytics-monthly-revenue').textContent = totalMonthlyRevenue.toFixed(2);
+                    
+                    const planBreakdown = Object.entries(activePlans)
+                        .filter(([plan, count]) => count > 0)
+                        .map(([plan, count]) => `${plan}: ${count}`)
+                        .join(', ') || 'None';
+                    document.getElementById('analytics-plan-breakdown').textContent = planBreakdown;
+                    
                     // Update vehicle status on dashboard
                     if (vehicleCount > 0) {
+                        // Count vehicles by plan
+                        let planCounts = { BASIC: 0, GOLD: 0, PLATINUM: 0, DIAMOND: 0 };
+                        let totalMonthly = 0;
+                        
+                        userVehicles.forEach(([id, v]) => {
+                            if (v.protectionPlan) {
+                                planCounts[v.protectionPlan] = (planCounts[v.protectionPlan] || 0) + 1;
+                                totalMonthly += v.planDetails?.price || 0;
+                            }
+                        });
+                        
                         vehicleStatus.innerHTML = `
                             <div style="margin-bottom: 20px;">
                                 <strong>✅ ${vehicleCount} Vehicle${vehicleCount > 1 ? 's' : ''} Protected</strong>
+                                ${totalMonthly > 0 ? `<br><span style="color: #6b7280; font-size: 14px;">Total monthly: ${totalMonthly.toFixed(2)}</span>` : ''}
                             </div>
                             <div class="stats-grid">
                                 <div class="stat-box">
@@ -1195,6 +1482,15 @@
                                     <div class="stat-label">Watchers</div>
                                 </div>
                             </div>
+                            ${Object.entries(planCounts).some(([plan, count]) => count > 0) ? `
+                                <div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 8px; font-size: 12px;">
+                                    <strong>Protection Plans:</strong><br>
+                                    ${planCounts.BASIC > 0 ? `🟢 Basic: ${planCounts.BASIC} vehicle${planCounts.BASIC > 1 ? 's' : ''}<br>` : ''}
+                                    ${planCounts.GOLD > 0 ? `🥇 Gold: ${planCounts.GOLD} vehicle${planCounts.GOLD > 1 ? 's' : ''}<br>` : ''}
+                                    ${planCounts.PLATINUM > 0 ? `💎 Platinum: ${planCounts.PLATINUM} vehicle${planCounts.PLATINUM > 1 ? 's' : ''}<br>` : ''}
+                                    ${planCounts.DIAMOND > 0 ? `💠 Diamond: ${planCounts.DIAMOND} vehicle${planCounts.DIAMOND > 1 ? 's' : ''}<br>` : ''}
+                                </div>
+                            ` : ''}
                         `;
                         
                         // Show vehicles in vehicles section
@@ -1202,14 +1498,36 @@
                         userVehicles.forEach(([key, vehicle]) => {
                             const vehicleCard = document.createElement('div');
                             vehicleCard.className = 'vehicle-card';
+                            
+                            // Get plan badge color
+                            const planColors = {
+                                'BASIC': '#4CAF50',
+                                'GOLD': '#FF9800',
+                                'PLATINUM': '#9C27B0',
+                                'DIAMOND': '#E91E63'
+                            };
+                            
                             vehicleCard.innerHTML = `
                                 <div style="display: flex; justify-content: space-between; align-items: start;">
                                     <div style="flex: 1;">
                                         <div class="vehicle-make">${vehicle.year || ''} ${vehicle.make} ${vehicle.model}</div>
+                                        ${vehicle.protectionPlan ? `
+                                            <div style="margin: 8px 0;">
+                                                <span style="background: ${planColors[vehicle.protectionPlan]}; color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">
+                                                    ${vehicle.protectionPlan} • ${vehicle.planDetails?.coverageText || ''} • ${vehicle.planDetails?.price || '0'}/mo
+                                                </span>
+                                            </div>
+                                        ` : ''}
                                         <div class="vehicle-details">
                                             <div><strong>Color:</strong> ${vehicle.color}</div>
                                             <div><strong>License Plate:</strong> ${vehicle.licensePlate}</div>
                                             ${vehicle.vin ? `<div><strong>VIN:</strong> ${vehicle.vin}</div>` : ''}
+                                            ${vehicle.planDetails ? `
+                                                <div style="margin-top: 8px; padding: 8px; background: #f3f4f6; border-radius: 6px;">
+                                                    <strong style="color: #10b981;">💰 Community Reward:</strong> ${vehicle.planDetails.reward} for helpers<br>
+                                                    <strong style="color: #4f46e5;">📍 Coverage Area:</strong> ${vehicle.planDetails.coverageText}
+                                                </div>
+                                            ` : ''}
                                         </div>
                                         ${vehicle.uniqueFeatures ? `
                                             <div style="margin-top: 10px; padding: 10px; background: #f3f4f6; border-radius: 8px;">
@@ -1236,6 +1554,16 @@
                     document.getElementById('settings-vehicles').textContent = '0';
                     document.getElementById('analytics-vehicles').textContent = '0';
                     document.getElementById('total-vehicles-analytics').textContent = '0';
+                    
+                    // Reset analytics
+                    const analyticsActiveVehicles = document.getElementById('analytics-active-vehicles');
+                    const analyticsMonthlyRevenue = document.getElementById('analytics-monthly-revenue');
+                    const analyticsPlanBreakdown = document.getElementById('analytics-plan-breakdown');
+                    
+                    if (analyticsActiveVehicles) analyticsActiveVehicles.textContent = '0';
+                    if (analyticsMonthlyRevenue) analyticsMonthlyRevenue.textContent = '0.00';
+                    if (analyticsPlanBreakdown) analyticsPlanBreakdown.textContent = 'None';
+                    
                     showEmptyVehicles(vehicleStatus);
                     showEmptyVehiclesList(vehiclesList);
                 }
@@ -1263,8 +1591,9 @@
                                          padding: 15px; border-radius: 8px; margin-bottom: 10px; 
                                          border-left: 4px solid ${alert.status === 'ACTIVE' ? '#ef4444' : '#10b981'};`;
                         alertDiv.innerHTML = `
-                            <strong>${alert.status === 'ACTIVE' ? '🚨' : '✅'} ${alert.vehicleYear || ''} ${alert.vehicleMake} ${alert.vehicleModel}</strong><br>
-                            <small>License: ${alert.licensePlate} • Color: ${alert.color} • ${new Date(alert.createdAt).toLocaleString()}</small>
+                            <strong>${alert.status === 'ACTIVE' ? '🚨' : '✅'} ${alert.vehicleYear || ''} ${alert.vehicleMake} ${alert.vehicleModel}</strong>
+                            ${alert.reward ? `<span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 10px; font-weight: bold;">💰 ${alert.reward} REWARD</span>` : ''}<br>
+                            <small>License: ${alert.licensePlate} • Color: ${alert.color} • Coverage: ${alert.coverageText || '30 miles'} • ${new Date(alert.createdAt).toLocaleString()}</small>
                             ${alert.uniqueFeatures ? `<br><small style="color: #6b7280;">🌟 ${alert.uniqueFeatures.substring(0, 100)}${alert.uniqueFeatures.length > 100 ? '...' : ''}</small>` : ''}
                         `;
                         alertsList.appendChild(alertDiv);
@@ -1378,6 +1707,10 @@
             showAddVehicleModal();
         };
 
+        // Subscription plan data
+        let selectedPlanData = null;
+        let currentStep = 1;
+
         // Vehicle Data
         const vehicleDatabase = {
             'Toyota': ['Camry', 'Corolla', 'RAV4', 'Highlander', 'Tacoma', 'Tundra', 'Sienna', 'Prius', '4Runner', 'Avalon', 'C-HR', 'Venza', 'Sequoia', 'Land Cruiser'],
@@ -1449,8 +1782,12 @@
                 makeSelect.appendChild(option);
             });
 
+            // Remove any existing event listeners
+            const newMakeSelect = makeSelect.cloneNode(true);
+            makeSelect.parentNode.replaceChild(newMakeSelect, makeSelect);
+            
             // Handle make selection to populate models
-            makeSelect.addEventListener('change', function() {
+            document.getElementById('vehicleMake').addEventListener('change', function() {
                 const modelSelect = document.getElementById('vehicleModel');
                 
                 if (this.value) {
@@ -1475,7 +1812,19 @@
         window.showAddVehicleModal = function() {
             const modal = document.getElementById('addVehicleModal');
             modal.classList.add('active');
+            currentStep = 1;
+            selectedPlanData = null;
+            updateStepIndicator();
+            showFormSection('vehicleDetailsSection');
             initializeVehicleForm();
+            
+            // Reset plan selection
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById('selectedPlan').value = '';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtnText').textContent = 'Select a Plan First';
         };
 
         // Close add vehicle modal
@@ -1483,15 +1832,89 @@
             const modal = document.getElementById('addVehicleModal');
             modal.classList.remove('active');
             document.getElementById('addVehicleForm').reset();
+            currentStep = 1;
+            selectedPlanData = null;
+        };
+
+        // Navigate between steps
+        window.nextStep = function() {
+            // Validate vehicle details first
+            const year = document.getElementById('vehicleYear').value;
+            const make = document.getElementById('vehicleMake').value;
+            const model = document.getElementById('vehicleModel').value;
+            const color = document.getElementById('vehicleColor').value;
+            const licensePlate = document.getElementById('vehicleLicensePlate').value;
+
+            if (!year || !make || !model || !color || !licensePlate) {
+                alert('Please fill in all required vehicle details');
+                return;
+            }
+
+            currentStep = 2;
+            updateStepIndicator();
+            showFormSection('protectionPlanSection');
+        };
+
+        window.previousStep = function() {
+            currentStep = 1;
+            updateStepIndicator();
+            showFormSection('vehicleDetailsSection');
+        };
+
+        function updateStepIndicator() {
+            document.getElementById('step1').classList.toggle('active', currentStep === 1);
+            document.getElementById('step2').classList.toggle('active', currentStep === 2);
+        }
+
+        function showFormSection(sectionId) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Plan selection
+        window.selectPlan = function(planId) {
+            // Remove previous selection
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selection to clicked plan
+            document.querySelector(`[data-plan="${planId}"]`).classList.add('selected');
+            document.getElementById('selectedPlan').value = planId;
+            
+            // Store plan data
+            const planDetails = {
+                'BASIC': { name: 'Basic Protection', price: 5.99, reward: 200, coverage: 30, coverageText: '30 miles' },
+                'GOLD': { name: 'Gold Protection', price: 9.99, reward: 300, coverage: 60, coverageText: '60 miles' },
+                'PLATINUM': { name: 'Platinum Protection', price: 19.99, reward: 500, coverage: 100, coverageText: '100 miles' },
+                'DIAMOND': { name: 'Diamond Protection', price: 29.99, reward: 750, coverage: -1, coverageText: 'Statewide' }
+            };
+            
+            selectedPlanData = {
+                planId: planId,
+                ...planDetails[planId]
+            };
+            
+            // Enable submit button and update text
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<span id="submitBtnText">💳 Add Vehicle with ${selectedPlanData.name} (${selectedPlanData.price}/mo)</span>`;
         };
 
         // Handle form submission
         document.getElementById('addVehicleForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (!selectedPlanData) {
+                alert('Please select a protection plan');
+                return;
+            }
+            
+            const submitBtn = e.target.querySelector('#submitBtn');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; display: inline-block;"></span> Adding...';
+            submitBtn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; display: inline-block;"></span> Processing payment...';
             submitBtn.disabled = true;
             
             // Get form values
@@ -1504,28 +1927,56 @@
                 vin: document.getElementById('vehicleVIN').value || '',
                 uniqueFeatures: document.getElementById('vehicleFeatures').value || '',
                 status: 'ACTIVE',
+                protectionPlan: selectedPlanData.planId,
+                planDetails: {
+                    name: selectedPlanData.name,
+                    price: selectedPlanData.price,
+                    reward: selectedPlanData.reward,
+                    coverage: selectedPlanData.coverage,
+                    coverageText: selectedPlanData.coverageText
+                },
                 createdAt: Date.now(),
                 lastUpdated: Date.now()
             };
 
-            try {
-                // Save to Firebase
-                const vehiclesRef = ref(database, `vehicles/${currentUser.uid}`);
-                const newVehicleRef = push(vehiclesRef);
-                
-                await set(newVehicleRef, vehicleData);
-                
-                // Success
-                alert(`✅ ${vehicleData.year} ${vehicleData.make} ${vehicleData.model} added successfully!`);
-                closeAddVehicleModal();
-                
-            } catch (error) {
-                console.error('Error adding vehicle:', error);
-                alert('❌ Failed to add vehicle. Please try again.');
-            } finally {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
+            // Simulate payment processing
+            setTimeout(async () => {
+                try {
+                    // Save to Firebase
+                    const vehiclesRef = ref(database, `vehicles/${currentUser.uid}`);
+                    const newVehicleRef = push(vehiclesRef);
+                    
+                    await set(newVehicleRef, vehicleData);
+                    
+                    // Save subscription data
+                    const subscriptionData = {
+                        userId: currentUser.uid,
+                        vehicleId: newVehicleRef.key,
+                        plan: selectedPlanData.planId,
+                        planName: selectedPlanData.name,
+                        price: selectedPlanData.price,
+                        reward: selectedPlanData.reward,
+                        coverageRadius: selectedPlanData.coverage,
+                        coverageType: selectedPlanData.coverage === -1 ? 'statewide' : 'radius',
+                        startDate: Date.now(),
+                        status: 'active',
+                        autoRenew: true
+                    };
+                    
+                    const subscriptionRef = ref(database, `subscriptions/${currentUser.uid}/${newVehicleRef.key}`);
+                    await set(subscriptionRef, subscriptionData);
+                    
+                    // Success
+                    alert(`🎉 Success!\n\n✅ ${vehicleData.year} ${vehicleData.make} ${vehicleData.model} added\n💳 ${selectedPlanData.name} activated (${selectedPlanData.price}/mo)\n📍 Coverage: ${selectedPlanData.coverageText}\n💰 Reward: ${selectedPlanData.reward} for helpers\n\nYour vehicle is now protected by 47,892 community members!`);
+                    closeAddVehicleModal();
+                    
+                } catch (error) {
+                    console.error('Error adding vehicle:', error);
+                    alert('❌ Failed to add vehicle. Please try again.');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            }, 2000); // Simulate payment processing time
         });
 
         // Close modal when clicking outside
@@ -1537,11 +1988,17 @@
         });
 
         window.deleteVehicle = async function(vehicleId) {
-            if (confirm('Are you sure you want to remove this vehicle?')) {
+            if (confirm('Are you sure you want to remove this vehicle? This will also cancel its protection plan.')) {
                 try {
+                    // Remove vehicle
                     const vehicleRef = ref(database, `vehicles/${currentUser.uid}/${vehicleId}`);
                     await remove(vehicleRef);
-                    alert('✅ Vehicle removed successfully');
+                    
+                    // Remove subscription
+                    const subscriptionRef = ref(database, `subscriptions/${currentUser.uid}/${vehicleId}`);
+                    await remove(subscriptionRef);
+                    
+                    alert('✅ Vehicle and protection plan removed successfully');
                 } catch (error) {
                     console.error('Error removing vehicle:', error);
                     alert('Failed to remove vehicle. Please try again.');
@@ -1557,6 +2014,7 @@ This will immediately:
 ✅ Create crowdsourced search alert
 ✅ Activate community reporting system
 ✅ Send real-time updates to helpers
+💰 Offer reward based on your protection plan
 
 ⚠️ Please ensure you have contacted local authorities (911) first.
 
@@ -1576,8 +2034,8 @@ Are you sure your vehicle is missing?`);
                 let vehicleIndex = 0;
                 if (userVehicles.length > 1) {
                     const vehicleOptions = userVehicles.map(([id, v], i) => 
-                        `${i + 1}. ${v.year || ''} ${v.make} ${v.model} (${v.color}, License: ${v.licensePlate})`
-                    ).join('\n');
+                        `${i + 1}. ${v.year || ''} ${v.make} ${v.model} (${v.color}, License: ${v.licensePlate})${v.protectionPlan ? `\n   💰 ${v.protectionPlan} Plan - ${v.planDetails?.reward || 200} reward, ${v.planDetails?.coverageText || '30 miles'} coverage` : ''}`
+                    ).join('\n\n');
                     
                     const selection = prompt(`Which vehicle is missing?\n\n${vehicleOptions}\n\nEnter number (1-${userVehicles.length}):`);
                     vehicleIndex = parseInt(selection) - 1;
@@ -1595,6 +2053,10 @@ Are you sure your vehicle is missing?`);
                         licensePlate: vehicle.licensePlate,
                         vin: vehicle.vin || '',
                         uniqueFeatures: vehicle.uniqueFeatures || '',
+                        protectionPlan: vehicle.protectionPlan || 'BASIC',
+                        reward: vehicle.planDetails?.reward || 200,
+                        coverageRadius: vehicle.planDetails?.coverage || 30,
+                        coverageText: vehicle.planDetails?.coverageText || '30 miles',
                         reportedBy: currentUser.uid,
                         reporterEmail: currentUser.email,
                         status: 'ACTIVE',
@@ -1610,10 +2072,13 @@ Are you sure your vehicle is missing?`);
 ✅ Crowdsourced search initiated
 ✅ Case ID: ${alertData.caseId}
 
+💰 REWARD: ${alertData.reward} for successful recovery
+📍 COVERAGE: ${alertData.coverageText} from theft location
 📧 Confirmation email sent
 📱 You will receive community updates
 
 96.1% success rate via community assistance!`);
+                    });
                     });
                 }
             }
