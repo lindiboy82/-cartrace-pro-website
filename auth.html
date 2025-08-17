@@ -15,7 +15,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: none; /* Hidden initially until auth check completes */
+            display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -36,7 +36,7 @@
             height: 120px;
             margin: 0 auto 20px;
             animation: bounce 2s infinite;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><radialGradient id="globeGrad" cx="50%" cy="40%" r="70%"><stop offset="0%" style="stop-color:%23a8c8ec"/><stop offset="100%" style="stop-color:%232563eb"/></radialGradient></defs><circle cx="200" cy="220" r="140" fill="url(%23globeGrad)"/><g stroke="white" stroke-width="3" fill="none"><circle cx="200" cy="220" r="140"/><ellipse cx="200" cy="220" rx="140" ry="70"/><ellipse cx="200" cy="220" rx="70" ry="140"/><line x1="60" y1="220" x2="340" y2="220"/><line x1="200" y1="80" x2="200" y2="360"/></g><path d="M200 80 L230 160 L200 200 Z" fill="%23dc2626"/><ellipse cx="210" cy="130" rx="18" ry="18" fill="white"/><text x="200" y="35" text-anchor="middle" fill="%23111827" font-family="Arial Black" font-size="40" font-weight="bold">Car Trace</text></svg>') center/contain no-repeat;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><radialGradient id="globeGrad" cx="50%" cy="40%" r="70%"><stop offset="0%" style="stop-color:%23a8c8ec"/><stop offset="100%" style="stop-color:%232563eb"/></radialGradient></defs><circle cx="200" cy="220" r="140" fill="url(%23globeGrad)"/><g stroke="white" stroke-width="3" fill="none"><circle cx="200" cy="220" r="140"/><ellipse cx="200" cy="220" rx="140" ry="70"/><ellipse cx="200" cy="220" rx="70" ry="140"/><line x1="60" y1="220" x2="340" y2="220"/><line x1="200" y1="80" x2="200" y2="360"/></g><path d="M200 80 L230 160 L200 200 Z" fill="%23dc2626"/><ellipse cx="210" cy="130" rx="18" ry="18" fill="white"/></svg>') center/contain no-repeat;
         }
 
         @keyframes bounce {
@@ -296,7 +296,7 @@
             </button>
         </form>
         
-        <a href="https://mycartrace.com" class="back-to-site">← Back to CarTrace.com</a>
+        <a href="cartrace_homepage.html" class="back-to-site">← Back to CarTrace.com</a>
     </div>
 
     <!-- Firebase SDK -->
@@ -307,9 +307,9 @@
             getAuth, 
             signInWithEmailAndPassword, 
             createUserWithEmailAndPassword,
-            updateProfile 
+            updateProfile,
+            onAuthStateChanged
         } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js';
-        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js';
 
         // Your Firebase configuration
         const firebaseConfig = {
@@ -325,12 +325,9 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const analytics = getAnalytics(app);
 
         // Make functions global so they can be called from HTML
         window.switchTab = switchTab;
-        window.handleLogin = handleLogin;
-        window.handleSignup = handleSignup;
 
         // Tab switching
         function switchTab(tab) {
@@ -488,15 +485,13 @@
         document.getElementById('loginForm').addEventListener('submit', handleLogin);
         document.getElementById('signupForm').addEventListener('submit', handleSignup);
 
-        // Check if user is already logged in
-        import { redirectIfAuthenticated } from './firebase_config.js';
-        
-        // Wait for auth state before showing the page
-        redirectIfAuthenticated().then(() => {
-            // User is not logged in, show the auth page
-            document.body.style.display = 'flex';
-        });
+        // Check if user is already logged in (simple check without hiding page)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, redirect to dashboard
+                window.location.href = 'dashboard.html';
             }
+            // If not logged in, just stay on this page (it's already visible)
         });
     </script>
 </body>
