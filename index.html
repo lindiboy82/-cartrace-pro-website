@@ -54,12 +54,20 @@
             100% { transform: rotate(360deg); }
         }
 
-        .error-message {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
-            display: none;
+        .fallback-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+
+        .fallback-btn:hover {
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -68,72 +76,85 @@
         <div class="logo">🚗</div>
         <h1>CarTrace Pro</h1>
         <div class="spinner"></div>
-        <p>Loading...</p>
-        <div class="error-message" id="errorMessage">
-            <p>Taking longer than expected...</p>
-            <button onclick="forceRedirect()" style="background: white; color: #667eea; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-                Continue to Homepage
-            </button>
-        </div>
+        <p id="status">Loading...</p>
+        <button class="fallback-btn" onclick="goToHomepage()" style="display: none;" id="fallbackBtn">
+            Continue to Homepage
+        </button>
     </div>
 
     <script type="module">
-        import { checkAuthState } from './firebase_config.js';
-
-        let redirected = false;
+        let hasRedirected = false;
         
-        // Force redirect function (fallback)
-        window.forceRedirect = function() {
-            if (!redirected) {
-                redirected = true;
+        // Simple fallback function
+        window.goToHomepage = function() {
+            if (!hasRedirected) {
+                hasRedirected = true;
                 window.location.href = 'cartrace_homepage.html';
             }
         };
 
-        // Main auth check
-        async function checkUserAuth() {
+        // SIMPLIFIED: Quick auth check with immediate fallbacks
+        async function quickAuthCheck() {
+            console.log('🔍 Quick auth check starting...');
+            
             try {
-                // Wait for Firebase auth state
+                // Update status
+                document.getElementById('status').textContent = 'Checking authentication...';
+                
+                // Try to import Firebase
+                const { checkAuthState } = await import('./firebase_config.js');
+                
+                // Set a quick timeout
+                const authTimeout = setTimeout(() => {
+                    if (!hasRedirected) {
+                        console.log('⏰ Auth check timeout, going to homepage');
+                        hasRedirected = true;
+                        window.location.href = 'cartrace_homepage.html';
+                    }
+                }, 1500); // Only wait 1.5 seconds
+                
+                // Check auth state
                 checkAuthState((user) => {
-                    if (redirected) return; // Prevent multiple redirects
+                    clearTimeout(authTimeout);
                     
-                    redirected = true;
+                    if (hasRedirected) return; // Prevent multiple redirects
+                    hasRedirected = true;
                     
                     if (user) {
-                        // User is logged in - go to dashboard
-                        console.log('User authenticated, redirecting to dashboard');
+                        console.log('✅ User authenticated, going to dashboard');
                         window.location.href = 'dashboard.html';
                     } else {
-                        // User not logged in - go to homepage
-                        console.log('User not authenticated, redirecting to homepage');
+                        console.log('❌ No user, going to homepage');
                         window.location.href = 'cartrace_homepage.html';
                     }
                 });
+                
             } catch (error) {
-                console.error('Auth check failed:', error);
-                if (!redirected) {
-                    redirected = true;
+                console.error('❌ Firebase import failed:', error);
+                if (!hasRedirected) {
+                    hasRedirected = true;
                     window.location.href = 'cartrace_homepage.html';
                 }
             }
         }
 
-        // Start the auth check
-        checkUserAuth();
+        // Start auth check
+        quickAuthCheck();
 
-        // Fallback timeout - redirect after 5 seconds if nothing happens
+        // Show fallback button after 1 second
         setTimeout(() => {
-            if (!redirected) {
-                redirected = true;
-                console.log('Timeout reached, redirecting to homepage');
-                window.location.href = 'cartrace_homepage.html';
+            if (!hasRedirected) {
+                document.getElementById('status').textContent = 'Taking longer than expected...';
+                document.getElementById('fallbackBtn').style.display = 'inline-block';
             }
-        }, 5000);
+        }, 1000);
 
-        // Show error message after 3 seconds
+        // ULTIMATE fallback - redirect after 3 seconds no matter what
         setTimeout(() => {
-            if (!redirected) {
-                document.getElementById('errorMessage').style.display = 'block';
+            if (!hasRedirected) {
+                console.log('🚨 Ultimate fallback triggered');
+                hasRedirected = true;
+                window.location.href = 'cartrace_homepage.html';
             }
         }, 3000);
     </script>
