@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CarTrace Pro - Loading...</title>
+    <title>CarTrace Pro</title>
     <style>
         body {
             margin: 0;
@@ -22,29 +22,29 @@
         }
 
         .logo {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             margin: 0 auto 20px;
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 50px;
+            font-size: 40px;
             animation: bounce 1s infinite;
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-5px); }
         }
 
         .spinner {
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-top: 3px solid white;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             animation: spin 1s linear infinite;
             margin: 20px auto;
         }
@@ -53,110 +53,27 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .fallback-btn {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: transform 0.2s;
-        }
-
-        .fallback-btn:hover {
-            transform: translateY(-2px);
-        }
     </style>
 </head>
 <body>
     <div class="loading-container">
         <div class="logo">🚗</div>
-        <h1>CarTrace Pro</h1>
+        <h2>CarTrace Pro</h2>
         <div class="spinner"></div>
-        <p id="status">Loading...</p>
-        <button class="fallback-btn" onclick="goToHomepage()" style="display: none;" id="fallbackBtn">
-            Continue to Homepage
-        </button>
+        <p>Loading...</p>
     </div>
 
-    <script type="module">
-        let hasRedirected = false;
+    <script>
+        // SIMPLE: Just redirect to homepage immediately
+        console.log('🏠 Index: Redirecting to homepage...');
         
-        // Simple fallback function
-        window.goToHomepage = function() {
-            if (!hasRedirected) {
-                hasRedirected = true;
-                window.location.href = 'cartrace_homepage.html';
-            }
-        };
-
-        // SIMPLIFIED: Quick auth check with immediate fallbacks
-        async function quickAuthCheck() {
-            console.log('🔍 Quick auth check starting...');
-            
-            try {
-                // Update status
-                document.getElementById('status').textContent = 'Checking authentication...';
-                
-                // Try to import Firebase
-                const { checkAuthState } = await import('./firebase_config.js');
-                
-                // Set a quick timeout
-                const authTimeout = setTimeout(() => {
-                    if (!hasRedirected) {
-                        console.log('⏰ Auth check timeout, going to homepage');
-                        hasRedirected = true;
-                        window.location.href = 'cartrace_homepage.html';
-                    }
-                }, 1500); // Only wait 1.5 seconds
-                
-                // Check auth state
-                checkAuthState((user) => {
-                    clearTimeout(authTimeout);
-                    
-                    if (hasRedirected) return; // Prevent multiple redirects
-                    hasRedirected = true;
-                    
-                    if (user) {
-                        console.log('✅ User authenticated, going to dashboard');
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        console.log('❌ No user, going to homepage');
-                        window.location.href = 'cartrace_homepage.html';
-                    }
-                });
-                
-            } catch (error) {
-                console.error('❌ Firebase import failed:', error);
-                if (!hasRedirected) {
-                    hasRedirected = true;
-                    window.location.href = 'cartrace_homepage.html';
-                }
-            }
-        }
-
-        // Start auth check
-        quickAuthCheck();
-
-        // Show fallback button after 1 second
+        // Immediate redirect - no auth checking here
+        window.location.href = 'cartrace_homepage.html';
+        
+        // Fallback in case redirect doesn't work
         setTimeout(() => {
-            if (!hasRedirected) {
-                document.getElementById('status').textContent = 'Taking longer than expected...';
-                document.getElementById('fallbackBtn').style.display = 'inline-block';
-            }
+            window.location.href = 'cartrace_homepage.html';
         }, 1000);
-
-        // ULTIMATE fallback - redirect after 3 seconds no matter what
-        setTimeout(() => {
-            if (!hasRedirected) {
-                console.log('🚨 Ultimate fallback triggered');
-                hasRedirected = true;
-                window.location.href = 'cartrace_homepage.html';
-            }
-        }, 3000);
     </script>
 </body>
 </html>
