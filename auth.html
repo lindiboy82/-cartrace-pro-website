@@ -186,6 +186,21 @@
             text-align: left;
         }
 
+        /* Debug panel */
+        .debug-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 10px;
+            max-width: 300px;
+            z-index: 1002;
+            font-family: monospace;
+        }
+
         /* Mobile responsiveness */
         @media (max-width: 480px) {
             .auth-container {
@@ -199,6 +214,12 @@
             
             .app-title {
                 font-size: 24px;
+            }
+
+            .debug-panel {
+                font-size: 8px;
+                max-width: 200px;
+                padding: 10px;
             }
         }
     </style>
@@ -299,199 +320,266 @@
         <a href="cartrace_homepage.html" class="back-to-site">← Back to CarTrace.com</a>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Debug Panel -->
+    <div id="debugPanel" class="debug-panel">
+        <strong>🔍 AUTH DEBUG:</strong><br>
+        <div id="debugInfo">Starting auth page...</div>
+    </div>
+
+    <!-- Firebase SDK with Embedded Config -->
     <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
-        import { 
-            getAuth, 
-            signInWithEmailAndPassword, 
-            createUserWithEmailAndPassword,
-            updateProfile,
-            onAuthStateChanged
-        } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js';
-
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
-            authDomain: "cartrace-pro.firebaseapp.com",
-            projectId: "cartrace-pro",
-            storageBucket: "cartrace-pro.firebasestorage.app",
-            messagingSenderId: "341907523496",
-            appId: "1:341907523496:web:f10a87930d939cf3b8ff9d",
-            measurementId: "G-X01QW112CD"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Make functions global so they can be called from HTML
-        window.switchTab = switchTab;
-
-        // Tab switching
-        function switchTab(tab) {
-            const loginTab = document.querySelector('[onclick="switchTab(\'login\')"]');
-            const signupTab = document.querySelector('[onclick="switchTab(\'signup\')"]');
-            const loginForm = document.getElementById('loginForm');
-            const signupForm = document.getElementById('signupForm');
-
-            if (tab === 'login') {
-                loginTab.classList.add('active');
-                signupTab.classList.remove('active');
-                loginForm.style.display = 'block';
-                signupForm.style.display = 'none';
-            } else {
-                signupTab.classList.add('active');
-                loginTab.classList.remove('active');
-                signupForm.style.display = 'block';
-                loginForm.style.display = 'none';
+        console.log('🔐 AUTH PAGE: Starting with embedded Firebase...');
+        
+        let debugLog = [];
+        
+        // Debug logging
+        function updateDebug(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            debugLog.push(logEntry);
+            
+            const debugInfo = document.getElementById('debugInfo');
+            if (debugInfo) {
+                debugInfo.innerHTML = debugLog.slice(-8).join('<br>');
             }
-            
-            hideMessages();
+            console.log('🔍', logEntry);
         }
 
-        // Message handling
-        function showMessage(message, isError = false) {
-            const successMsg = document.getElementById('successMessage');
-            const errorMsg = document.getElementById('errorMessage');
-            
-            hideMessages();
-            
-            if (isError) {
-                errorMsg.textContent = message;
-                errorMsg.style.display = 'block';
-            } else {
-                successMsg.textContent = message;
-                successMsg.style.display = 'block';
-            }
-        }
+        updateDebug('🚀 Auth page initialization started');
 
-        function hideMessages() {
-            document.getElementById('successMessage').style.display = 'none';
-            document.getElementById('errorMessage').style.display = 'none';
-        }
-
-        // Login handling
-        async function handleLogin(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const loginButton = document.getElementById('loginButton');
-            
-            loginButton.innerHTML = '<span class="spinner"></span>Signing in...';
-            loginButton.classList.add('loading');
+        // EMBEDDED Firebase initialization for production
+        async function initializeFirebase() {
+            updateDebug('📦 Initializing Firebase...');
             
             try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                showMessage('✅ Login successful! Redirecting to dashboard...');
-                
-                setTimeout(() => {
-                    // Redirect to dashboard
-                    window.location.href = 'dashboard.html';
-                }, 1500);
-                
-            } catch (error) {
-                let errorMessage = 'Login failed. Please try again.';
-                
-                switch (error.code) {
-                    case 'auth/user-not-found':
-                        errorMessage = 'No account found with this email address.';
-                        break;
-                    case 'auth/wrong-password':
-                        errorMessage = 'Incorrect password.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Invalid email address.';
-                        break;
-                    case 'auth/too-many-requests':
-                        errorMessage = 'Too many failed attempts. Please try again later.';
-                        break;
-                    case 'auth/invalid-credential':
-                        errorMessage = 'Invalid email or password. Please check your credentials.';
-                        break;
-                }
-                
-                showMessage(errorMessage, true);
-                loginButton.innerHTML = 'Sign In to CarTrace Pro';
-                loginButton.classList.remove('loading');
-            }
-        }
+                // Import Firebase modules from CDN
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
+                const { 
+                    getAuth, 
+                    signInWithEmailAndPassword, 
+                    createUserWithEmailAndPassword,
+                    updateProfile,
+                    onAuthStateChanged
+                } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js');
 
-        // Signup handling
-        async function handleSignup(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const signupButton = document.getElementById('signupButton');
-            
-            if (password !== confirmPassword) {
-                showMessage('Passwords do not match.', true);
-                return;
-            }
-            
-            if (password.length < 6) {
-                showMessage('Password must be at least 6 characters long.', true);
-                return;
-            }
-            
-            signupButton.innerHTML = '<span class="spinner"></span>Creating account...';
-            signupButton.classList.add('loading');
-            
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                
-                // Update user profile with name
-                await updateProfile(userCredential.user, {
-                    displayName: name
+                updateDebug('✅ Firebase modules imported');
+
+                // Your Firebase configuration - EMBEDDED
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
+                    authDomain: "cartrace-pro.firebaseapp.com",
+                    projectId: "cartrace-pro",
+                    storageBucket: "cartrace-pro.firebasestorage.app",
+                    messagingSenderId: "341907523496",
+                    appId: "1:341907523496:web:f10a87930d939cf3b8ff9d",
+                    measurementId: "G-X01QW112CD"
+                };
+
+                // Initialize Firebase
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+
+                updateDebug('🔧 Firebase app initialized');
+
+                // Check if user is already logged in
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        updateDebug(`👤 User already logged in: ${user.email}`);
+                        updateDebug('🚀 Redirecting to dashboard...');
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        updateDebug('👻 No user logged in, showing auth forms');
+                    }
                 });
-                
-                showMessage('✅ Account created successfully! Welcome to CarTrace Pro!');
-                
-                setTimeout(() => {
-                    // Redirect to dashboard
-                    window.location.href = 'dashboard.html';
-                }, 1500);
-                
-            } catch (error) {
-                let errorMessage = 'Account creation failed. Please try again.';
-                
-                switch (error.code) {
-                    case 'auth/email-already-in-use':
-                        errorMessage = 'An account with this email already exists.';
-                        break;
-                    case 'auth/invalid-email':
-                        errorMessage = 'Invalid email address.';
-                        break;
-                    case 'auth/weak-password':
-                        errorMessage = 'Password is too weak. Please use at least 6 characters.';
-                        break;
-                    case 'auth/operation-not-allowed':
-                        errorMessage = 'Email/password accounts are not enabled. Please contact support.';
-                        break;
+
+                // Tab switching function
+                window.switchTab = function(tab) {
+                    updateDebug(`🔄 Switching to ${tab} tab`);
+                    
+                    const loginTab = document.querySelector('[onclick="switchTab(\'login\')"]');
+                    const signupTab = document.querySelector('[onclick="switchTab(\'signup\')"]');
+                    const loginForm = document.getElementById('loginForm');
+                    const signupForm = document.getElementById('signupForm');
+
+                    if (tab === 'login') {
+                        loginTab.classList.add('active');
+                        signupTab.classList.remove('active');
+                        loginForm.style.display = 'block';
+                        signupForm.style.display = 'none';
+                    } else {
+                        signupTab.classList.add('active');
+                        loginTab.classList.remove('active');
+                        signupForm.style.display = 'block';
+                        loginForm.style.display = 'none';
+                    }
+                    
+                    hideMessages();
+                };
+
+                // Message handling
+                function showMessage(message, isError = false) {
+                    const successMsg = document.getElementById('successMessage');
+                    const errorMsg = document.getElementById('errorMessage');
+                    
+                    hideMessages();
+                    
+                    if (isError) {
+                        errorMsg.textContent = message;
+                        errorMsg.style.display = 'block';
+                        updateDebug(`❌ Error: ${message}`);
+                    } else {
+                        successMsg.textContent = message;
+                        successMsg.style.display = 'block';
+                        updateDebug(`✅ Success: ${message}`);
+                    }
                 }
-                
-                showMessage(errorMessage, true);
-                signupButton.innerHTML = 'Create CarTrace Pro Account';
-                signupButton.classList.remove('loading');
+
+                function hideMessages() {
+                    document.getElementById('successMessage').style.display = 'none';
+                    document.getElementById('errorMessage').style.display = 'none';
+                }
+
+                // Login handling
+                async function handleLogin(e) {
+                    e.preventDefault();
+                    updateDebug('🔑 Starting login process...');
+                    
+                    const email = document.getElementById('loginEmail').value;
+                    const password = document.getElementById('loginPassword').value;
+                    const loginButton = document.getElementById('loginButton');
+                    
+                    updateDebug(`📧 Login attempt for: ${email}`);
+                    
+                    loginButton.innerHTML = '<span class="spinner"></span>Signing in...';
+                    loginButton.classList.add('loading');
+                    
+                    try {
+                        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                        updateDebug(`✅ Login successful for: ${userCredential.user.email}`);
+                        
+                        showMessage('✅ Login successful! Redirecting to dashboard...');
+                        
+                        setTimeout(() => {
+                            updateDebug('🚀 Redirecting to dashboard...');
+                            window.location.href = 'dashboard.html';
+                        }, 1500);
+                        
+                    } catch (error) {
+                        updateDebug(`❌ Login failed: ${error.code} - ${error.message}`);
+                        
+                        let errorMessage = 'Login failed. Please try again.';
+                        
+                        switch (error.code) {
+                            case 'auth/user-not-found':
+                                errorMessage = 'No account found with this email address.';
+                                break;
+                            case 'auth/wrong-password':
+                                errorMessage = 'Incorrect password.';
+                                break;
+                            case 'auth/invalid-email':
+                                errorMessage = 'Invalid email address.';
+                                break;
+                            case 'auth/too-many-requests':
+                                errorMessage = 'Too many failed attempts. Please try again later.';
+                                break;
+                            case 'auth/invalid-credential':
+                                errorMessage = 'Invalid email or password. Please check your credentials.';
+                                break;
+                        }
+                        
+                        showMessage(errorMessage, true);
+                        loginButton.innerHTML = 'Sign In to CarTrace Pro';
+                        loginButton.classList.remove('loading');
+                    }
+                }
+
+                // Signup handling
+                async function handleSignup(e) {
+                    e.preventDefault();
+                    updateDebug('📝 Starting signup process...');
+                    
+                    const name = document.getElementById('signupName').value;
+                    const email = document.getElementById('signupEmail').value;
+                    const password = document.getElementById('signupPassword').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    const signupButton = document.getElementById('signupButton');
+                    
+                    updateDebug(`📧 Signup attempt for: ${email}`);
+                    
+                    if (password !== confirmPassword) {
+                        showMessage('Passwords do not match.', true);
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        showMessage('Password must be at least 6 characters long.', true);
+                        return;
+                    }
+                    
+                    signupButton.innerHTML = '<span class="spinner"></span>Creating account...';
+                    signupButton.classList.add('loading');
+                    
+                    try {
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        updateDebug(`✅ Account created for: ${userCredential.user.email}`);
+                        
+                        // Update user profile with name
+                        await updateProfile(userCredential.user, {
+                            displayName: name
+                        });
+                        
+                        updateDebug('✅ Profile updated with display name');
+                        
+                        showMessage('✅ Account created successfully! Welcome to CarTrace Pro!');
+                        
+                        setTimeout(() => {
+                            updateDebug('🚀 Redirecting to dashboard...');
+                            window.location.href = 'dashboard.html';
+                        }, 1500);
+                        
+                    } catch (error) {
+                        updateDebug(`❌ Signup failed: ${error.code} - ${error.message}`);
+                        
+                        let errorMessage = 'Account creation failed. Please try again.';
+                        
+                        switch (error.code) {
+                            case 'auth/email-already-in-use':
+                                errorMessage = 'An account with this email already exists.';
+                                break;
+                            case 'auth/invalid-email':
+                                errorMessage = 'Invalid email address.';
+                                break;
+                            case 'auth/weak-password':
+                                errorMessage = 'Password is too weak. Please use at least 6 characters.';
+                                break;
+                            case 'auth/operation-not-allowed':
+                                errorMessage = 'Email/password accounts are not enabled. Please contact support.';
+                                break;
+                        }
+                        
+                        showMessage(errorMessage, true);
+                        signupButton.innerHTML = 'Create CarTrace Pro Account';
+                        signupButton.classList.remove('loading');
+                    }
+                }
+
+                // Add event listeners
+                document.getElementById('loginForm').addEventListener('submit', handleLogin);
+                document.getElementById('signupForm').addEventListener('submit', handleSignup);
+
+                updateDebug('✅ AUTH PAGE SETUP COMPLETE!');
+
+            } catch (error) {
+                updateDebug(`❌ Firebase initialization failed: ${error.message}`);
+                console.error('Firebase initialization error:', error);
+                showMessage('Authentication system failed to load. Please refresh the page.', true);
             }
         }
 
-        // Add event listeners
-        document.getElementById('loginForm').addEventListener('submit', handleLogin);
-        document.getElementById('signupForm').addEventListener('submit', handleSignup);
-
-        // Check if user is already logged in (simple check without hiding page)
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is signed in, redirect to dashboard
-                window.location.href = 'dashboard.html';
-            }
-            // If not logged in, just stay on this page (it's already visible)
+        // Start Firebase initialization when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebug('📄 DOM loaded, starting Firebase setup');
+            initializeFirebase();
         });
     </script>
 </body>
