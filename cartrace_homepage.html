@@ -106,6 +106,22 @@
             background: rgba(255,255,255,0.3);
         }
 
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -166,22 +182,6 @@
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
-        }
-
-        .btn-large {
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-        }
-
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
 
         /* How It Works */
@@ -249,253 +249,48 @@
             line-height: 1.6;
         }
 
-        /* Free vs Protected */
-        .pricing {
-            padding: 80px 0;
-            background: white;
-        }
-
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 3rem;
-            margin-top: 3rem;
-        }
-
-        .pricing-card {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .pricing-card.featured {
-            border-color: #4f46e5;
-            border-width: 3px;
-        }
-
-        .pricing-card.featured::before {
-            content: "MOST POPULAR";
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #4f46e5;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .pricing-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: #4f46e5;
-        }
-
-        .pricing-price {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .pricing-period {
-            color: #6b7280;
-            margin-bottom: 2rem;
-        }
-
-        .pricing-features {
-            list-style: none;
-            margin-bottom: 2rem;
-        }
-
-        .pricing-features li {
-            padding: 0.5rem 0;
-            color: #374151;
-        }
-
-        .pricing-features li::before {
-            content: "✅ ";
-            margin-right: 0.5rem;
-        }
-
-        .pricing-features li.disabled {
-            color: #9ca3af;
-        }
-
-        .pricing-features li.disabled::before {
-            content: "❌ ";
-        }
-
-        .warning-box {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            text-align: center;
-        }
-
-        .warning-title {
-            font-weight: bold;
-            color: #92400e;
-            margin-bottom: 0.5rem;
-        }
-
-        .warning-text {
-            color: #92400e;
-            font-size: 0.9rem;
-        }
-
-        /* Founder Story */
-        .founder-story {
-            padding: 80px 0;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        }
-
-        .story-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .founder-image {
-            text-align: center;
-        }
-
-        .founder-avatar {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: white;
-            margin: 0 auto 1rem;
-        }
-
-        .founder-name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #4f46e5;
-        }
-
-        .founder-title {
-            color: #6b7280;
-            margin-bottom: 1rem;
-        }
-
-        .story-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #374151;
-        }
-
-        .story-quote {
-            font-style: italic;
-            font-size: 1.2rem;
-            color: #4f46e5;
-            margin: 1.5rem 0;
-            padding-left: 1rem;
-            border-left: 4px solid #4f46e5;
-        }
-
-        /* Stats Section */
-        .stats-section {
-            padding: 80px 0;
-            background: #4f46e5;
-            color: white;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            text-align: center;
-        }
-
-        .stat-item {
+        /* User status styles */
+        .user-welcome {
+            background: rgba(255,255,255,0.1);
             padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
         }
 
-        .stat-item .stat-number {
-            font-size: 3rem;
+        .dashboard-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
             font-weight: bold;
-            display: block;
-            margin-bottom: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
         }
 
-        .stat-item .stat-label {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .dashboard-btn:hover {
+            transform: translateY(-2px);
         }
 
-        /* CTA Section */
-        .final-cta {
-            padding: 80px 0;
-            background: white;
-            text-align: center;
-        }
-
-        .cta-content {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .cta-title {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #4f46e5;
-        }
-
-        .cta-text {
-            font-size: 1.2rem;
-            color: #6b7280;
-            margin-bottom: 2rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: #1f2937;
+        /* Debug panel */
+        .debug-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.9);
             color: white;
-            padding: 40px 0;
-            text-align: center;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-links a {
-            color: #d1d5db;
-            text-decoration: none;
-        }
-
-        .footer-links a:hover {
-            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 11px;
+            max-width: 350px;
+            z-index: 1002;
+            font-family: monospace;
         }
 
         /* Responsive */
@@ -522,17 +317,10 @@
                 align-items: center;
             }
 
-            .story-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .pricing-grid {
-                grid-template-columns: 1fr;
+            .debug-panel {
+                font-size: 9px;
+                max-width: 250px;
+                padding: 10px;
             }
         }
     </style>
@@ -547,13 +335,10 @@
             </div>
             <ul class="nav-links">
                 <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#pricing">Plans</a></li>
                 <li><a href="#story">Our Story</a></li>
-                <li><a href="#stats">Results</a></li>
             </ul>
-            <div class="auth-buttons">
-                <a href="auth.html" class="btn btn-secondary">Sign In</a>
-                <a href="auth.html" class="btn btn-primary">Join Free</a>
+            <div class="auth-buttons" id="authButtons">
+                <span style="color: rgba(255,255,255,0.7); font-size: 14px;">🔄 Checking login...</span>
             </div>
         </nav>
     </header>
@@ -565,6 +350,9 @@
             <p class="hero-subtitle">
                 Community-powered vehicle recovery that puts money in your neighbors' pockets for helping find stolen cars.
             </p>
+            
+            <!-- User welcome message -->
+            <div id="userWelcome"></div>
             
             <div class="hero-stats">
                 <div class="stat">
@@ -581,9 +369,8 @@
                 </div>
             </div>
 
-            <div class="cta-buttons">
-                <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
-                <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
+            <div class="cta-buttons" id="ctaButtons">
+                <span style="color: rgba(255,255,255,0.7); font-size: 14px;">🔄 Loading options...</span>
             </div>
         </div>
     </section>
@@ -624,288 +411,211 @@
         </div>
     </section>
 
-    <!-- Pricing -->
-    <section class="pricing" id="pricing">
-        <div class="container">
-            <h2 class="section-title">Free Community + Optional Protection</h2>
-            <p class="section-subtitle">
-                Join the community for free, upgrade for personal protection when you're ready
-            </p>
+    <!-- Debug Panel -->
+    <div id="debugPanel" class="debug-panel">
+        <strong>🔍 AUTH DEBUG:</strong><br>
+        <div id="debugInfo">Starting homepage...</div>
+    </div>
 
-            <div class="warning-box">
-                <div class="warning-title">⚠️ Important: 3-Day Waiting Period</div>
-                <div class="warning-text">
-                    Protection plan registrations take 3 days to activate. This prevents people from signing up only after their car is stolen. Plan ahead to ensure you're covered!
-                </div>
-            </div>
-
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <h3 class="pricing-title">🆓 Free Community</h3>
-                    <div class="pricing-price">$0</div>
-                    <div class="pricing-period">Forever</div>
-                    <ul class="pricing-features">
-                        <li>Help find stolen vehicles</li>
-                        <li>Earn money for successful finds</li>
-                        <li>Access to community alerts</li>
-                        <li>Report stolen vehicles</li>
-                        <li class="disabled">Personal protection coverage</li>
-                        <li class="disabled">Priority community response</li>
-                        <li class="disabled">Recovery team dispatch</li>
-                    </ul>
-                    <a href="auth.html" class="btn btn-primary btn-large">Join Free</a>
-                </div>
-
-<!-- Example: Hide for logged-in users -->
-<div class="guest-only">
-    <h2>Sign Up for CarTrace Pro</h2>
-    <button>Get Started</button>
-</div>
-
-<!-- Example: Show for logged-in users -->
-<div class="user-only" style="display: none;">
-    <h2>Your Protected Vehicles</h2>
-    <p>Access your dashboard to manage your vehicles.</p>
-</div>
-
-                <div class="pricing-card featured">
-                    <h3 class="pricing-title">🛡️ Gold Protection</h3>
-                    <div class="pricing-price">$9.99</div>
-                    <div class="pricing-period">per month</div>
-                    <ul class="pricing-features">
-                        <li>Everything in Free Community</li>
-                        <li>Personal vehicle protection</li>
-                        <li>Priority community alerts</li>
-                        <li>$300 finder rewards for your car</li>
-                        <li>Professional recovery team</li>
-                        <li>Insurance claim assistance</li>
-                        <li>24/7 support hotline</li>
-                    </ul>
-                    <a href="auth.html" class="btn btn-success btn-large">Start Protection</a>
-                    <div style="margin-top: 1rem; font-size: 0.9rem; color: #6b7280;">
-                        *3-day waiting period applies
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Founder Story -->
-    <section class="founder-story" id="story">
-        <div class="container">
-            <h2 class="section-title">Built from Personal Experience</h2>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        console.log('🏠 LOCAL DEV: Starting homepage with embedded Firebase...');
+        
+        let debugLog = [];
+        let authResolved = false;
+        
+        // Enhanced debug logging
+        function updateDebug(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            debugLog.push(logEntry);
             
-            <div class="story-content">
-                <div class="founder-image">
-                    <div class="founder-avatar">👤</div>
-                    <div class="founder-name">Lindi</div>
-                    <div class="founder-title">Founder & CEO</div>
-                </div>
+            const debugInfo = document.getElementById('debugInfo');
+            if (debugInfo) {
+                debugInfo.innerHTML = debugLog.slice(-8).join('<br>');
+            }
+            console.log('🔍', logEntry);
+        }
+
+        updateDebug('🚀 LOCAL DEV: Homepage initialization started');
+
+        // EMBEDDED Firebase initialization for local development
+        async function initializeFirebaseLocally() {
+            updateDebug('📦 Initializing Firebase directly (local dev mode)...');
+            
+            try {
+                // Import Firebase modules directly from CDN
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
+                const { getAuth, onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js');
                 
-                <div class="story-text">
-                    <p>Ten years ago, my car was stolen and police couldn't help me find it. Worse yet, it was used in an armed robbery. I had to find my own vehicle by driving around the city myself.</p>
+                updateDebug('✅ Firebase modules imported from CDN');
+                
+                // Your Firebase configuration
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
+                    authDomain: "cartrace-pro.firebaseapp.com",
+                    databaseURL: "https://cartrace-pro-default-rtdb.firebaseio.com/",
+                    projectId: "cartrace-pro",
+                    storageBucket: "cartrace-pro.firebasestorage.app",
+                    messagingSenderId: "341907523496",
+                    appId: "1:341907523496:web:f10a87930d939cf3b8ff9d",
+                    measurementId: "G-X01QW112CD"
+                };
+
+                // Initialize Firebase
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                
+                updateDebug('🔧 Firebase app initialized successfully');
+                
+                // Check immediate auth state
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    updateDebug(`⚡ IMMEDIATE USER FOUND: ${currentUser.email}`);
+                    resolveAsUser(currentUser);
+                    return;
+                }
+                
+                updateDebug('🕐 Setting up auth state listener...');
+                
+                // Set up auth state listener
+                onAuthStateChanged(auth, (user) => {
+                    if (authResolved) return;
+                    authResolved = true;
                     
-                    <div class="story-quote">
-                        "I realized that if I could find my car, imagine what an entire community could accomplish working together."
-                    </div>
-                    
-                    <p>That experience inspired me to spend the next decade creating CarTrace Pro – a community-powered vehicle recovery network that helps people find their stolen cars by crowdsourcing the search to thousands of community members who earn rewards for helping.</p>
-                    
-                    <p>Today, we've achieved a 96.1% recovery rate with most vehicles found within hours, and we've paid over $1.2M in community rewards. <strong>At CarTrace Pro, you never search alone.</strong></p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats -->
-    <section class="stats-section" id="stats">
-        <div class="container">
-            <h2 class="section-title">Community Impact</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-number">47,892</span>
-                    <span class="stat-label">Active Community Members</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">2,847</span>
-                    <span class="stat-label">Vehicles Successfully Recovered</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">$1.2M</span>
-                    <span class="stat-label">Paid to Community Helpers</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">96.1%</span>
-                    <span class="stat-label">Recovery Success Rate</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Final CTA -->
-    <section class="final-cta">
-        <div class="container">
-            <div class="cta-content">
-                <h2 class="cta-title">Ready to Protect Your Community?</h2>
-                <p class="cta-text">
-                    Join thousands of neighbors who are making their communities safer while earning money for helping others.
-                </p>
-                <div class="cta-buttons">
-                    <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Today</a>
-                    <a href="auth.html" class="btn btn-primary btn-large">🛡️ Get Protection</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="#privacy">Privacy Policy</a>
-                <a href="#terms">Terms of Service</a>
-                <a href="#contact">Contact</a>
-                <a href="#help">Help Center</a>
-            </div>
-            <p>&copy; 2024 CarTrace Pro. All rights reserved. Community-powered vehicle recovery.</p>
-        </div>
-    </footer>
-
-       <script type="module">
-        // Import Firebase auth functions
-        import { checkAuthState, logout } from './firebase_config.js';
-
-        // Check auth state and update UI accordingly
-        checkAuthState((user) => {
-            if (user) {
-                showLoggedInHomepage(user);
-            } else {
-                showPublicHomepage();
-            }
-        });
-
-        function showLoggedInHomepage(user) {
-            console.log('User is logged in - showing personalized homepage');
-            
-            // Add "Back to Dashboard" button
-            addBackToDashboardButton();
-            
-            // Show personalized content
-            addWelcomeMessage(user);
-            
-            // Hide login/signup buttons
-            hideAuthButtons();
-            
-            // Show user menu
-            showUserMenu(user);
-        }
-
-        function showPublicHomepage() {
-            console.log('User not logged in - showing public homepage');
-            
-            // Show login/signup buttons
-            showAuthButtons();
-            
-            // Hide user-specific content
-            hideUserContent();
-        }
-
-        function addBackToDashboardButton() {
-            // Create a prominent "Back to Dashboard" button
-            const dashboardBtn = document.createElement('button');
-            dashboardBtn.innerHTML = '📊 Back to Dashboard';
-            dashboardBtn.className = 'btn btn-primary btn-large';
-            dashboardBtn.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 1000;
-                background: #4CAF50;
-                color: white;
-                padding: 1rem 2rem;
-                border: none;
-                border-radius: 8px;
-                font-weight: bold;
-                cursor: pointer;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            `;
-            dashboardBtn.onclick = function() {
-                window.location.href = 'dashboard.html';
-            };
-            
-            document.body.appendChild(dashboardBtn);
-        }
-
-        function addWelcomeMessage(user) {
-            // Add welcome back message
-            const header = document.querySelector('header, .header, h1');
-            if (header) {
-                const welcomeMsg = document.createElement('div');
-                welcomeMsg.innerHTML = `
-                    <div style="background: #4CAF50; color: white; padding: 1rem; text-align: center; margin: 1rem 0; border-radius: 8px;">
-                        👋 Welcome back, ${user.displayName || user.email}! Your vehicles are protected by CarTrace Pro.
-                        <button onclick="window.location.href='dashboard.html'" style="margin-left: 1rem; padding: 0.5rem 1rem; background: white; color: #4CAF50; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                            View Dashboard
-                        </button>
-                    </div>
-                `;
-                header.parentNode.insertBefore(welcomeMsg, header.nextSibling);
+                    if (user) {
+                        updateDebug(`✅ AUTH LISTENER: User detected - ${user.email}`);
+                        resolveAsUser(user);
+                    } else {
+                        updateDebug('👻 AUTH LISTENER: No user detected');
+                        resolveAsGuest();
+                    }
+                });
+                
+                // Make logout function available
+                window.firebaseSignOut = async function() {
+                    updateDebug('🚪 Initiating sign out...');
+                    try {
+                        await signOut(auth);
+                        updateDebug('✅ Sign out successful');
+                        window.location.reload();
+                    } catch (error) {
+                        updateDebug(`❌ Sign out error: ${error.message}`);
+                    }
+                };
+                
+                // Timeout fallback
+                setTimeout(() => {
+                    if (!authResolved) {
+                        updateDebug('⏰ Auth check timeout, resolving as guest');
+                        resolveAsGuest();
+                    }
+                }, 5000);
+                
+            } catch (error) {
+                updateDebug(`❌ Firebase initialization error: ${error.message}`);
+                console.error('Local Firebase init failed:', error);
+                resolveAsGuest();
             }
         }
 
-        function hideAuthButtons() {
-            // Hide login/signup buttons
-            const authButtons = document.querySelectorAll('[href*="auth.html"], .auth-buttons');
-            authButtons.forEach(btn => {
-                btn.style.display = 'none';
-            });
+        function resolveAsUser(user) {
+            if (authResolved) return;
+            authResolved = true;
             
-            // Hide any elements with class 'auth-only' or 'login-only'
-            const authElements = document.querySelectorAll('.auth-only, .login-only, .guest-only');
-            authElements.forEach(el => {
-                el.style.display = 'none';
-            });
+            updateDebug(`🎯 RESOLVING AS USER: ${user.email}`);
+            setupUserHomepage(user);
         }
 
-        function showAuthButtons() {
-            // Show login/signup buttons for guests
-            const authButtons = document.querySelectorAll('[href*="auth.html"], .auth-buttons');
-            authButtons.forEach(btn => {
-                btn.style.display = 'block';
-            });
+        function resolveAsGuest() {
+            if (authResolved) return;
+            authResolved = true;
+            
+            updateDebug('🎯 RESOLVING AS GUEST');
+            setupGuestHomepage();
         }
 
-        function hideUserContent() {
-            // Hide user-specific content for guests
-            const userElements = document.querySelectorAll('.user-only, .logged-in-only');
-            userElements.forEach(el => {
-                el.style.display = 'none';
-            });
-        }
+        function setupUserHomepage(user) {
+            console.log('👤 Setting up USER homepage for:', user.email);
+            updateDebug(`🎨 Setting up logged-in UI for: ${user.email}`);
 
-        function showUserMenu(user) {
-            // Add user menu or profile info
-            const userMenu = document.createElement('div');
-            userMenu.innerHTML = `
-                <div style="position: fixed; top: 20px; left: 20px; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 1000;">
-                    <strong>🚗 ${user.displayName || 'CarTrace Pro User'}</strong><br>
-                    <small style="color: #666;">${user.email}</small><br>
-                    <button onclick="signOut()" style="margin-top: 0.5rem; padding: 0.5rem; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        Sign Out
-                    </button>
+            // Add dashboard button
+            addDashboardButton();
+
+            // Add welcome message
+            const welcomeDiv = document.getElementById('userWelcome');
+            welcomeDiv.innerHTML = `
+                <div class="user-welcome">
+                    <strong>👋 Welcome back, ${user.displayName || user.email}!</strong><br>
+                    <small>Your vehicles are protected by CarTrace Pro</small>
                 </div>
             `;
-            document.body.appendChild(userMenu);
+
+            // Update auth buttons in header
+            document.getElementById('authButtons').innerHTML = `
+                <button onclick="goToDashboard()" class="btn btn-primary">📊 Dashboard</button>
+                <button onclick="signOut()" class="btn btn-secondary">Sign Out</button>
+            `;
+
+            // Update CTA buttons
+            document.getElementById('ctaButtons').innerHTML = `
+                <button onclick="goToDashboard()" class="btn btn-success btn-large">📊 View Dashboard</button>
+                <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
+            `;
+
+            updateDebug('✅ USER HOMEPAGE SETUP COMPLETE!');
         }
 
-        // Global logout function
-        window.signOut = function() {
+        function setupGuestHomepage() {
+            console.log('🌍 Setting up GUEST homepage');
+            updateDebug('🎨 Setting up guest UI');
+
+            // Update auth buttons in header
+            document.getElementById('authButtons').innerHTML = `
+                <a href="auth.html" class="btn btn-secondary">Sign In</a>
+                <a href="auth.html" class="btn btn-primary">Join Free</a>
+            `;
+
+            // Update CTA buttons
+            document.getElementById('ctaButtons').innerHTML = `
+                <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
+                <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
+            `;
+
+            updateDebug('✅ GUEST HOMEPAGE SETUP COMPLETE!');
+        }
+
+        function addDashboardButton() {
+            // Remove existing
+            const existing = document.querySelector('.dashboard-btn');
+            if (existing) existing.remove();
+
+            // Add new dashboard button
+            const btn = document.createElement('button');
+            btn.className = 'dashboard-btn';
+            btn.innerHTML = '📊 Dashboard';
+            btn.onclick = goToDashboard;
+            document.body.appendChild(btn);
+        }
+
+        // Global functions
+        window.goToDashboard = function() {
+            updateDebug('🚀 Navigating to dashboard...');
+            window.location.href = 'dashboard.html';
+        };
+
+        window.signOut = async function() {
             if (confirm('Are you sure you want to sign out?')) {
-                logout();
+                if (window.firebaseSignOut) {
+                    window.firebaseSignOut();
+                } else {
+                    updateDebug('❌ Firebase signOut not available');
+                    window.location.href = 'auth.html';
+                }
             }
         };
 
-        // Smooth scrolling for navigation links
+        // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -919,15 +629,19 @@
             });
         });
 
-        // Add scroll effect to header
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('.header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(79, 70, 229, 0.95)';
-            } else {
-                header.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-            }
+        // Start Firebase initialization when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebug('📄 DOM loaded, starting Firebase initialization');
+            initializeFirebaseLocally();
         });
+
+        // Emergency fallback
+        setTimeout(() => {
+            if (!authResolved) {
+                updateDebug('🚨 EMERGENCY FALLBACK: Forcing guest setup');
+                resolveAsGuest();
+            }
+        }, 10000);
     </script>
 </body>
 </html>
