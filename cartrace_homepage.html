@@ -278,21 +278,6 @@
             transform: translateY(-2px);
         }
 
-        /* Debug panel */
-        .debug-panel {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 11px;
-            max-width: 350px;
-            z-index: 1002;
-            font-family: monospace;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .nav-container {
@@ -316,12 +301,6 @@
                 flex-direction: column;
                 align-items: center;
             }
-
-            .debug-panel {
-                font-size: 9px;
-                max-width: 250px;
-                padding: 10px;
-            }
         }
     </style>
 </head>
@@ -338,7 +317,9 @@
                 <li><a href="#story">Our Story</a></li>
             </ul>
             <div class="auth-buttons" id="authButtons">
-                <span style="color: rgba(255,255,255,0.7); font-size: 14px;">🔄 Checking login...</span>
+                <!-- Default to guest buttons, will be updated if user is logged in -->
+                <a href="auth.html" class="btn btn-secondary">Sign In</a>
+                <a href="auth.html" class="btn btn-primary">Join Free</a>
             </div>
         </nav>
     </header>
@@ -370,7 +351,9 @@
             </div>
 
             <div class="cta-buttons" id="ctaButtons">
-                <span style="color: rgba(255,255,255,0.7); font-size: 14px;">🔄 Loading options...</span>
+                <!-- Default to guest buttons, will be updated if user is logged in -->
+                <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
+                <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
             </div>
         </div>
     </section>
@@ -411,302 +394,151 @@
         </div>
     </section>
 
-    <!-- Debug Panel -->
-    <div id="debugPanel" class="debug-panel">
-        <strong>🔍 AUTH DEBUG:</strong><br>
-        <div id="debugInfo">Starting homepage...</div>
-    </div>
-
-    <!-- Firebase SDKs -->
     <script type="module">
-        console.log('🏠 FIXED: Starting homepage with proper auth handling...');
+        console.log('🏠 RELIABLE: Starting homepage...');
         
-        let debugLog = [];
-        let authResolved = false;
+        let authCheckComplete = false;
         
-        // Enhanced debug logging
-        function updateDebug(message) {
-            const timestamp = new Date().toLocaleTimeString();
-            const logEntry = `[${timestamp}] ${message}`;
-            debugLog.push(logEntry);
-            
-            const debugInfo = document.getElementById('debugInfo');
-            if (debugInfo) {
-                debugInfo.innerHTML = debugLog.slice(-10).join('<br>');
-            }
-            console.log('🔍', logEntry);
-        }
-
-        updateDebug('🚀 FIXED: Homepage initialization started');
-
-        // FIXED Firebase initialization
-        async function initializeFirebaseFixed() {
-            updateDebug('📦 Starting Firebase initialization...');
+        // RELIABLE: Start with working guest buttons, upgrade if user is logged in
+        async function checkAuthStateReliably() {
+            console.log('🔍 Checking auth state reliably...');
             
             try {
-                // Import Firebase modules directly from CDN
-                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
-                const { getAuth, onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js');
-                
-                updateDebug('✅ Firebase modules imported from CDN');
-                
-                // Your Firebase configuration
-                const firebaseConfig = {
-                    apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
-                    authDomain: "cartrace-pro.firebaseapp.com",
-                    databaseURL: "https://cartrace-pro-default-rtdb.firebaseio.com/",
-                    projectId: "cartrace-pro",
-                    storageBucket: "cartrace-pro.firebasestorage.app",
-                    messagingSenderId: "341907523496",
-                    appId: "1:341907523496:web:f10a87930d939cf3b8ff9d",
-                    measurementId: "G-X01QW112CD"
-                };
-
-                // Initialize Firebase
-                const app = initializeApp(firebaseConfig);
-                const auth = getAuth(app);
-                
-                updateDebug('🔧 Firebase app initialized successfully');
-                
-                // FIXED: Set up auth state listener with better error handling
-                updateDebug('🕐 Setting up auth state listener...');
-                
-                onAuthStateChanged(auth, (user) => {
-                    updateDebug(`🎯 AUTH STATE CHANGED: ${user ? user.email : 'No user'}`);
-                    
-                    if (authResolved) {
-                        updateDebug('⚠️ Auth already resolved, ignoring duplicate call');
-                        return;
-                    }
-                    
-                    try {
-                        if (user) {
-                            updateDebug(`✅ PROCESSING USER: ${user.email}`);
-                            resolveAsUser(user);
-                        } else {
-                            updateDebug('👻 PROCESSING GUEST STATE');
-                            resolveAsGuest();
-                        }
-                    } catch (error) {
-                        updateDebug(`❌ Error in auth state handler: ${error.message}`);
-                        console.error('Auth state handler error:', error);
-                        resolveAsGuest();
-                    }
-                }, (error) => {
-                    updateDebug(`❌ Auth state listener error: ${error.message}`);
-                    console.error('Auth listener error:', error);
-                    resolveAsGuest();
+                // Quick timeout - don't let Firebase hang the page
+                const authPromise = checkFirebaseAuth();
+                const timeoutPromise = new Promise((resolve) => {
+                    setTimeout(() => {
+                        console.log('⏰ Auth check timeout - staying with guest mode');
+                        resolve(null);
+                    }, 3000); // Only wait 3 seconds max
                 });
                 
-                // Check immediate auth state as backup
+                const user = await Promise.race([authPromise, timeoutPromise]);
+                
+                if (user) {
+                    console.log('✅ User authenticated:', user.email);
+                    upgradeToLoggedInMode(user);
+                } else {
+                    console.log('👤 Staying in guest mode');
+                    // Already showing guest buttons, nothing to do
+                }
+                
+            } catch (error) {
+                console.error('❌ Auth check failed:', error);
+                // Already showing guest buttons, nothing to do
+            }
+            
+            authCheckComplete = true;
+        }
+        
+        async function checkFirebaseAuth() {
+            // Import Firebase
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
+            const { getAuth, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js');
+            
+            // Firebase config
+            const firebaseConfig = {
+                apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
+                authDomain: "cartrace-pro.firebaseapp.com",
+                databaseURL: "https://cartrace-pro-default-rtdb.firebaseio.com/",
+                projectId: "cartrace-pro",
+                storageBucket: "cartrace-pro.firebasestorage.app",
+                messagingSenderId: "341907523496",
+                appId: "1:341907523496:web:f10a87930d939cf3b8ff9d",
+                measurementId: "G-X01QW112CD"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            
+            // Check immediate user
+            if (auth.currentUser) {
+                return auth.currentUser;
+            }
+            
+            // Wait for auth state with timeout
+            return new Promise((resolve) => {
+                const unsubscribe = onAuthStateChanged(auth, (user) => {
+                    unsubscribe();
+                    resolve(user);
+                });
+                
+                // Internal timeout
                 setTimeout(() => {
-                    if (!authResolved) {
-                        const currentUser = auth.currentUser;
-                        updateDebug(`🔍 BACKUP CHECK: ${currentUser ? currentUser.email : 'No user'}`);
-                        
-                        if (currentUser) {
-                            resolveAsUser(currentUser);
-                        } else {
-                            resolveAsGuest();
-                        }
-                    }
+                    unsubscribe();
+                    resolve(null);
                 }, 2000);
-                
-                // Make logout function available
-                window.firebaseSignOut = async function() {
-                    updateDebug('🚪 Initiating sign out...');
-                    try {
-                        await signOut(auth);
-                        updateDebug('✅ Sign out successful');
-                        // Force reload to clear all state
-                        window.location.reload();
-                    } catch (error) {
-                        updateDebug(`❌ Sign out error: ${error.message}`);
-                        // Fallback - just go to auth page
-                        window.location.href = 'auth.html';
-                    }
-                };
-                
-                // Final timeout fallback
-                setTimeout(() => {
-                    if (!authResolved) {
-                        updateDebug('⏰ FINAL TIMEOUT: Forcing guest setup');
-                        resolveAsGuest();
-                    }
-                }, 8000);
-                
-            } catch (error) {
-                updateDebug(`❌ Firebase initialization error: ${error.message}`);
-                console.error('Firebase init failed:', error);
-                resolveAsGuest();
-            }
+            });
         }
-
-        function resolveAsUser(user) {
-            if (authResolved) {
-                updateDebug('⚠️ resolveAsUser called but already resolved');
-                return;
+        
+        function upgradeToLoggedInMode(user) {
+            console.log('🔧 Upgrading to logged-in mode for:', user.email);
+            
+            // Add dashboard button
+            addDashboardButton();
+            
+            // Add welcome message
+            const welcomeDiv = document.getElementById('userWelcome');
+            if (welcomeDiv) {
+                welcomeDiv.innerHTML = `
+                    <div class="user-welcome">
+                        <strong>👋 Welcome back, ${user.displayName || user.email}!</strong><br>
+                        <small>Your vehicles are protected by CarTrace Pro</small>
+                    </div>
+                `;
             }
             
-            authResolved = true;
-            updateDebug(`🎯 RESOLVING AS USER: ${user.email}`);
-            
-            try {
-                setupUserHomepage(user);
-                updateDebug('✅ USER RESOLUTION COMPLETE');
-            } catch (error) {
-                updateDebug(`❌ Error in resolveAsUser: ${error.message}`);
-                console.error('resolveAsUser error:', error);
-            }
-        }
-
-        function resolveAsGuest() {
-            if (authResolved) {
-                updateDebug('⚠️ resolveAsGuest called but already resolved');
-                return;
+            // Update auth buttons
+            const authButtons = document.getElementById('authButtons');
+            if (authButtons) {
+                authButtons.innerHTML = `
+                    <button onclick="goToDashboard()" class="btn btn-primary">📊 Dashboard</button>
+                    <button onclick="signOut()" class="btn btn-secondary">Sign Out</button>
+                `;
             }
             
-            authResolved = true;
-            updateDebug('🎯 RESOLVING AS GUEST');
+            // Update CTA buttons
+            const ctaButtons = document.getElementById('ctaButtons');
+            if (ctaButtons) {
+                ctaButtons.innerHTML = `
+                    <button onclick="goToDashboard()" class="btn btn-success btn-large">📊 View Dashboard</button>
+                    <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
+                `;
+            }
             
-            try {
-                setupGuestHomepage();
-                updateDebug('✅ GUEST RESOLUTION COMPLETE');
-            } catch (error) {
-                updateDebug(`❌ Error in resolveAsGuest: ${error.message}`);
-                console.error('resolveAsGuest error:', error);
-            }
+            console.log('✅ Upgraded to logged-in mode successfully');
         }
-
-        function setupUserHomepage(user) {
-            updateDebug(`🎨 Setting up logged-in UI for: ${user.email}`);
-
-            try {
-                // Add dashboard button
-                addDashboardButton();
-                updateDebug('✅ Dashboard button added');
-
-                // Add welcome message
-                const welcomeDiv = document.getElementById('userWelcome');
-                if (welcomeDiv) {
-                    welcomeDiv.innerHTML = `
-                        <div class="user-welcome">
-                            <strong>👋 Welcome back, ${user.displayName || user.email}!</strong><br>
-                            <small>Your vehicles are protected by CarTrace Pro</small>
-                        </div>
-                    `;
-                    updateDebug('✅ Welcome message added');
-                } else {
-                    updateDebug('⚠️ Welcome div not found');
-                }
-
-                // Update auth buttons in header
-                const authButtonsDiv = document.getElementById('authButtons');
-                if (authButtonsDiv) {
-                    authButtonsDiv.innerHTML = `
-                        <button onclick="goToDashboard()" class="btn btn-primary">📊 Dashboard</button>
-                        <button onclick="signOut()" class="btn btn-secondary">Sign Out</button>
-                    `;
-                    updateDebug('✅ Auth buttons updated');
-                } else {
-                    updateDebug('⚠️ Auth buttons div not found');
-                }
-
-                // Update CTA buttons
-                const ctaButtonsDiv = document.getElementById('ctaButtons');
-                if (ctaButtonsDiv) {
-                    ctaButtonsDiv.innerHTML = `
-                        <button onclick="goToDashboard()" class="btn btn-success btn-large">📊 View Dashboard</button>
-                        <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
-                    `;
-                    updateDebug('✅ CTA buttons updated');
-                } else {
-                    updateDebug('⚠️ CTA buttons div not found');
-                }
-
-                updateDebug('✅ USER HOMEPAGE SETUP COMPLETE!');
-                
-            } catch (error) {
-                updateDebug(`❌ Error in setupUserHomepage: ${error.message}`);
-                console.error('setupUserHomepage error:', error);
-            }
-        }
-
-        function setupGuestHomepage() {
-            updateDebug('🎨 Setting up guest UI');
-
-            try {
-                // Update auth buttons in header
-                const authButtonsDiv = document.getElementById('authButtons');
-                if (authButtonsDiv) {
-                    authButtonsDiv.innerHTML = `
-                        <a href="auth.html" class="btn btn-secondary">Sign In</a>
-                        <a href="auth.html" class="btn btn-primary">Join Free</a>
-                    `;
-                    updateDebug('✅ Guest auth buttons updated');
-                }
-
-                // Update CTA buttons
-                const ctaButtonsDiv = document.getElementById('ctaButtons');
-                if (ctaButtonsDiv) {
-                    ctaButtonsDiv.innerHTML = `
-                        <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
-                        <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
-                    `;
-                    updateDebug('✅ Guest CTA buttons updated');
-                }
-
-                updateDebug('✅ GUEST HOMEPAGE SETUP COMPLETE!');
-                
-            } catch (error) {
-                updateDebug(`❌ Error in setupGuestHomepage: ${error.message}`);
-                console.error('setupGuestHomepage error:', error);
-            }
-        }
-
+        
         function addDashboardButton() {
-            try {
-                // Remove existing
-                const existing = document.querySelector('.dashboard-btn');
-                if (existing) {
-                    existing.remove();
-                    updateDebug('🗑️ Removed existing dashboard button');
-                }
-
-                // Add new dashboard button
-                const btn = document.createElement('button');
-                btn.className = 'dashboard-btn';
-                btn.innerHTML = '📊 Dashboard';
-                btn.onclick = goToDashboard;
-                document.body.appendChild(btn);
-                updateDebug('➕ Added new dashboard button');
-                
-            } catch (error) {
-                updateDebug(`❌ Error adding dashboard button: ${error.message}`);
-                console.error('addDashboardButton error:', error);
-            }
+            const existing = document.querySelector('.dashboard-btn');
+            if (existing) existing.remove();
+            
+            const btn = document.createElement('button');
+            btn.className = 'dashboard-btn';
+            btn.innerHTML = '📊 Dashboard';
+            btn.onclick = () => window.location.href = 'dashboard.html';
+            document.body.appendChild(btn);
         }
-
+        
         // Global functions
         window.goToDashboard = function() {
-            updateDebug('🚀 Navigating to dashboard...');
             window.location.href = 'dashboard.html';
         };
-
+        
         window.signOut = async function() {
             if (confirm('Are you sure you want to sign out?')) {
-                updateDebug('🚪 User confirmed sign out');
-                if (window.firebaseSignOut) {
-                    window.firebaseSignOut();
-                } else {
-                    updateDebug('❌ Firebase signOut not available, using fallback');
+                try {
+                    const { getAuth, signOut } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js');
+                    const auth = getAuth();
+                    await signOut(auth);
+                    window.location.reload();
+                } catch (error) {
+                    console.error('Sign out failed:', error);
                     window.location.href = 'auth.html';
                 }
-            } else {
-                updateDebug('❌ User cancelled sign out');
             }
         };
-
+        
         // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -720,12 +552,14 @@
                 }
             });
         });
-
-        // Start Firebase initialization when page loads
+        
+        // Start auth check when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            updateDebug('📄 DOM loaded, starting Firebase initialization');
-            initializeFirebaseFixed();
+            console.log('📄 DOM loaded, starting reliable auth check');
+            checkAuthStateReliably();
         });
+        
+        console.log('✅ Reliable homepage script loaded');
     </script>
 </body>
 </html>
