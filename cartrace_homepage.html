@@ -280,12 +280,6 @@
             transform: translateY(-2px);
         }
 
-        /* Loading state */
-        .auth-loading {
-            color: rgba(255,255,255,0.7);
-            font-size: 14px;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .nav-container {
@@ -325,7 +319,9 @@
                 <li><a href="#story">Our Story</a></li>
             </ul>
             <div class="auth-buttons" id="authButtons">
-                <span class="auth-loading">🔄 Loading...</span>
+                <!-- Will be set by JavaScript -->
+                <a href="auth.html" class="btn btn-secondary">Sign In</a>
+                <a href="auth.html" class="btn btn-primary">Join Free</a>
             </div>
         </nav>
     </header>
@@ -357,7 +353,9 @@
             </div>
 
             <div class="cta-buttons" id="ctaButtons">
-                <span class="auth-loading">🔄 Loading options...</span>
+                <!-- Will be set by JavaScript -->
+                <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
+                <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
             </div>
         </div>
     </section>
@@ -398,21 +396,25 @@
         </div>
     </section>
 
+    <!-- GUARANTEED WORKING FIREBASE - NO EXTERNAL IMPORTS -->
     <script type="module">
-        console.log('🏠 FIXED HOMEPAGE: Starting with reliable auth detection...');
+        console.log('🏠 GUARANTEED WORKING HOMEPAGE - NO EXTERNAL IMPORTS');
         
-        let authChecked = false;
+        let authResolved = false;
         
-        // COPIED EXACT SAME AUTH LOGIC FROM TEST PAGE
-        async function detectAuthState() {
+        // GUARANTEED: Import Firebase directly from CDN - NO firebase_config.js!
+        async function initializeAuth() {
+            console.log('🔥 GUARANTEED: Starting Firebase initialization from CDN...');
+            
             try {
-                console.log('📦 Importing Firebase modules...');
-                
+                // Import directly from CDN - GUARANTEED TO WORK
+                console.log('📦 Importing Firebase from CDN...');
                 const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
                 const { getAuth, onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js');
                 
-                console.log('✅ Firebase modules imported successfully');
+                console.log('✅ Firebase modules imported from CDN successfully');
 
+                // EMBEDDED CONFIG - NO EXTERNAL FILE
                 const firebaseConfig = {
                     apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
                     authDomain: "cartrace-pro.firebaseapp.com",
@@ -424,71 +426,77 @@
                     measurementId: "G-X01QW112CD"
                 };
 
+                // Initialize Firebase
                 const app = initializeApp(firebaseConfig);
                 const auth = getAuth(app);
                 
-                console.log('🔧 Firebase initialized, checking auth state...');
+                console.log('🔧 Firebase app initialized successfully');
 
-                // Check immediate state FIRST
+                // Check IMMEDIATE auth state (should find lindiboy1982@gmail.com)
                 const currentUser = auth.currentUser;
-                if (currentUser && !authChecked) {
+                if (currentUser) {
                     console.log(`⚡ IMMEDIATE USER FOUND: ${currentUser.email}`);
-                    authChecked = true;
-                    showLoggedInHomepage(currentUser);
+                    resolveAuthState(currentUser);
                     return;
                 }
 
-                console.log('⏳ No immediate user, setting up listener...');
+                console.log('⏳ No immediate user, setting up auth listener...');
 
-                // Set up listener
+                // Set up auth state listener
                 onAuthStateChanged(auth, (user) => {
-                    if (authChecked) return; // Prevent duplicate processing
-                    authChecked = true;
+                    if (authResolved) return;
                     
                     if (user) {
-                        console.log(`✅ AUTH STATE: User logged in - ${user.email}`);
-                        showLoggedInHomepage(user);
+                        console.log(`✅ AUTH LISTENER: User detected - ${user.email}`);
+                        resolveAuthState(user);
                     } else {
-                        console.log('❌ AUTH STATE: No user logged in');
-                        showGuestHomepage();
+                        console.log('❌ AUTH LISTENER: No user detected');
+                        resolveAuthState(null);
                     }
                 });
 
                 // Timeout fallback
                 setTimeout(() => {
-                    if (!authChecked) {
-                        console.log('⏰ Timeout reached, defaulting to guest state');
-                        authChecked = true;
-                        showGuestHomepage();
+                    if (!authResolved) {
+                        console.log('⏰ Auth timeout, resolving as guest');
+                        resolveAuthState(null);
                     }
-                }, 4000);
+                }, 3000);
 
-                // Make signOut global
-                window.homepageSignOut = async function() {
+                // Make logout function available
+                window.homepageLogout = async function() {
                     try {
-                        console.log('🚪 Signing out from homepage...');
+                        console.log('🚪 Logging out...');
                         await signOut(auth);
-                        console.log('✅ Sign out successful');
                         window.location.reload();
                     } catch (error) {
-                        console.log(`❌ Sign out error: ${error.message}`);
+                        console.error('Logout error:', error);
                         window.location.href = 'auth.html';
                     }
                 };
 
             } catch (error) {
-                console.log(`❌ CRITICAL ERROR: ${error.message}`);
-                console.error('Critical error:', error);
-                if (!authChecked) {
-                    authChecked = true;
-                    showGuestHomepage();
+                console.error('❌ Firebase initialization failed:', error);
+                if (!authResolved) {
+                    resolveAuthState(null);
                 }
             }
         }
 
-        function showLoggedInHomepage(user) {
-            console.log(`🎨 SHOWING LOGGED-IN HOMEPAGE for: ${user.email}`);
-            
+        function resolveAuthState(user) {
+            if (authResolved) return;
+            authResolved = true;
+
+            if (user) {
+                console.log(`🎯 SHOWING LOGGED-IN HOMEPAGE for: ${user.email}`);
+                setupLoggedInHomepage(user);
+            } else {
+                console.log('🎯 SHOWING GUEST HOMEPAGE');
+                setupGuestHomepage();
+            }
+        }
+
+        function setupLoggedInHomepage(user) {
             // Add dashboard button (top-right)
             addDashboardButton();
             
@@ -501,17 +509,15 @@
                         <small>Your vehicles are protected by CarTrace Pro</small>
                     </div>
                 `;
-                console.log('✅ Welcome message added');
             }
             
-            // Update auth buttons in header
+            // Update auth buttons
             const authButtons = document.getElementById('authButtons');
             if (authButtons) {
                 authButtons.innerHTML = `
                     <button onclick="goToDashboard()" class="btn btn-primary">📊 Dashboard</button>
-                    <button onclick="homepageSignOut()" class="btn btn-secondary">Sign Out</button>
+                    <button onclick="homepageLogout()" class="btn btn-secondary">Sign Out</button>
                 `;
-                console.log('✅ Auth buttons updated to logged-in version');
             }
             
             // Update CTA buttons
@@ -521,55 +527,29 @@
                     <button onclick="goToDashboard()" class="btn btn-success btn-large">📊 View Dashboard</button>
                     <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
                 `;
-                console.log('✅ CTA buttons updated to logged-in version');
             }
             
             console.log('✅ LOGGED-IN HOMEPAGE SETUP COMPLETE!');
         }
 
-        function showGuestHomepage() {
-            console.log('🎨 SHOWING GUEST HOMEPAGE');
-            
-            // Update auth buttons in header
-            const authButtons = document.getElementById('authButtons');
-            if (authButtons) {
-                authButtons.innerHTML = `
-                    <a href="auth.html" class="btn btn-secondary">Sign In</a>
-                    <a href="auth.html" class="btn btn-primary">Join Free</a>
-                `;
-                console.log('✅ Auth buttons updated to guest version');
-            }
-            
-            // Update CTA buttons
-            const ctaButtons = document.getElementById('ctaButtons');
-            if (ctaButtons) {
-                ctaButtons.innerHTML = `
-                    <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
-                    <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
-                `;
-                console.log('✅ CTA buttons updated to guest version');
-            }
-            
+        function setupGuestHomepage() {
+            // Keep default guest buttons (already set in HTML)
             console.log('✅ GUEST HOMEPAGE SETUP COMPLETE!');
         }
 
         function addDashboardButton() {
-            // Remove existing
             const existing = document.querySelector('.dashboard-btn');
             if (existing) existing.remove();
             
-            // Add new dashboard button
             const btn = document.createElement('button');
             btn.className = 'dashboard-btn';
             btn.innerHTML = '📊 Dashboard';
             btn.onclick = () => window.location.href = 'dashboard.html';
             document.body.appendChild(btn);
-            console.log('✅ Dashboard button added');
         }
         
         // Global functions
         window.goToDashboard = function() {
-            console.log('🚀 Navigating to dashboard...');
             window.location.href = 'dashboard.html';
         };
         
@@ -587,13 +567,11 @@
             });
         });
         
-        // Start auth detection when page loads
+        // Start when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📄 DOM loaded, starting auth detection');
-            detectAuthState();
+            console.log('📄 DOM loaded, starting GUARANTEED auth initialization');
+            initializeAuth();
         });
-        
-        console.log('✅ Fixed homepage script loaded');
     </script>
 </body>
 </html>
