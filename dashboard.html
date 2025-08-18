@@ -221,6 +221,14 @@
             background: #dc2626;
         }
 
+        .btn-success {
+            background: #10b981;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
         /* Loading */
         .loading {
             text-align: center;
@@ -267,7 +275,7 @@
             padding: 30px;
             border-radius: 20px;
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -352,6 +360,177 @@
             gap: 15px;
         }
 
+        /* Step indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+        }
+
+        .step::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: -1;
+        }
+
+        .step:first-child::before {
+            display: none;
+        }
+
+        .step.active::before {
+            background: #4f46e5;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #e5e7eb;
+            color: #6b7280;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .step.active .step-number {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .step.active .step-label {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        /* Form sections */
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        /* Subscription Plans */
+        .plans-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .plan-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .plan-card:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.1);
+        }
+
+        .plan-card.selected {
+            border-color: #4f46e5;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+        }
+
+        .plan-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4f46e5;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .plan-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .plan-basic { color: #10b981; }
+        .plan-gold { color: #f59e0b; }
+        .plan-platinum { color: #8b5cf6; }
+        .plan-diamond { color: #ec4899; }
+
+        .plan-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .plan-price span {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: normal;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .plan-features li {
+            padding: 5px 0;
+            color: #4b5563;
+            font-size: 14px;
+        }
+
+        .plan-features li::before {
+            content: '✓ ';
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .plan-highlight {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
         .btn-secondary {
             background: #6b7280;
             color: white;
@@ -394,6 +573,20 @@
             font-style: italic;
         }
 
+        .plan-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .badge-basic { background: #d1fae5; color: #065f46; }
+        .badge-gold { background: #fed7aa; color: #92400e; }
+        .badge-platinum { background: #e9d5ff; color: #581c87; }
+        .badge-diamond { background: #fce7f3; color: #831843; }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .dashboard-container {
@@ -416,6 +609,10 @@
             .modal-content {
                 width: 95%;
                 padding: 20px;
+            }
+
+            .plans-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -535,6 +732,21 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Community Network Card -->
+                    <div class="card">
+                        <h2 class="card-title">
+                            <span class="card-icon">🌐</span>
+                            Community Network
+                        </h2>
+                        <p style="margin-bottom: 10px;">Your vehicles are protected by our growing community network:</p>
+                        <ul style="list-style: none; color: #4b5563;">
+                            <li>👥 47,892 Active Members</li>
+                            <li>📍 Coverage in All 50 States</li>
+                            <li>🎯 96.1% Recovery Success Rate</li>
+                            <li>⏱️ Average Recovery: 48 Hours</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -564,7 +776,17 @@
                         <span class="card-icon">🚨</span>
                         Community Vehicle Recovery
                     </h2>
-                    <p style="margin-bottom: 20px;">Report your vehicle as stolen to alert the community network.</p>
+                    <p style="margin-bottom: 20px; line-height: 1.8;">
+                        <strong>How Our Community Recovery Works:</strong><br>
+                        1️⃣ Report your vehicle as missing<br>
+                        2️⃣ Alert sent to community members in your plan's radius<br>
+                        3️⃣ Members actively look for your vehicle<br>
+                        4️⃣ Finder's fee paid to successful spotter<br>
+                        5️⃣ Vehicle returned to you safely
+                    </p>
+                    <p style="color: #6b7280; margin-bottom: 20px;">
+                        📊 Current success rate: 96.1% of vehicles recovered within 48 hours
+                    </p>
                     <button class="btn btn-danger" onclick="reportStolen()">
                         🚨 Report Vehicle Missing
                     </button>
@@ -579,7 +801,13 @@
                         Community Alerts
                     </h2>
                     <div id="alertsList">
-                        <p>No active alerts at this time.</p>
+                        <p style="color: #10b981; font-weight: 600;">✅ All Clear - No Active Alerts</p>
+                        <p style="color: #6b7280; margin-top: 10px;">
+                            You will receive instant notifications when:<br>
+                            • A vehicle is reported missing in your area<br>
+                            • Community members spot suspicious activity<br>
+                            • Your protection zone has new alerts
+                        </p>
                     </div>
                 </div>
             </div>
@@ -591,7 +819,7 @@
                         <span class="card-icon">📈</span>
                         Analytics
                     </h2>
-                    <p>Analytics dashboard coming soon...</p>
+                    <p>Community protection analytics and recovery statistics coming soon...</p>
                 </div>
             </div>
 
@@ -622,74 +850,159 @@
                 <h2 class="modal-title">🚗 Add New Vehicle</h2>
                 <button class="close-btn" onclick="closeAddVehicleModal()">&times;</button>
             </div>
+
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Vehicle Details</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Protection Plan</div>
+                </div>
+            </div>
             
             <form id="addVehicleForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Year *</label>
-                        <select class="form-select" id="vehicleYear" required>
-                            <option value="">Select Year</option>
-                        </select>
+                <!-- Step 1: Vehicle Details -->
+                <div class="form-section active" id="vehicleDetailsSection">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Year *</label>
+                            <select class="form-select" id="vehicleYear" required>
+                                <option value="">Select Year</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Make *</label>
+                            <select class="form-select" id="vehicleMake" required>
+                                <option value="">Select Make</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Model *</label>
+                            <select class="form-select" id="vehicleModel" required disabled>
+                                <option value="">Select Make First</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Color *</label>
+                            <select class="form-select" id="vehicleColor" required>
+                                <option value="">Select Color</option>
+                                <option value="Black">Black</option>
+                                <option value="White">White</option>
+                                <option value="Silver">Silver</option>
+                                <option value="Gray">Gray</option>
+                                <option value="Red">Red</option>
+                                <option value="Blue">Blue</option>
+                                <option value="Navy">Navy Blue</option>
+                                <option value="Green">Green</option>
+                                <option value="Brown">Brown</option>
+                                <option value="Beige">Beige</option>
+                                <option value="Gold">Gold</option>
+                                <option value="Orange">Orange</option>
+                                <option value="Yellow">Yellow</option>
+                                <option value="Purple">Purple</option>
+                                <option value="Maroon">Maroon</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Make *</label>
-                        <select class="form-select" id="vehicleMake" required>
-                            <option value="">Select Make</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Model *</label>
-                        <select class="form-select" id="vehicleModel" required disabled>
-                            <option value="">Select Make First</option>
-                        </select>
+                        <label class="form-label">License Plate *</label>
+                        <input type="text" class="form-input" id="vehicleLicensePlate" placeholder="Enter license plate number" required style="text-transform: uppercase;">
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Color *</label>
-                        <select class="form-select" id="vehicleColor" required>
-                            <option value="">Select Color</option>
-                            <option value="Black">Black</option>
-                            <option value="White">White</option>
-                            <option value="Silver">Silver</option>
-                            <option value="Gray">Gray</option>
-                            <option value="Red">Red</option>
-                            <option value="Blue">Blue</option>
-                            <option value="Navy">Navy Blue</option>
-                            <option value="Green">Green</option>
-                            <option value="Brown">Brown</option>
-                            <option value="Beige">Beige</option>
-                            <option value="Gold">Gold</option>
-                            <option value="Orange">Orange</option>
-                            <option value="Yellow">Yellow</option>
-                            <option value="Purple">Purple</option>
-                            <option value="Maroon">Maroon</option>
-                            <option value="Other">Other</option>
-                        </select>
+                        <label class="form-label">VIN (Optional)</label>
+                        <input type="text" class="form-input" id="vehicleVIN" placeholder="Vehicle Identification Number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">🌟 Unique Features & Modifications</label>
+                        <textarea class="form-textarea" id="vehicleFeatures" placeholder="Describe any unique features that would help identify your vehicle...&#10;&#10;Examples:&#10;• Black aftermarket wheels&#10;• Tinted windows&#10;• Custom exhaust&#10;• Roof rack&#10;• Racing stripes&#10;• Body kit or spoiler&#10;• Decals or stickers&#10;• Dents or scratches&#10;• Interior modifications"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddVehicleModal()">Cancel</button>
+                        <button type="button" class="btn btn-success" onclick="nextStep()">Next: Choose Plan →</button>
                     </div>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">License Plate *</label>
-                    <input type="text" class="form-input" id="vehicleLicensePlate" placeholder="Enter license plate number" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">VIN (Optional)</label>
-                    <input type="text" class="form-input" id="vehicleVIN" placeholder="Vehicle Identification Number">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">🌟 Unique Features & Modifications</label>
-                    <textarea class="form-textarea" id="vehicleFeatures" placeholder="Describe any unique features that would help identify your vehicle...&#10;&#10;Examples:&#10;• Black aftermarket wheels&#10;• Tinted windows&#10;• Custom exhaust&#10;• Roof rack&#10;• Racing stripes&#10;• Body kit or spoiler&#10;• Decals or stickers&#10;• Dents or scratches&#10;• Interior modifications"></textarea>
-                </div>
-                
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
-                    <button type="button" class="btn btn-secondary" onclick="closeAddVehicleModal()">Cancel</button>
-                    <button type="submit" class="btn">Add Vehicle</button>
+
+                <!-- Step 2: Protection Plan Selection -->
+                <div class="form-section" id="protectionPlanSection">
+                    <h3 style="margin-bottom: 20px; color: #1f2937;">Choose Your Protection Plan</h3>
+                    
+                    <div class="plans-container">
+                        <!-- Basic Plan -->
+                        <div class="plan-card" onclick="selectPlan('basic')">
+                            <div class="plan-name plan-basic">🟢 Basic Protection</div>
+                            <div class="plan-price">$6.99<span>/month</span></div>
+                            <ul class="plan-features">
+                                <li>Community Alerts (20-mile radius)</li>
+                                <li>$200 Finder's Reward</li>
+                                <li>24/7 Support</li>
+                                <li>Basic Recovery Assistance</li>
+                            </ul>
+                        </div>
+
+                        <!-- Gold Plan -->
+                        <div class="plan-card" onclick="selectPlan('gold')">
+                            <div class="plan-highlight">MOST POPULAR</div>
+                            <div class="plan-name plan-gold">🥇 Gold Protection</div>
+                            <div class="plan-price">$9.99<span>/month</span></div>
+                            <ul class="plan-features">
+                                <li>Community Alerts (60-mile radius)</li>
+                                <li>$300 Finder's Reward</li>
+                                <li>Priority 24/7 Support</li>
+                                <li>Enhanced Recovery Tools</li>
+                                <li>Monthly Security Reports</li>
+                            </ul>
+                        </div>
+
+                        <!-- Platinum Plan -->
+                        <div class="plan-card" onclick="selectPlan('platinum')">
+                            <div class="plan-name plan-platinum">💎 Platinum Protection</div>
+                            <div class="plan-price">$14.99<span>/month</span></div>
+                            <ul class="plan-features">
+                                <li>Community Alerts (100-mile radius)</li>
+                                <li>$500 Finder's Reward</li>
+                                <li>VIP Priority Support</li>
+                                <li>Professional Recovery Team</li>
+                                <li>Insurance Liaison Service</li>
+                                <li>Weekly Status Updates</li>
+                            </ul>
+                        </div>
+
+                        <!-- Diamond Plan -->
+                        <div class="plan-card" onclick="selectPlan('diamond')">
+                            <div class="plan-highlight">PREMIUM</div>
+                            <div class="plan-name plan-diamond">💠 Diamond Protection</div>
+                            <div class="plan-price">$24.99<span>/month</span></div>
+                            <ul class="plan-features">
+                                <li>Statewide Community Alerts</li>
+                                <li>$750 Finder's Reward</li>
+                                <li>Dedicated Account Manager</li>
+                                <li>Elite Recovery Team</li>
+                                <li>Full Insurance Coverage Assistance</li>
+                                <li>Replacement Vehicle Service</li>
+                                <li>Daily Status Updates</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="selectedPlan" value="">
+                    
+                    <div style="display: flex; gap: 10px; justify-content: space-between; margin-top: 25px;">
+                        <button type="button" class="btn btn-secondary" onclick="previousStep()">← Back</button>
+                        <button type="submit" class="btn" id="submitBtn" disabled>Select a Plan First</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -697,7 +1010,7 @@
 
     <!-- FIXED Firebase Integration -->
     <script type="module">
-        console.log('🚀 Starting Dashboard with FIXED Firebase...');
+        console.log('🚀 Starting Dashboard with Subscription Plans...');
         
         // Import Firebase - using same version as firebase_config.js (12.1.0)
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js';
@@ -725,6 +1038,7 @@
 
         let currentUser = null;
         let userVehicles = [];
+        let selectedPlanData = null;
 
         // Comprehensive vehicle database
         const vehicleDatabase = {
@@ -773,6 +1087,38 @@
             'Lucid': ['Air'],
             'Polestar': ['Polestar 1', 'Polestar 2'],
             'Other': ['Custom/Other']
+        };
+
+        // Subscription plans data
+        const subscriptionPlans = {
+            'basic': {
+                name: 'Basic Protection',
+                price: 6.99,
+                features: ['20-mile radius alerts', '$200 finder reward', '24/7 support'],
+                reward: 200,
+                radius: 20
+            },
+            'gold': {
+                name: 'Gold Protection',
+                price: 9.99,
+                features: ['60-mile radius alerts', '$300 finder reward', 'Priority support', 'Monthly reports'],
+                reward: 300,
+                radius: 60
+            },
+            'platinum': {
+                name: 'Platinum Protection',
+                price: 14.99,
+                features: ['100-mile radius alerts', '$500 finder reward', 'VIP support', 'Recovery team', 'Weekly updates'],
+                reward: 500,
+                radius: 100
+            },
+            'diamond': {
+                name: 'Diamond Protection',
+                price: 24.99,
+                features: ['Statewide alerts', '$750 finder reward', 'Dedicated manager', 'Elite recovery', 'Daily updates', 'Replacement vehicle'],
+                reward: 750,
+                radius: 'statewide'
+            }
         };
 
         // Check authentication state
@@ -847,6 +1193,12 @@
                     modelSelect.innerHTML = '<option value="">Select Make First</option>';
                 }
             });
+
+            // Auto-uppercase license plate input
+            const licensePlateInput = document.getElementById('vehicleLicensePlate');
+            licensePlateInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
         }
 
         // Load vehicles
@@ -862,25 +1214,39 @@
                     userVehicles = Object.entries(vehicles);
                     const vehicleCount = userVehicles.length;
                     
+                    // Calculate total monthly cost
+                    let totalMonthlyCost = 0;
+                    userVehicles.forEach(([key, vehicle]) => {
+                        if (vehicle.subscriptionPlan && subscriptionPlans[vehicle.subscriptionPlan]) {
+                            totalMonthlyCost += subscriptionPlans[vehicle.subscriptionPlan].price;
+                        }
+                    });
+                    
                     // Update summary
                     vehicleSummary.innerHTML = `
                         <p><strong>${vehicleCount}</strong> vehicle${vehicleCount !== 1 ? 's' : ''} protected</p>
                         <p style="color: #10b981; margin-top: 5px;">✅ All systems active</p>
+                        ${totalMonthlyCost > 0 ? `<p style="color: #6b7280; margin-top: 5px;">Monthly: $${totalMonthlyCost.toFixed(2)}</p>` : ''}
                     `;
                     
                     // Update list
                     vehiclesList.innerHTML = '';
                     userVehicles.forEach(([key, vehicle]) => {
+                        const plan = vehicle.subscriptionPlan ? subscriptionPlans[vehicle.subscriptionPlan] : null;
+                        const badgeClass = plan ? `badge-${vehicle.subscriptionPlan}` : '';
+                        
                         const vehicleCard = document.createElement('div');
                         vehicleCard.className = 'vehicle-card';
                         vehicleCard.innerHTML = `
                             <div class="vehicle-title">
                                 ${vehicle.year || ''} ${vehicle.make} ${vehicle.model}
+                                ${plan ? `<span class="plan-badge ${badgeClass}">${plan.name}</span>` : ''}
                             </div>
                             <div class="vehicle-details">
                                 <strong>Color:</strong> ${vehicle.color} | 
                                 <strong>License Plate:</strong> ${vehicle.licensePlate}
                                 ${vehicle.vin ? ` | <strong>VIN:</strong> ${vehicle.vin}` : ''}
+                                ${plan ? `<br><strong>Protection:</strong> ${plan.price}/mo | <strong>Finder's Fee:</strong> ${plan.reward}` : ''}
                             </div>
                             ${vehicle.uniqueFeatures ? `
                                 <div class="vehicle-features">
@@ -904,22 +1270,87 @@
         function updateQuickStats() {
             const quickStats = document.getElementById('quickStats');
             quickStats.innerHTML = `
-                <p>✅ Network Status: <strong style="color: #10b981;">Online</strong></p>
-                <p>👥 Community Members: <strong>47,892</strong></p>
-                <p>🎯 Recovery Rate: <strong>96.1%</strong></p>
+                <p>✅ Protection Status: <strong style="color: #10b981;">Active</strong></p>
+                <p>👥 Community Network: <strong>47,892 Members</strong></p>
+                <p>🎯 Recovery Success Rate: <strong>96.1%</strong></p>
+                <p>⏱️ Avg Recovery Time: <strong>48 Hours</strong></p>
             `;
         }
+
+        // Multi-step form functions
+        window.nextStep = function() {
+            // Validate form fields
+            const year = document.getElementById('vehicleYear').value;
+            const make = document.getElementById('vehicleMake').value;
+            const model = document.getElementById('vehicleModel').value;
+            const color = document.getElementById('vehicleColor').value;
+            const licensePlate = document.getElementById('vehicleLicensePlate').value;
+
+            if (!year || !make || !model || !color || !licensePlate) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Move to step 2
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step1').classList.add('completed');
+            document.getElementById('step2').classList.add('active');
+            
+            document.getElementById('vehicleDetailsSection').classList.remove('active');
+            document.getElementById('protectionPlanSection').classList.add('active');
+        };
+
+        window.previousStep = function() {
+            // Move back to step 1
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step1').classList.remove('completed');
+            document.getElementById('step1').classList.add('active');
+            
+            document.getElementById('protectionPlanSection').classList.remove('active');
+            document.getElementById('vehicleDetailsSection').classList.add('active');
+        };
+
+        window.selectPlan = function(planType) {
+            // Remove previous selection
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selection to clicked plan
+            event.currentTarget.classList.add('selected');
+            selectedPlanData = planType;
+            
+            // Update submit button
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
+            submitBtn.textContent = `Add Vehicle with ${subscriptionPlans[planType].name}`;
+        };
 
         // Show add vehicle modal
         window.showAddVehicleModal = function() {
             const modal = document.getElementById('addVehicleModal');
             modal.classList.add('active');
             
-            // Reset form
+            // Reset form and steps
             document.getElementById('addVehicleForm').reset();
             const modelSelect = document.getElementById('vehicleModel');
             modelSelect.disabled = true;
             modelSelect.innerHTML = '<option value="">Select Make First</option>';
+            
+            // Reset steps
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('step1').classList.remove('completed');
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('vehicleDetailsSection').classList.add('active');
+            document.getElementById('protectionPlanSection').classList.remove('active');
+            
+            // Reset plan selection
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            selectedPlanData = null;
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = 'Select a Plan First';
         };
 
         // Close add vehicle modal
@@ -932,6 +1363,11 @@
         document.getElementById('addVehicleForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            if (!selectedPlanData) {
+                alert('Please select a protection plan');
+                return;
+            }
+            
             const vehicleData = {
                 year: document.getElementById('vehicleYear').value,
                 make: document.getElementById('vehicleMake').value,
@@ -940,6 +1376,7 @@
                 licensePlate: document.getElementById('vehicleLicensePlate').value.toUpperCase(),
                 vin: document.getElementById('vehicleVIN').value || '',
                 uniqueFeatures: document.getElementById('vehicleFeatures').value || '',
+                subscriptionPlan: selectedPlanData,
                 createdAt: Date.now()
             };
             
@@ -947,7 +1384,8 @@
                 const vehiclesRef = ref(database, `vehicles/${currentUser.uid}`);
                 await push(vehiclesRef, vehicleData);
                 
-                alert('✅ Vehicle added successfully!');
+                const plan = subscriptionPlans[selectedPlanData];
+                alert(`✅ Vehicle added successfully!\n\nProtection Plan: ${plan.name}\nMonthly Cost: ${plan.price}\nFinder's Reward: ${plan.reward}`);
                 closeAddVehicleModal();
                 
             } catch (error) {
@@ -1017,11 +1455,11 @@
         };
 
         window.deleteVehicle = async function(vehicleId) {
-            if (confirm('Are you sure you want to remove this vehicle?')) {
+            if (confirm('Are you sure you want to remove this vehicle and cancel its protection plan?')) {
                 try {
                     const vehicleRef = ref(database, `vehicles/${currentUser.uid}/${vehicleId}`);
                     await remove(vehicleRef);
-                    alert('✅ Vehicle removed successfully');
+                    alert('✅ Vehicle and protection plan removed successfully');
                 } catch (error) {
                     console.error('Error removing vehicle:', error);
                     alert('Failed to remove vehicle. Please try again.');
@@ -1036,10 +1474,27 @@
                 return;
             }
             
-            alert('🚨 VEHICLE RECOVERY ALERT\n\nThis will notify the community network.\nCase ID: CVR-' + Date.now() + '\n\n✅ Alert sent to 47,892 community members!');
+            // Get first vehicle with plan for demo
+            const vehicleWithPlan = userVehicles.find(([key, v]) => v.subscriptionPlan);
+            if (vehicleWithPlan) {
+                const [key, vehicle] = vehicleWithPlan;
+                const plan = subscriptionPlans[vehicle.subscriptionPlan];
+                alert(`🚨 VEHICLE RECOVERY ALERT
+
+Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}
+License: ${vehicle.licensePlate}
+Protection: ${plan.name}
+Finder's Reward: ${plan.reward}
+Alert Radius: ${plan.radius === 'statewide' ? 'Statewide' : plan.radius + ' miles'}
+
+✅ Alert sent to 47,892 community members!
+Case ID: CVR-${Date.now()}`);
+            } else {
+                alert('🚨 VEHICLE RECOVERY ALERT\n\nThis will notify the community network.\nCase ID: CVR-' + Date.now() + '\n\n✅ Alert sent to 47,892 community members!');
+            }
         };
 
-        console.log('✅ Dashboard setup complete!');
+        console.log('✅ Dashboard setup complete with subscription plans!');
     </script>
 </body>
 </html>
