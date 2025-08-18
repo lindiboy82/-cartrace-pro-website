@@ -485,7 +485,7 @@
             </div>
             <div class="header-right">
                 <div class="user-display" id="userDisplay">Loading...</div>
-                <button class="btn-logout" onclick="logout()">Sign Out</button>
+                <button class="btn-logout" id="logoutBtn">Sign Out</button>
             </div>
         </header>
 
@@ -597,8 +597,8 @@
                         <div class="feature-item">Recall notifications and safety updates</div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="connectCarCare()">🔗 Connect CarCare Account</button>
-                        <button class="btn btn-info" onclick="viewServiceHistory()">📋 View Service History</button>
+                        <button class="btn btn-primary" id="connectCarCareBtn">🔗 Connect CarCare Account</button>
+                        <button class="btn btn-info" id="viewServiceHistoryBtn">📋 View Service History</button>
                     </div>
                 </div>
 
@@ -638,8 +638,8 @@
                         <div class="feature-item">API Integration: Active (insurance partner)</div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-info" onclick="performCloudSync()">🔄 Force Sync</button>
-                        <button class="btn btn-success" onclick="showCloudSettings()">☁️ Cloud Settings</button>
+                        <button class="btn btn-info" id="performCloudSyncBtn">🔄 Force Sync</button>
+                        <button class="btn btn-success" id="showCloudSettingsBtn">☁️ Cloud Settings</button>
                     </div>
                 </div>
 
@@ -680,9 +680,9 @@
                         <div class="feature-item">Insurance claim auto-generation</div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="startPhotoCapture()">📸 Capture Evidence</button>
-                        <button class="btn btn-info" onclick="showPhotoGallery()">🖼️ View Gallery</button>
-                        <button class="btn btn-success" onclick="showAIAnalysis()">🤖 AI Analysis</button>
+                        <button class="btn btn-primary" id="startPhotoCaptureBtn">📸 Capture Evidence</button>
+                        <button class="btn btn-info" id="showPhotoGalleryBtn">🖼️ View Gallery</button>
+                        <button class="btn btn-success" id="showAIAnalysisBtn">🤖 AI Analysis</button>
                     </div>
                 </div>
 
@@ -719,8 +719,8 @@
                         </div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-danger" onclick="startAutomaticClaim()">🚨 File Claim</button>
-                        <button class="btn btn-info" onclick="showClaimTracking()">📊 Track Claims</button>
+                        <button class="btn btn-danger" id="startAutomaticClaimBtn">🚨 File Claim</button>
+                        <button class="btn btn-info" id="showClaimTrackingBtn">📊 Track Claims</button>
                     </div>
                 </div>
 
@@ -735,8 +735,8 @@
                         <div class="feature-item">24/7 Professional Support Available</div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-large" style="background: #fff; color: #ee5a24; font-weight: bold;" onclick="reportVehicleStolen()">🚨 REPORT VEHICLE STOLEN</button>
-                        <button class="btn btn-large" style="background: #fff; color: #00b894;" onclick="foundStolenVehicle()">🔍 I FOUND A STOLEN VEHICLE</button>
+                        <button class="btn btn-large" style="background: #fff; color: #ee5a24; font-weight: bold;" id="reportStolenBtn">🚨 REPORT VEHICLE STOLEN</button>
+                        <button class="btn btn-large" style="background: #fff; color: #00b894;" id="foundStolenBtn">🔍 I FOUND A STOLEN VEHICLE</button>
                     </div>
                     <div style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
                         🆘 For immediate emergencies, always contact local authorities (911) first.
@@ -749,7 +749,7 @@
                 <div class="card">
                     <h2 class="card-title">🚗 My Vehicles</h2>
                     <div class="btn-group">
-                        <button class="btn btn-primary btn-large" onclick="addVehicle()">➕ Add New Vehicle</button>
+                        <button class="btn btn-primary btn-large" id="addVehicleBtn">➕ Add New Vehicle</button>
                     </div>
                     <div id="vehicles-list">
                         <!-- Vehicles will be loaded here -->
@@ -775,8 +775,8 @@
                         <div class="feature-item">6️⃣ Recovery team dispatched</div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-large" style="background: #fff; color: #ee5a24;" onclick="reportVehicleStolen()">🚨 REPORT VEHICLE STOLEN</button>
-                        <button class="btn btn-large" style="background: #fff; color: #00b894;" onclick="foundStolenVehicle()">🔍 I FOUND A STOLEN VEHICLE</button>
+                        <button class="btn btn-large" style="background: #fff; color: #ee5a24;" id="reportStolenBtn2">🚨 REPORT VEHICLE STOLEN</button>
+                        <button class="btn btn-large" style="background: #fff; color: #00b894;" id="foundStolenBtn2">🔍 I FOUND A STOLEN VEHICLE</button>
                     </div>
                 </div>
             </div>
@@ -815,8 +815,8 @@
                         </div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-primary btn-large" onclick="manageSubscription()">💎 Manage Subscription</button>
-                        <button class="btn btn-secondary" onclick="logout()">🚪 Sign Out</button>
+                        <button class="btn btn-primary btn-large" id="manageSubscriptionBtn">💎 Manage Subscription</button>
+                        <button class="btn btn-secondary" id="logoutBtn2">🚪 Sign Out</button>
                     </div>
                 </div>
             </div>
@@ -824,24 +824,24 @@
 
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
-            <div class="nav-container">
-                <div class="nav-item active" onclick="showContent('dashboard')">
+            <div class="nav-container" id="navContainer">
+                <div class="nav-item active" data-section="dashboard">
                     <div class="nav-icon">📊</div>
                     <div class="nav-label">Dashboard</div>
                 </div>
-                <div class="nav-item" onclick="showContent('vehicles')">
+                <div class="nav-item" data-section="vehicles">
                     <div class="nav-icon">🚗</div>
                     <div class="nav-label">Vehicles</div>
                 </div>
-                <div class="nav-item" onclick="showContent('recovery')">
+                <div class="nav-item" data-section="recovery">
                     <div class="nav-icon">🚨</div>
                     <div class="nav-label">Recovery</div>
                 </div>
-                <div class="nav-item" onclick="showContent('alerts')">
+                <div class="nav-item" data-section="alerts">
                     <div class="nav-icon">🔔</div>
                     <div class="nav-label">Alerts</div>
                 </div>
-                <div class="nav-item" onclick="showContent('settings')">
+                <div class="nav-item" data-section="settings">
                     <div class="nav-icon">⚙️</div>
                     <div class="nav-label">Settings</div>
                 </div>
@@ -849,31 +849,14 @@
         </nav>
     </div>
 
-    <!-- Firebase Scripts -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-        import { getDatabase, ref, set, get, remove, onValue } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
-
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-
+    <!-- First: Define all global functions before Firebase -->
+    <script>
+        // Global variables
         let currentUser = null;
         let userVehicles = [];
         let carcareConnected = false;
+        let database = null;
+        let auth = null;
 
         // Real-time data variables
         let networkUptime = 99.97;
@@ -881,48 +864,314 @@
         let securityScore = 95;
         let dataPoints = 1247;
 
-        // Check authentication state
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('userDisplay').textContent = user.email;
-                document.getElementById('userEmail').textContent = user.email;
-                document.getElementById('memberSince').textContent = new Date(user.metadata.creationTime).toLocaleDateString();
-                loadUserData();
-                startRealTimeUpdates();
-            } else {
-                window.location.href = 'index.html';
-            }
-        });
+        // Navigation function
+        function showContent(sectionId) {
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected content
+            document.getElementById(sectionId + '-content').classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the clicked nav item
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+        }
 
-        // Load user data
-        async function loadUserData() {
-            try {
-                // Load vehicles
-                const vehiclesRef = ref(database, `vehicles/${currentUser.uid}`);
-                onValue(vehiclesRef, (snapshot) => {
-                    const data = snapshot.val();
-                    userVehicles = data ? Object.values(data) : [];
-                    updateVehicleDisplay();
-                    updateVehicleCount();
-                });
+        // Vehicle Management Functions
+        function addVehicle() {
+            const year = prompt('Enter vehicle year:');
+            const make = prompt('Enter vehicle make:');
+            const model = prompt('Enter vehicle model:');
+            const color = prompt('Enter vehicle color:');
+            const license = prompt('Enter license plate:');
+            const plan = prompt('Enter protection plan (BASIC/GOLD/PLATINUM/DIAMOND):');
 
-                // Load CarCare status
-                const carcareRef = ref(database, `carcare/${currentUser.uid}`);
-                const carcareSnapshot = await get(carcareRef);
-                if (carcareSnapshot.exists()) {
-                    carcareConnected = carcareSnapshot.val().connected || false;
-                    updateCarCareStatus();
+            if (year && make && model && color && license && plan) {
+                const vehicleId = Date.now().toString();
+                const vehicle = {
+                    id: vehicleId,
+                    year,
+                    make,
+                    model,
+                    color,
+                    license,
+                    plan: plan.toUpperCase(),
+                    addedDate: new Date().toISOString()
+                };
+
+                // Use Firebase imports after they're loaded
+                if (window.firebaseRef && window.firebaseSet) {
+                    const vehicleRef = window.firebaseRef(database, `vehicles/${currentUser.uid}/${vehicleId}`);
+                    window.firebaseSet(vehicleRef, vehicle)
+                        .then(() => {
+                            alert('✅ Vehicle added successfully!');
+                        })
+                        .catch((error) => {
+                            alert('❌ Error adding vehicle: ' + error.message);
+                        });
                 }
-
-                // Load alerts
-                loadAlerts();
-            } catch (error) {
-                console.error('Error loading user data:', error);
             }
         }
 
-        // Update vehicle display
+        function showVehicleDetails(vehicleId) {
+            const vehicle = userVehicles.find(v => v.id === vehicleId);
+            if (vehicle) {
+                alert(`📋 VEHICLE DETAILS\n\n` +
+                      `🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
+                      `🎨 Color: ${vehicle.color}\n` +
+                      `🏷️ License: ${vehicle.license}\n` +
+                      `📋 Plan: ${vehicle.plan}\n` +
+                      `📅 Added: ${new Date(vehicle.addedDate).toLocaleDateString()}\n\n` +
+                      `🛡️ Protection Level: ACTIVE\n` +
+                      `📱 Community Network: CONNECTED\n` +
+                      `🔔 Push Notifications: ENABLED`);
+            }
+        }
+
+        function editVehicle(vehicleId) {
+            const vehicle = userVehicles.find(v => v.id === vehicleId);
+            if (vehicle) {
+                const newColor = prompt('Enter new color (current: ' + vehicle.color + '):', vehicle.color);
+                const newLicense = prompt('Enter new license plate (current: ' + vehicle.license + '):', vehicle.license);
+                const newPlan = prompt('Enter new plan (current: ' + vehicle.plan + '):', vehicle.plan);
+
+                if (newColor && newLicense && newPlan) {
+                    vehicle.color = newColor;
+                    vehicle.license = newLicense;
+                    vehicle.plan = newPlan.toUpperCase();
+
+                    if (window.firebaseRef && window.firebaseSet) {
+                        const vehicleRef = window.firebaseRef(database, `vehicles/${currentUser.uid}/${vehicleId}`);
+                        window.firebaseSet(vehicleRef, vehicle)
+                            .then(() => {
+                                alert('✅ Vehicle updated successfully!');
+                            })
+                            .catch((error) => {
+                                alert('❌ Error updating vehicle: ' + error.message);
+                            });
+                    }
+                }
+            }
+        }
+
+        function removeVehicle(vehicleId) {
+            if (confirm('Are you sure you want to remove this vehicle?')) {
+                if (window.firebaseRef && window.firebaseRemove) {
+                    const vehicleRef = window.firebaseRef(database, `vehicles/${currentUser.uid}/${vehicleId}`);
+                    window.firebaseRemove(vehicleRef)
+                        .then(() => {
+                            alert('✅ Vehicle removed successfully!');
+                        })
+                        .catch((error) => {
+                            alert('❌ Error removing vehicle: ' + error.message);
+                        });
+                }
+            }
+        }
+
+        // Report Stolen Vehicle
+        function reportVehicleStolen() {
+            if (userVehicles.length === 0) {
+                alert('❌ No vehicles found!\n\nPlease add a vehicle first before reporting it stolen.');
+                return;
+            }
+
+            if (!confirm('🚨 EMERGENCY PROTOCOL\n\n' +
+                        '⚠️ Have you contacted 911 first?\n\n' +
+                        'You must report to police before using recovery services.')) {
+                alert('📞 Please call 911 first, then return to CarTrace Pro.');
+                return;
+            }
+
+            let selectedVehicle = null;
+            
+            if (userVehicles.length === 1) {
+                selectedVehicle = userVehicles[0];
+            } else {
+                let vehicleOptions = 'Select the stolen vehicle:\n\n';
+                userVehicles.forEach((v, i) => {
+                    vehicleOptions += `${i + 1}. ${v.year} ${v.make} ${v.model} (${v.license})\n`;
+                });
+                
+                const selection = prompt(vehicleOptions + '\nEnter number:');
+                if (selection && !isNaN(selection)) {
+                    selectedVehicle = userVehicles[parseInt(selection) - 1];
+                }
+            }
+
+            if (selectedVehicle) {
+                const caseId = 'CVR-' + Date.now();
+                
+                // Save report to database
+                if (window.firebaseRef && window.firebaseSet) {
+                    const reportRef = window.firebaseRef(database, `stolen-reports/${currentUser.uid}/${caseId}`);
+                    window.firebaseSet(reportRef, {
+                        vehicleId: selectedVehicle.id,
+                        vehicle: selectedVehicle,
+                        reportTime: new Date().toISOString(),
+                        caseId: caseId,
+                        status: 'ACTIVE'
+                    }).then(() => {
+                        alert(`🚨 THEFT REPORT ACTIVATED\n\n` +
+                              `✅ Case ID: ${caseId}\n` +
+                              `🚗 Vehicle: ${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}\n` +
+                              `🏷️ License: ${selectedVehicle.license}\n\n` +
+                              `📱 Community Alert Status:\n` +
+                              `• 47,892 users notified\n` +
+                              `• Push notifications sent\n` +
+                              `• Recovery team dispatched\n\n` +
+                              `📧 Confirmation email sent`);
+                    });
+                }
+            }
+        }
+
+        // Found Stolen Vehicle
+        function foundStolenVehicle() {
+            const licensePlate = prompt('Enter the license plate of the found vehicle:');
+            const location = prompt('Enter the current location/address:');
+            
+            if (licensePlate && location) {
+                const reportId = 'FVR-' + Date.now();
+                
+                // Save found report to database
+                if (window.firebaseRef && window.firebaseSet) {
+                    const foundRef = window.firebaseRef(database, `found-reports/${reportId}`);
+                    window.firebaseSet(foundRef, {
+                        licensePlate,
+                        location,
+                        reportedBy: currentUser.email,
+                        reportTime: new Date().toISOString(),
+                        reportId
+                    }).then(() => {
+                        alert(`📋 FOUND VEHICLE REPORT SUBMITTED\n\n` +
+                              `🏷️ License Plate: ${licensePlate}\n` +
+                              `📍 Location: ${location}\n\n` +
+                              `✅ Report ID: ${reportId}\n` +
+                              `✅ Authorities notified\n` +
+                              `💰 Reward eligibility: Under review\n\n` +
+                              `Thank you for helping our community!`);
+                    });
+                }
+            }
+        }
+
+        // All other functions
+        function connectCarCare() {
+            const choice = confirm('🔗 CONNECT CARFAX CARCARE\n\n' +
+                                  'Would you like to:\n' +
+                                  'OK = Connect existing account\n' +
+                                  'Cancel = Create new FREE account');
+            
+            if (choice) {
+                const username = prompt('Enter your CarCare username/email:');
+                const password = prompt('Enter your CarCare password:');
+                
+                if (username && password) {
+                    if (window.firebaseRef && window.firebaseSet) {
+                        const carcareRef = window.firebaseRef(database, `carcare/${currentUser.uid}`);
+                        window.firebaseSet(carcareRef, {
+                            connected: true,
+                            username: username,
+                            connectedDate: new Date().toISOString()
+                        }).then(() => {
+                            carcareConnected = true;
+                            updateCarCareStatus();
+                            alert('✅ CarCare account connected successfully!');
+                        });
+                    }
+                }
+            } else {
+                alert('🆓 CREATE FREE CARCARE ACCOUNT\n\nVisit: carfax.com/carcare');
+            }
+        }
+
+        function viewServiceHistory() {
+            if (!carcareConnected) {
+                alert('❌ CarCare not connected!\n\nPlease connect your CarCare account first.');
+                return;
+            }
+            alert('📋 SERVICE HISTORY\n\n' +
+                  '🔧 Recent Services:\n\n' +
+                  '• Oil Change - 3 weeks ago\n' +
+                  '• Tire Rotation - 2 months ago\n' +
+                  '• Annual Inspection - 4 months ago');
+        }
+
+        function performCloudSync() {
+            alert('🔄 CLOUD SYNCHRONIZATION\n\n' +
+                  '✅ Sync completed successfully!');
+        }
+
+        function showCloudSettings() {
+            alert('☁️ CLOUD SETTINGS\n\n' +
+                  '✅ Auto-sync: Enabled\n' +
+                  '✅ Multi-device: Active');
+        }
+
+        function startPhotoCapture() {
+            alert('📸 PHOTO CAPTURE\n\nCamera feature coming soon!');
+        }
+
+        function showPhotoGallery() {
+            alert('🖼️ PHOTO GALLERY\n\n23 photos stored securely');
+        }
+
+        function showAIAnalysis() {
+            alert('🤖 AI ANALYSIS\n\nAll photos analyzed successfully');
+        }
+
+        function startAutomaticClaim() {
+            alert('🚨 INSURANCE CLAIM\n\nFeature coming soon!');
+        }
+
+        function showClaimTracking() {
+            alert('📊 CLAIM TRACKING\n\nNo active claims');
+        }
+
+        function manageSubscription() {
+            alert('💎 SUBSCRIPTION\n\nCarTrace Pro Premium Active');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to sign out?')) {
+                if (window.firebaseSignOut) {
+                    window.firebaseSignOut(auth).then(() => {
+                        window.location.href = 'index.html';
+                    });
+                }
+            }
+        }
+
+        // Helper functions
+        function updateCarCareStatus() {
+            const statusBadge = document.querySelector('.carcare-badge');
+            const statusIcon = document.getElementById('carcare-status-icon');
+            const statusText = document.getElementById('carcare-status-text');
+            
+            if (carcareConnected) {
+                statusBadge.classList.remove('disconnected');
+                statusBadge.innerHTML = '✅ CarCare Status: Connected';
+                statusIcon.textContent = '✅';
+                statusText.textContent = 'Connected';
+                document.getElementById('service-records').textContent = '12';
+                document.getElementById('maintenance-alerts').textContent = '2';
+            } else {
+                statusBadge.classList.add('disconnected');
+                statusBadge.innerHTML = '🔗 CarCare Status: Not Connected';
+                statusIcon.textContent = '🔗';
+                statusText.textContent = 'Not Connected';
+                document.getElementById('service-records').textContent = '0';
+                document.getElementById('maintenance-alerts').textContent = '0';
+            }
+        }
+
         function updateVehicleDisplay() {
             const vehiclesList = document.getElementById('vehicles-list');
             vehiclesList.innerHTML = '';
@@ -938,7 +1187,6 @@
             });
         }
 
-        // Create vehicle card
         function createVehicleCard(vehicle) {
             const card = document.createElement('div');
             card.className = 'vehicle-card';
@@ -973,36 +1221,11 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             return card;
         }
 
-        // Update vehicle count
         function updateVehicleCount() {
             document.getElementById('vehicle-count').textContent = userVehicles.length;
             document.getElementById('maintenance-vehicles').textContent = userVehicles.length;
         }
 
-        // Update CarCare status
-        function updateCarCareStatus() {
-            const statusBadge = document.querySelector('.carcare-badge');
-            const statusIcon = document.getElementById('carcare-status-icon');
-            const statusText = document.getElementById('carcare-status-text');
-            
-            if (carcareConnected) {
-                statusBadge.classList.remove('disconnected');
-                statusBadge.innerHTML = '✅ CarCare Status: Connected';
-                statusIcon.textContent = '✅';
-                statusText.textContent = 'Connected';
-                document.getElementById('service-records').textContent = '12';
-                document.getElementById('maintenance-alerts').textContent = '2';
-            } else {
-                statusBadge.classList.add('disconnected');
-                statusBadge.innerHTML = '🔗 CarCare Status: Not Connected';
-                statusIcon.textContent = '🔗';
-                statusText.textContent = 'Not Connected';
-                document.getElementById('service-records').textContent = '0';
-                document.getElementById('maintenance-alerts').textContent = '0';
-            }
-        }
-
-        // Load alerts
         function loadAlerts() {
             const alertsList = document.getElementById('alerts-list');
             const sampleAlerts = [
@@ -1010,22 +1233,19 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                     icon: '🟢',
                     title: 'Security Scan Complete',
                     description: 'All vehicles - No threats detected',
-                    time: '2 min ago',
-                    type: 'success'
+                    time: '2 min ago'
                 },
                 {
                     icon: '🔄',
                     title: 'System Update',
                     description: 'CarTrace Pro v3.1 installed successfully',
-                    time: '15 min ago',
-                    type: 'info'
+                    time: '15 min ago'
                 },
                 {
                     icon: '🛡️',
                     title: 'Network Security Check',
                     description: 'Community network scanned - All secure',
-                    time: '1 hour ago',
-                    type: 'success'
+                    time: '1 hour ago'
                 }
             ];
 
@@ -1036,7 +1256,6 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             });
         }
 
-        // Create alert item
         function createAlertItem(alert) {
             const item = document.createElement('div');
             item.className = 'alert-item';
@@ -1051,13 +1270,11 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             return item;
         }
 
-        // Real-time updates
         function startRealTimeUpdates() {
             setInterval(updateLiveData, 3000);
         }
 
         function updateLiveData() {
-            // Simulate real data changes
             const random = Math.random();
             
             if (random < 0.4) {
@@ -1067,381 +1284,117 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                 dataPoints += Math.floor(Math.random() * 10);
             }
 
-            // Update display
             document.getElementById('network-uptime').textContent = networkUptime.toFixed(2) + '%';
             document.getElementById('response-time').textContent = responseTime.toFixed(1) + 'ms';
             document.getElementById('security-score').textContent = securityScore;
             document.getElementById('data-points').textContent = dataPoints.toLocaleString();
-            
-            // Update community stats
             document.getElementById('active-users').textContent = (47892 + Math.floor(Math.random() * 100)).toLocaleString();
             
-            // Update timestamp
             const now = new Date();
             document.getElementById('last-update').textContent = now.toLocaleTimeString();
         }
 
-        // Navigation
-        window.showContent = function(contentId) {
-            // Hide all content sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show selected content
-            document.getElementById(contentId + '-content').classList.add('active');
-            
-            // Update navigation
+        // Setup event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation click handlers
             document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
+                item.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    showContent(section);
+                });
             });
-            event.currentTarget.classList.add('active');
+
+            // Button click handlers
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('logoutBtn2').addEventListener('click', logout);
+            document.getElementById('addVehicleBtn').addEventListener('click', addVehicle);
+            document.getElementById('reportStolenBtn').addEventListener('click', reportVehicleStolen);
+            document.getElementById('reportStolenBtn2').addEventListener('click', reportVehicleStolen);
+            document.getElementById('foundStolenBtn').addEventListener('click', foundStolenVehicle);
+            document.getElementById('foundStolenBtn2').addEventListener('click', foundStolenVehicle);
+            document.getElementById('connectCarCareBtn').addEventListener('click', connectCarCare);
+            document.getElementById('viewServiceHistoryBtn').addEventListener('click', viewServiceHistory);
+            document.getElementById('performCloudSyncBtn').addEventListener('click', performCloudSync);
+            document.getElementById('showCloudSettingsBtn').addEventListener('click', showCloudSettings);
+            document.getElementById('startPhotoCaptureBtn').addEventListener('click', startPhotoCapture);
+            document.getElementById('showPhotoGalleryBtn').addEventListener('click', showPhotoGallery);
+            document.getElementById('showAIAnalysisBtn').addEventListener('click', showAIAnalysis);
+            document.getElementById('startAutomaticClaimBtn').addEventListener('click', startAutomaticClaim);
+            document.getElementById('showClaimTrackingBtn').addEventListener('click', showClaimTracking);
+            document.getElementById('manageSubscriptionBtn').addEventListener('click', manageSubscription);
+        });
+    </script>
+
+    <!-- Firebase Scripts - Load after global functions are defined -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+        import { getDatabase, ref, set, get, remove, onValue } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+
+        // Your Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
-        // Vehicle Management Functions
-        window.addVehicle = function() {
-            const year = prompt('Enter vehicle year:');
-            const make = prompt('Enter vehicle make:');
-            const model = prompt('Enter vehicle model:');
-            const color = prompt('Enter vehicle color:');
-            const license = prompt('Enter license plate:');
-            const plan = prompt('Enter protection plan (BASIC/GOLD/PLATINUM/DIAMOND):').toUpperCase();
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        database = getDatabase(app);
 
-            if (year && make && model && color && license && plan) {
-                const vehicleId = Date.now().toString();
-                const vehicle = {
-                    id: vehicleId,
-                    year,
-                    make,
-                    model,
-                    color,
-                    license,
-                    plan,
-                    addedDate: new Date().toISOString()
-                };
+        // Export Firebase functions to window
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebaseGet = get;
+        window.firebaseRemove = remove;
+        window.firebaseOnValue = onValue;
+        window.firebaseSignOut = signOut;
 
-                const vehicleRef = ref(database, `vehicles/${currentUser.uid}/${vehicleId}`);
-                set(vehicleRef, vehicle)
-                    .then(() => {
-                        alert('✅ Vehicle added successfully!');
-                    })
-                    .catch((error) => {
-                        alert('❌ Error adding vehicle: ' + error.message);
+        // Check authentication state
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('userDisplay').textContent = user.email;
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('memberSince').textContent = new Date(user.metadata.creationTime).toLocaleDateString();
+                
+                // Load user data
+                try {
+                    // Load vehicles
+                    const vehiclesRef = ref(database, `vehicles/${currentUser.uid}`);
+                    onValue(vehiclesRef, (snapshot) => {
+                        const data = snapshot.val();
+                        userVehicles = data ? Object.values(data) : [];
+                        updateVehicleDisplay();
+                        updateVehicleCount();
                     });
-            }
-        };
 
-        window.showVehicleDetails = function(vehicleId) {
-            const vehicle = userVehicles.find(v => v.id === vehicleId);
-            if (vehicle) {
-                alert(`📋 VEHICLE DETAILS\n\n` +
-                      `🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
-                      `🎨 Color: ${vehicle.color}\n` +
-                      `🏷️ License: ${vehicle.license}\n` +
-                      `📋 Plan: ${vehicle.plan}\n` +
-                      `📅 Added: ${new Date(vehicle.addedDate).toLocaleDateString()}\n\n` +
-                      `🛡️ Protection Level: ACTIVE\n` +
-                      `📱 Community Network: CONNECTED\n` +
-                      `🔔 Push Notifications: ENABLED`);
-            }
-        };
-
-        window.editVehicle = function(vehicleId) {
-            const vehicle = userVehicles.find(v => v.id === vehicleId);
-            if (vehicle) {
-                const newColor = prompt('Enter new color (current: ' + vehicle.color + '):', vehicle.color);
-                const newLicense = prompt('Enter new license plate (current: ' + vehicle.license + '):', vehicle.license);
-                const newPlan = prompt('Enter new plan (current: ' + vehicle.plan + '):', vehicle.plan).toUpperCase();
-
-                if (newColor && newLicense && newPlan) {
-                    vehicle.color = newColor;
-                    vehicle.license = newLicense;
-                    vehicle.plan = newPlan;
-
-                    const vehicleRef = ref(database, `vehicles/${currentUser.uid}/${vehicleId}`);
-                    set(vehicleRef, vehicle)
-                        .then(() => {
-                            alert('✅ Vehicle updated successfully!');
-                        })
-                        .catch((error) => {
-                            alert('❌ Error updating vehicle: ' + error.message);
-                        });
-                }
-            }
-        };
-
-        window.removeVehicle = function(vehicleId) {
-            if (confirm('Are you sure you want to remove this vehicle?')) {
-                const vehicleRef = ref(database, `vehicles/${currentUser.uid}/${vehicleId}`);
-                remove(vehicleRef)
-                    .then(() => {
-                        alert('✅ Vehicle removed successfully!');
-                    })
-                    .catch((error) => {
-                        alert('❌ Error removing vehicle: ' + error.message);
-                    });
-            }
-        };
-
-        // Report Stolen Vehicle
-        window.reportVehicleStolen = function() {
-            if (userVehicles.length === 0) {
-                alert('❌ No vehicles found!\n\nPlease add a vehicle first before reporting it stolen.');
-                return;
-            }
-
-            if (!confirm('🚨 EMERGENCY PROTOCOL\n\n' +
-                        '⚠️ Have you contacted 911 first?\n\n' +
-                        'You must report to police before using recovery services.')) {
-                alert('📞 Please call 911 first, then return to CarTrace Pro.');
-                return;
-            }
-
-            let selectedVehicle = null;
-            
-            if (userVehicles.length === 1) {
-                selectedVehicle = userVehicles[0];
-            } else {
-                let vehicleOptions = 'Select the stolen vehicle:\n\n';
-                userVehicles.forEach((v, i) => {
-                    vehicleOptions += `${i + 1}. ${v.year} ${v.make} ${v.model} (${v.license})\n`;
-                });
-                
-                const selection = prompt(vehicleOptions + '\nEnter number:');
-                if (selection && !isNaN(selection)) {
-                    selectedVehicle = userVehicles[parseInt(selection) - 1];
-                }
-            }
-
-            if (selectedVehicle) {
-                const caseId = 'CVR-' + Date.now();
-                
-                // Save report to database
-                const reportRef = ref(database, `stolen-reports/${currentUser.uid}/${caseId}`);
-                set(reportRef, {
-                    vehicleId: selectedVehicle.id,
-                    vehicle: selectedVehicle,
-                    reportTime: new Date().toISOString(),
-                    caseId: caseId,
-                    status: 'ACTIVE'
-                }).then(() => {
-                    alert(`🚨 THEFT REPORT ACTIVATED\n\n` +
-                          `✅ Case ID: ${caseId}\n` +
-                          `🚗 Vehicle: ${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}\n` +
-                          `🏷️ License: ${selectedVehicle.license}\n\n` +
-                          `📱 Community Alert Status:\n` +
-                          `• 47,892 users notified\n` +
-                          `• Push notifications sent\n` +
-                          `• Recovery team dispatched\n\n` +
-                          `📧 Confirmation email sent`);
-                });
-            }
-        };
-
-        // Found Stolen Vehicle
-        window.foundStolenVehicle = function() {
-            const licensePlate = prompt('Enter the license plate of the found vehicle:');
-            const location = prompt('Enter the current location/address:');
-            
-            if (licensePlate && location) {
-                const reportId = 'FVR-' + Date.now();
-                
-                // Save found report to database
-                const foundRef = ref(database, `found-reports/${reportId}`);
-                set(foundRef, {
-                    licensePlate,
-                    location,
-                    reportedBy: currentUser.email,
-                    reportTime: new Date().toISOString(),
-                    reportId
-                }).then(() => {
-                    alert(`📋 FOUND VEHICLE REPORT SUBMITTED\n\n` +
-                          `🏷️ License Plate: ${licensePlate}\n` +
-                          `📍 Location: ${location}\n\n` +
-                          `✅ Report ID: ${reportId}\n` +
-                          `✅ Authorities notified\n` +
-                          `💰 Reward eligibility: Under review\n\n` +
-                          `Thank you for helping our community!`);
-                });
-            }
-        };
-
-        // CarCare Functions
-        window.connectCarCare = function() {
-            const choice = confirm('🔗 CONNECT CARFAX CARCARE\n\n' +
-                                  'Would you like to:\n' +
-                                  'OK = Connect existing account\n' +
-                                  'Cancel = Create new FREE account');
-            
-            if (choice) {
-                // Connect existing
-                const username = prompt('Enter your CarCare username/email:');
-                const password = prompt('Enter your CarCare password:');
-                
-                if (username && password) {
-                    // Simulate connection
+                    // Load CarCare status
                     const carcareRef = ref(database, `carcare/${currentUser.uid}`);
-                    set(carcareRef, {
-                        connected: true,
-                        username: username,
-                        connectedDate: new Date().toISOString()
-                    }).then(() => {
-                        carcareConnected = true;
+                    const carcareSnapshot = await get(carcareRef);
+                    if (carcareSnapshot.exists()) {
+                        carcareConnected = carcareSnapshot.val().connected || false;
                         updateCarCareStatus();
-                        alert('✅ CarCare account connected successfully!\n\n' +
-                              'Your service history is now syncing...');
-                    });
+                    }
+
+                    // Load alerts
+                    loadAlerts();
+                    
+                    // Start real-time updates
+                    startRealTimeUpdates();
+                } catch (error) {
+                    console.error('Error loading user data:', error);
                 }
             } else {
-                // Create new account
-                alert('🆓 CREATE FREE CARCARE ACCOUNT\n\n' +
-                      'Visit: carfax.com/carcare\n\n' +
-                      'Benefits:\n' +
-                      '• Track all maintenance\n' +
-                      '• Get recall alerts\n' +
-                      '• Monitor service costs\n' +
-                      '• Maintain vehicle value\n\n' +
-                      'Return here after creating your account to connect!');
+                // Redirect to login if not authenticated
+                window.location.href = 'index.html';
             }
-        };
-
-        window.viewServiceHistory = function() {
-            if (!carcareConnected) {
-                alert('❌ CarCare not connected!\n\n' +
-                      'Please connect your CarCare account first to view service history.');
-                return;
-            }
-            
-            alert('📋 SERVICE HISTORY\n\n' +
-                  '🔧 Recent Services:\n\n' +
-                  '• Oil Change - 3 weeks ago\n' +
-                  '  Mileage: 45,230\n' +
-                  '  Cost: $47.99\n\n' +
-                  '• Tire Rotation - 2 months ago\n' +
-                  '  Mileage: 43,100\n' +
-                  '  Cost: $29.99\n\n' +
-                  '• Annual Inspection - 4 months ago\n' +
-                  '  Mileage: 41,500\n' +
-                  '  Cost: $85.00\n\n' +
-                  '📅 Upcoming Services:\n' +
-                  '• Oil Change due in 1,770 miles\n' +
-                  '• Brake inspection due in 3 months');
-        };
-
-        // Cloud Sync Functions
-        window.performCloudSync = function() {
-            alert('🔄 CLOUD SYNCHRONIZATION\n\n' +
-                  '☁️ Initiating sync process...\n\n' +
-                  '✅ Device data upload: Complete\n' +
-                  '✅ Cloud data download: Complete\n' +
-                  '✅ Multi-device sync: Updated\n' +
-                  '✅ Security verification: Passed\n\n' +
-                  '⏱️ Sync completed in 1.3 seconds\n' +
-                  '📊 Data integrity: 100% verified');
-        };
-
-        window.showCloudSettings = function() {
-            alert('☁️ CLOUD & SYNC SETTINGS\n\n' +
-                  '🌐 Enterprise Cloud Configuration:\n\n' +
-                  '✅ Automatic backup: Every 5 minutes\n' +
-                  '✅ Data retention: 7 years (premium)\n' +
-                  '✅ Geographic redundancy: 15 data centers\n' +
-                  '✅ Real-time sync: Enabled\n' +
-                  '✅ Multi-device management: 3/5 slots used\n\n' +
-                  '🛡️ Security: Zero-knowledge encryption active');
-        };
-
-        // Photo Evidence Functions
-        window.startPhotoCapture = function() {
-            alert('📸 AI PHOTO EVIDENCE CAPTURE\n\n' +
-                  '🤖 Smart Evidence Collection System:\n\n' +
-                  '📸 Available capture modes:\n' +
-                  '• Vehicle damage documentation\n' +
-                  '• Document capture (OCR enabled)\n' +
-                  '• Scene documentation\n\n' +
-                  '🎯 AI features:\n' +
-                  '• Real-time quality assessment\n' +
-                  '• Automatic lighting optimization\n' +
-                  '• Metadata verification');
-        };
-
-        window.showPhotoGallery = function() {
-            alert('🖼️ EVIDENCE PHOTO GALLERY\n\n' +
-                  '📸 Digital Evidence Vault:\n\n' +
-                  '📂 Evidence Categories (23 photos total):\n' +
-                  '• Vehicle Damage Evidence: 8 photos\n' +
-                  '• Document Archives: 7 photos\n' +
-                  '• Scene Documentation: 5 photos\n' +
-                  '• Theft Evidence: 3 photos\n\n' +
-                  '🤖 AI Analysis: 100% verified authentic\n' +
-                  '🔒 Security: End-to-end encrypted');
-        };
-
-        window.showAIAnalysis = function() {
-            alert('🤖 AI EVIDENCE ANALYSIS CENTER\n\n' +
-                  '🧠 Artificial Intelligence Analysis Engine:\n\n' +
-                  '🔍 Computer Vision Results:\n' +
-                  '• Damage type: Surface scratches (minor)\n' +
-                  '• Severity: Level 1/5 (cosmetic)\n' +
-                  '• Cost estimate: $347 ± $50 (93% confidence)\n\n' +
-                  '📊 AI Confidence Metrics:\n' +
-                  '• Damage detection: 99.7% confidence\n' +
-                  '• Classification accuracy: 97.3%\n' +
-                  '• Overall score: 98.7/100 (Excellent)');
-        };
-
-        // Insurance Functions
-        window.startAutomaticClaim = function() {
-            alert('🚨 SMART CLAIM FILING SYSTEM\n\n' +
-                  '⚠️ Insurance API Integration Coming Soon!\n\n' +
-                  'This feature will allow:\n' +
-                  '• Automatic claim filing\n' +
-                  '• Real-time claim tracking\n' +
-                  '• Direct insurance communication\n' +
-                  '• Instant damage assessment\n\n' +
-                  'Currently in beta testing with:\n' +
-                  '• GEICO\n' +
-                  '• State Farm\n' +
-                  '• Progressive\n' +
-                  '• Allstate');
-        };
-
-        window.showClaimTracking = function() {
-            alert('📊 CLAIM TRACKING\n\n' +
-                  '⚠️ No active claims\n\n' +
-                  'When insurance integration is active:\n' +
-                  '• Track claim status in real-time\n' +
-                  '• Receive push notifications\n' +
-                  '• Upload evidence directly\n' +
-                  '• Chat with adjusters\n\n' +
-                  'Coming Q2 2025!');
-        };
-
-        // Settings Functions
-        window.manageSubscription = function() {
-            alert('💎 SUBSCRIPTION MANAGEMENT\n\n' +
-                  '📋 Current Plan: CarTrace Pro Premium\n' +
-                  '💰 Cost: $29.99/month\n' +
-                  '📅 Next billing: ' + new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString() + '\n' +
-                  '🔄 Status: ACTIVE\n\n' +
-                  '✨ Premium Features:\n' +
-                  '• Unlimited vehicles\n' +
-                  '• Priority recovery\n' +
-                  '• Insurance integration\n' +
-                  '• 24/7 support\n' +
-                  '• Advanced analytics');
-        };
-
-        // Logout
-        window.logout = function() {
-            if (confirm('Are you sure you want to sign out?')) {
-                signOut(auth).then(() => {
-                    window.location.href = 'index.html';
-                }).catch((error) => {
-                    alert('Error signing out: ' + error.message);
-                });
-            }
-        };
+        });
     </script>
 </body>
 </html>
