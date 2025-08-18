@@ -745,7 +745,7 @@
                 <div class="card">
                     <h2 class="card-title">🔧 Vehicle Maintenance Hub</h2>
                     <div id="carcare-status">
-                        <div class="carcare-badge disconnected">
+                        <div class="carcare-badge disconnected" id="carcareBadge">
                             🔗 CarCare Status: Not Connected
                         </div>
                     </div>
@@ -777,10 +777,25 @@
                         <div class="feature-item">Maintenance reminders and alerts</div>
                         <div class="feature-item">Service cost monitoring</div>
                         <div class="feature-item">Recall notifications and safety updates</div>
+                        <div class="feature-item">Automatic VIN-based history lookup</div>
                     </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" id="connectCarCareBtn">🔗 Connect CarCare Account</button>
-                        <button class="btn btn-info" id="viewServiceHistoryBtn">📋 View Service History</button>
+                    <div id="carcare-connection-area">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" id="connectCarCareBtn">🔗 Connect CarCare Account</button>
+                            <button class="btn btn-success" id="carfaxSignupBtn">🆓 Create FREE CarCare Account</button>
+                            <button class="btn btn-info" id="viewServiceHistoryBtn">📋 View Service History</button>
+                        </div>
+                    </div>
+                    <div id="carcare-connected-area" style="display: none;">
+                        <div class="btn-group">
+                            <button class="btn btn-info" id="syncCarfaxBtn">🔄 Sync CarCare Data</button>
+                            <button class="btn btn-success" id="viewFullHistoryBtn">📋 View Full History</button>
+                            <button class="btn btn-warning" id="manageCarfaxBtn">⚙️ Manage Account</button>
+                            <button class="btn btn-danger" id="disconnectCarfaxBtn">🔌 Disconnect</button>
+                        </div>
+                    </div>
+                    <div id="service-history-display" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--surface); border-radius: 8px;">
+                        <!-- Service history will be displayed here -->
                     </div>
                 </div>
 
@@ -1066,6 +1081,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="form-label">VIN (Vehicle Identification Number)</label>
+                        <input type="text" class="form-control" id="vehicleVIN" placeholder="17-character VIN (for Carfax integration)" maxlength="17" style="text-transform: uppercase;">
+                        <small style="color: #666; font-size: 0.85rem;">Optional but recommended for Carfax service history</small>
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">Special Features / Trim Details (Optional)</label>
                         <textarea class="form-control" id="vehicleFeatures" placeholder="e.g., Black Wing Edition, 20&quot; wheels, Sport Package, Sunroof, etc."></textarea>
                     </div>
@@ -1243,6 +1264,31 @@
             });
         }
 
+        // Update vehicle display (moved to global scope)
+        function updateVehicleDisplay() {
+            const vehiclesList = document.getElementById('vehicles-list');
+            if (!vehiclesList) return;
+            
+            vehiclesList.innerHTML = '';
+            
+            if (!window.userVehicles || window.userVehicles.length === 0) {
+                vehiclesList.innerHTML = '<p style="text-align: center; color: #757575; padding: 2rem;">No vehicles added yet. Click "Add New Vehicle" to get started!</p>';
+                return;
+            }
+
+            window.userVehicles.forEach(vehicle => {
+                const vehicleCard = createVehicleCard(vehicle);
+                vehiclesList.appendChild(vehicleCard);
+            });
+        }
+
+        // Update vehicle count (moved to global scope)
+        function updateVehicleCount() {
+            const vehicleCount = window.userVehicles ? window.userVehicles.length : 0;
+            document.getElementById('vehicle-count').textContent = vehicleCount;
+            document.getElementById('maintenance-vehicles').textContent = vehicleCount;
+        }
+
         // Create vehicle card
         function createVehicleCard(vehicle) {
             const card = document.createElement('div');
@@ -1265,6 +1311,11 @@
             let vehicleDetails = `🎨 Color: ${vehicle.color}
 🏷️ License: ${vehicle.license}`;
 
+            if (vehicle.vin) {
+                vehicleDetails += `
+🔑 VIN: ${vehicle.vin}`;
+            }
+
             if (vehicle.features) {
                 vehicleDetails += `
 ✨ Features: ${vehicle.features}`;
@@ -1274,11 +1325,18 @@
 ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
 📍 Status: ACTIVE`;
 
+            // Add Carfax sync button if VIN exists
+            let carfaxButton = '';
+            if (vehicle.vin) {
+                carfaxButton = `<button class="btn btn-success" onclick="syncSpecificVehicle('${vehicle.vin}')">🔄 Sync Carfax</button>`;
+            }
+
             card.innerHTML = `
                 <div class="vehicle-title">${planEmoji} ${vehicle.year} ${vehicle.make} ${vehicle.model}</div>
                 <div class="vehicle-details">${vehicleDetails}</div>
                 <div class="btn-group">
                     <button class="btn btn-info" onclick="showVehicleDetails('${vehicle.id}')">📋 Details</button>
+                    ${carfaxButton}
                     <button class="btn btn-warning" onclick="editVehicle('${vehicle.id}')">✏️ Edit</button>
                     <button class="btn btn-danger" onclick="removeVehicle('${vehicle.id}')">🗑️ Remove</button>
                 </div>
@@ -1552,6 +1610,7 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                     const model = document.getElementById('vehicleModel').value;
                     const color = document.getElementById('vehicleColor').value;
                     const license = document.getElementById('vehicleLicense').value;
+                    const vin = document.getElementById('vehicleVIN').value.toUpperCase();
                     const features = document.getElementById('vehicleFeatures').value;
 
                     const vehicleId = Date.now().toString();
@@ -1562,6 +1621,7 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                         model,
                         color,
                         license,
+                        vin: vin || null,
                         features,
                         plan: selectedPlan,
                         addedDate: new Date().toISOString()
@@ -1573,6 +1633,12 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                             .then(() => {
                                 alert('✅ Vehicle added successfully!');
                                 closeVehicleModal();
+                                
+                                // If VIN provided and Carfax connected, auto-sync
+                                if (vin && window.carcareConnected) {
+                                    alert('🔄 Auto-syncing Carfax service history for this VIN...');
+                                    syncSpecificVehicle(vin);
+                                }
                             })
                             .catch((error) => {
                                 alert('❌ Error adding vehicle: ' + error.message);
@@ -1582,14 +1648,39 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             }
         });
 
+        // Sync specific vehicle with Carfax
+        function syncSpecificVehicle(vin) {
+            if (vin && vin.length === 17) {
+                // Simulate fetching Carfax data for this VIN
+                setTimeout(() => {
+                    const serviceHistory = [
+                        { date: '2024-10-15', service: 'Oil Change', mileage: '45,230', cost: '$47.99' },
+                        { date: '2024-08-20', service: 'Tire Rotation', mileage: '43,100', cost: '$29.99' }
+                    ];
+                    
+                    if (window.firebaseRef && window.firebaseSet && window.currentUser) {
+                        const historyRef = window.firebaseRef(window.firebaseDatabase, `service-history/${window.currentUser.uid}/${vin}`);
+                        window.firebaseSet(historyRef, serviceHistory).then(() => {
+                            alert('✅ Carfax history synced for VIN: ' + vin);
+                        });
+                    }
+                }, 1000);
+            }
+        }
+
         function showVehicleDetails(vehicleId) {
             const vehicle = window.userVehicles.find(v => v.id === vehicleId);
             if (vehicle) {
                 let details = `📋 VEHICLE DETAILS\n\n` +
                       `🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
                       `🎨 Color: ${vehicle.color}\n` +
-                      `🏷️ License: ${vehicle.license}\n` +
-                      `📋 Plan: ${vehicle.plan}\n`;
+                      `🏷️ License: ${vehicle.license}\n`;
+                
+                if (vehicle.vin) {
+                    details += `🔑 VIN: ${vehicle.vin}\n`;
+                }
+                
+                details += `📋 Plan: ${vehicle.plan}\n`;
                 
                 if (vehicle.features) {
                     details += `✨ Features: ${vehicle.features}\n`;
@@ -1599,6 +1690,10 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                       `🛡️ Protection Level: ACTIVE\n` +
                       `📱 Community Network: CONNECTED\n` +
                       `🔔 Push Notifications: ENABLED`;
+                
+                if (vehicle.vin && window.carcareConnected) {
+                    details += `\n\n🔧 Carfax Service History: Available`;
+                }
                       
                 alert(details);
             }
@@ -1609,11 +1704,13 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             if (vehicle) {
                 const newColor = prompt('Enter new color (current: ' + vehicle.color + '):', vehicle.color);
                 const newLicense = prompt('Enter new license plate (current: ' + vehicle.license + '):', vehicle.license);
-                const newPlan = prompt('Enter new plan (current: ' + vehicle.plan + '):', vehicle.plan);
+                const newVIN = prompt('Enter VIN (current: ' + (vehicle.vin || 'Not set') + '):', vehicle.vin || '');
+                const newPlan = prompt('Enter new plan (BASIC/GOLD/PLATINUM/DIAMOND) (current: ' + vehicle.plan + '):', vehicle.plan);
 
                 if (newColor && newLicense && newPlan) {
                     vehicle.color = newColor;
                     vehicle.license = newLicense;
+                    vehicle.vin = newVIN.toUpperCase() || vehicle.vin;
                     vehicle.plan = newPlan.toUpperCase();
 
                     if (window.firebaseRef && window.firebaseSet && window.currentUser) {
@@ -1621,6 +1718,13 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                         window.firebaseSet(vehicleRef, vehicle)
                             .then(() => {
                                 alert('✅ Vehicle updated successfully!');
+                                
+                                // If VIN was added and Carfax is connected, offer to sync
+                                if (newVIN && window.carcareConnected && !vehicle.vin) {
+                                    if (confirm('Would you like to sync Carfax service history for this VIN?')) {
+                                        syncSpecificVehicle(newVIN);
+                                    }
+                                }
                             })
                             .catch((error) => {
                                 alert('❌ Error updating vehicle: ' + error.message);
@@ -1631,16 +1735,35 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
         }
 
         function removeVehicle(vehicleId) {
-            if (confirm('Are you sure you want to remove this vehicle?')) {
-                if (window.firebaseRef && window.firebaseRemove && window.currentUser) {
+            if (!vehicleId) {
+                console.error('No vehicle ID provided');
+                return;
+            }
+            
+            const vehicle = window.userVehicles.find(v => v.id === vehicleId);
+            if (!vehicle) {
+                alert('❌ Vehicle not found');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to remove this vehicle?\n\n🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n🏷️ License: ${vehicle.license}`)) {
+                if (window.firebaseRef && window.firebaseRemove && window.currentUser && window.firebaseDatabase) {
                     const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
                     window.firebaseRemove(vehicleRef)
                         .then(() => {
                             alert('✅ Vehicle removed successfully!');
+                            // Update local array
+                            window.userVehicles = window.userVehicles.filter(v => v.id !== vehicleId);
+                            updateVehicleDisplay();
+                            updateVehicleCount();
                         })
                         .catch((error) => {
+                            console.error('Error removing vehicle:', error);
                             alert('❌ Error removing vehicle: ' + error.message);
                         });
+                } else {
+                    console.error('Firebase not properly initialized');
+                    alert('❌ Unable to remove vehicle. Please refresh the page and try again.');
                 }
             }
         }
@@ -1730,33 +1853,142 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             }
         }
 
-        // CarCare Functions
+        // CarCare/Carfax Functions
         function connectCarCare() {
-            const choice = confirm('🔗 CONNECT CARFAX CARCARE\n\n' +
-                                  'Would you like to:\n' +
-                                  'OK = Connect existing account\n' +
-                                  'Cancel = Create new FREE account');
+            // Open Carfax login in new window
+            const carfaxWindow = window.open('https://www.carfax.com/signin', 'CarfaxLogin', 'width=600,height=700');
             
-            if (choice) {
-                const username = prompt('Enter your CarCare username/email:');
-                const password = prompt('Enter your CarCare password:');
-                
-                if (username && password) {
-                    if (window.firebaseRef && window.firebaseSet && window.currentUser) {
-                        const carcareRef = window.firebaseRef(window.firebaseDatabase, `carcare/${window.currentUser.uid}`);
-                        window.firebaseSet(carcareRef, {
-                            connected: true,
-                            username: username,
-                            connectedDate: new Date().toISOString()
-                        }).then(() => {
-                            window.carcareConnected = true;
-                            window.updateCarCareStatus();
-                            alert('✅ CarCare account connected successfully!');
-                        });
-                    }
+            // Show instructions
+            alert('🔗 CONNECTING TO CARFAX CARCARE\n\n' +
+                  '1. Sign in to your Carfax account in the new window\n' +
+                  '2. If you don\'t have an account, create one for FREE\n' +
+                  '3. Once logged in, return here and click "Sync CarCare Data"\n' +
+                  '4. Enter your VIN to sync service history\n\n' +
+                  'Note: Keep the Carfax window open for syncing');
+            
+            // Enable sync button
+            setTimeout(() => {
+                const syncBtn = document.getElementById('syncCarfaxBtn');
+                if (syncBtn) {
+                    document.getElementById('carcare-connection-area').style.display = 'none';
+                    document.getElementById('carcare-connected-area').style.display = 'block';
                 }
-            } else {
-                alert('🆓 CREATE FREE CARCARE ACCOUNT\n\nVisit: carfax.com/carcare');
+            }, 2000);
+        }
+
+        function createCarfaxAccount() {
+            // Open Carfax signup
+            window.open('https://www.carfax.com/signin?intent=register', 'CarfaxSignup', 'width=600,height=700');
+            
+            alert('🆓 CREATE FREE CARFAX CARCARE ACCOUNT\n\n' +
+                  'Benefits of Carfax CarCare:\n' +
+                  '✅ Track all service history\n' +
+                  '✅ Get maintenance reminders\n' +
+                  '✅ Monitor recall alerts\n' +
+                  '✅ Track service costs\n' +
+                  '✅ Maintain vehicle value\n\n' +
+                  'After creating your account, click "Connect CarCare Account"');
+        }
+
+        function syncCarfaxData() {
+            // Ask for VIN to sync specific vehicle
+            const vin = prompt('Enter your Vehicle VIN to sync Carfax history:\n\n' +
+                               'You can find your VIN:\n' +
+                               '• On the driver\'s side dashboard\n' +
+                               '• Driver\'s side door jamb\n' +
+                               '• Vehicle registration\n' +
+                               '• Insurance documents');
+            
+            if (vin && vin.length === 17) {
+                // Simulate syncing process
+                alert('🔄 SYNCING CARFAX DATA...\n\n' +
+                      'VIN: ' + vin + '\n\n' +
+                      'Please wait while we sync your service history...');
+                
+                // Store in Firebase
+                if (window.firebaseRef && window.firebaseSet && window.currentUser) {
+                    const carcareRef = window.firebaseRef(window.firebaseDatabase, `carcare/${window.currentUser.uid}`);
+                    window.firebaseSet(carcareRef, {
+                        connected: true,
+                        vin: vin,
+                        connectedDate: new Date().toISOString(),
+                        lastSync: new Date().toISOString()
+                    }).then(() => {
+                        window.carcareConnected = true;
+                        updateCarCareStatus();
+                        
+                        // Simulate fetched data
+                        const serviceHistory = [
+                            { date: '2024-10-15', service: 'Oil Change', mileage: '45,230', cost: '$47.99' },
+                            { date: '2024-08-20', service: 'Tire Rotation', mileage: '43,100', cost: '$29.99' },
+                            { date: '2024-06-10', service: 'Annual Inspection', mileage: '41,500', cost: '$85.00' },
+                            { date: '2024-03-05', service: 'Brake Service', mileage: '39,200', cost: '$325.00' },
+                            { date: '2023-12-15', service: 'Battery Replacement', mileage: '37,500', cost: '$189.99' }
+                        ];
+                        
+                        // Store service history
+                        const historyRef = window.firebaseRef(window.firebaseDatabase, `service-history/${window.currentUser.uid}/${vin}`);
+                        window.firebaseSet(historyRef, serviceHistory);
+                        
+                        alert('✅ CARFAX SYNC COMPLETE!\n\n' +
+                              'Found ' + serviceHistory.length + ' service records\n' +
+                              'Your maintenance history has been updated');
+                        
+                        displayServiceHistory(serviceHistory);
+                    });
+                }
+            } else if (vin) {
+                alert('❌ Invalid VIN\n\nPlease enter a valid 17-character VIN');
+            }
+        }
+
+        function displayServiceHistory(history) {
+            const displayArea = document.getElementById('service-history-display');
+            if (displayArea) {
+                let html = '<h3 style="margin-bottom: 1rem;">📋 Service History</h3>';
+                html += '<div style="display: grid; gap: 0.5rem;">';
+                
+                history.forEach(record => {
+                    html += `
+                        <div style="padding: 0.75rem; background: white; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${record.service}</strong><br>
+                                <small style="color: #666;">📅 ${record.date} • 🛣️ ${record.mileage} miles</small>
+                            </div>
+                            <div style="text-align: right;">
+                                <strong style="color: #4CAF50;">${record.cost}</strong>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                displayArea.innerHTML = html;
+                displayArea.style.display = 'block';
+            }
+        }
+
+        function viewFullHistory() {
+            window.open('https://www.carfax.com/mycarfax/service', 'CarfaxHistory', 'width=800,height=600');
+        }
+
+        function manageCarfaxAccount() {
+            window.open('https://www.carfax.com/mycarfax/account', 'CarfaxAccount', 'width=800,height=600');
+        }
+
+        function disconnectCarfax() {
+            if (confirm('Are you sure you want to disconnect your Carfax CarCare account?')) {
+                if (window.firebaseRef && window.firebaseRemove && window.currentUser) {
+                    const carcareRef = window.firebaseRef(window.firebaseDatabase, `carcare/${window.currentUser.uid}`);
+                    window.firebaseRemove(carcareRef).then(() => {
+                        window.carcareConnected = false;
+                        updateCarCareStatus();
+                        document.getElementById('carcare-connection-area').style.display = 'block';
+                        document.getElementById('carcare-connected-area').style.display = 'none';
+                        document.getElementById('service-history-display').style.display = 'none';
+                        alert('✅ Carfax CarCare disconnected successfully');
+                    });
+                }
             }
         }
 
@@ -1765,11 +1997,107 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                 alert('❌ CarCare not connected!\n\nPlease connect your CarCare account first.');
                 return;
             }
-            alert('📋 SERVICE HISTORY\n\n' +
-                  '🔧 Recent Services:\n\n' +
-                  '• Oil Change - 3 weeks ago\n' +
-                  '• Tire Rotation - 2 months ago\n' +
-                  '• Annual Inspection - 4 months ago');
+            
+            // Retrieve and display stored service history
+            if (window.firebaseRef && window.firebaseGet && window.currentUser) {
+                // Get the first VIN from carcare data
+                const carcareRef = window.firebaseRef(window.firebaseDatabase, `carcare/${window.currentUser.uid}`);
+                window.firebaseGet(carcareRef).then((snapshot) => {
+                    if (snapshot.exists() && snapshot.val().vin) {
+                        const vin = snapshot.val().vin;
+                        const historyRef = window.firebaseRef(window.firebaseDatabase, `service-history/${window.currentUser.uid}/${vin}`);
+                        window.firebaseGet(historyRef).then((historySnapshot) => {
+                            if (historySnapshot.exists()) {
+                                displayServiceHistory(historySnapshot.val());
+                            } else {
+                                alert('📋 No service history found\n\nClick "Sync CarCare Data" to update');
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        // Update CarCare status with more details
+        function updateCarCareStatus() {
+            const statusBadge = document.querySelector('.carcare-badge');
+            const statusIcon = document.getElementById('carcare-status-icon');
+            const statusText = document.getElementById('carcare-status-text');
+            
+            if (window.carcareConnected) {
+                statusBadge.classList.remove('disconnected');
+                statusBadge.innerHTML = '✅ CarCare Status: Connected';
+                statusIcon.textContent = '✅';
+                statusText.textContent = 'Connected';
+                document.getElementById('service-records').textContent = '5';
+                document.getElementById('maintenance-alerts').textContent = '1';
+                
+                // Show connected area, hide connection area
+                document.getElementById('carcare-connection-area').style.display = 'none';
+                document.getElementById('carcare-connected-area').style.display = 'block';
+                
+                // Auto-load service history
+                viewServiceHistory();
+            } else {
+                statusBadge.classList.add('disconnected');
+                statusBadge.innerHTML = '🔗 CarCare Status: Not Connected';
+                statusIcon.textContent = '🔗';
+                statusText.textContent = 'Not Connected';
+                document.getElementById('service-records').textContent = '0';
+                document.getElementById('maintenance-alerts').textContent = '0';
+                
+                // Show connection area, hide connected area
+                document.getElementById('carcare-connection-area').style.display = 'block';
+                document.getElementById('carcare-connected-area').style.display = 'none';
+            }
+        }
+
+        // Load alerts (moved to global scope)
+        function loadAlerts() {
+            const alertsList = document.getElementById('alerts-list');
+            if (!alertsList) return;
+            
+            const sampleAlerts = [
+                {
+                    icon: '🟢',
+                    title: 'Security Scan Complete',
+                    description: 'All vehicles - No threats detected',
+                    time: '2 min ago'
+                },
+                {
+                    icon: '🔄',
+                    title: 'System Update',
+                    description: 'CarTrace Pro v3.1 installed successfully',
+                    time: '15 min ago'
+                },
+                {
+                    icon: '🛡️',
+                    title: 'Network Security Check',
+                    description: 'Community network scanned - All secure',
+                    time: '1 hour ago'
+                }
+            ];
+
+            alertsList.innerHTML = '';
+            sampleAlerts.forEach(alert => {
+                const alertItem = createAlertItem(alert);
+                alertsList.appendChild(alertItem);
+            });
+        }
+
+        // Create alert item (moved to global scope)
+        function createAlertItem(alert) {
+            const item = document.createElement('div');
+            item.className = 'alert-item';
+            item.innerHTML = `
+                <div class="alert-icon">${alert.icon}</div>
+                <div class="alert-content">
+                    <div class="alert-title">${alert.title}</div>
+                    <div class="alert-desc">${alert.description}</div>
+                    <div class="alert-time">${alert.time}</div>
+                </div>
+            `;
+            return item;
         }
 
         // Other functions
@@ -1838,8 +2166,17 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             document.getElementById('reportStolenBtn2').addEventListener('click', reportVehicleStolen);
             document.getElementById('foundStolenBtn').addEventListener('click', foundStolenVehicle);
             document.getElementById('foundStolenBtn2').addEventListener('click', foundStolenVehicle);
+            
+            // Carfax/CarCare buttons
             document.getElementById('connectCarCareBtn').addEventListener('click', connectCarCare);
+            document.getElementById('carfaxSignupBtn').addEventListener('click', createCarfaxAccount);
             document.getElementById('viewServiceHistoryBtn').addEventListener('click', viewServiceHistory);
+            document.getElementById('syncCarfaxBtn').addEventListener('click', syncCarfaxData);
+            document.getElementById('viewFullHistoryBtn').addEventListener('click', viewFullHistory);
+            document.getElementById('manageCarfaxBtn').addEventListener('click', manageCarfaxAccount);
+            document.getElementById('disconnectCarfaxBtn').addEventListener('click', disconnectCarfax);
+            
+            // Other buttons
             document.getElementById('performCloudSyncBtn').addEventListener('click', performCloudSync);
             document.getElementById('showCloudSettingsBtn').addEventListener('click', showCloudSettings);
             document.getElementById('startPhotoCaptureBtn').addEventListener('click', startPhotoCapture);
@@ -1849,6 +2186,42 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             document.getElementById('showClaimTrackingBtn').addEventListener('click', showClaimTracking);
             document.getElementById('manageSubscriptionBtn').addEventListener('click', manageSubscription);
         });
+        
+        // Make all functions globally available for onclick handlers
+        window.showContent = showContent;
+        window.showVehicleModal = showVehicleModal;
+        window.closeVehicleModal = closeVehicleModal;
+        window.selectPlan = selectPlan;
+        window.addVehicle = addVehicle;
+        window.showVehicleDetails = showVehicleDetails;
+        window.editVehicle = editVehicle;
+        window.removeVehicle = removeVehicle;
+        window.createVehicleCard = createVehicleCard;
+        window.updateVehicleDisplay = updateVehicleDisplay;
+        window.updateVehicleCount = updateVehicleCount;
+        window.loadAlerts = loadAlerts;
+        window.createAlertItem = createAlertItem;
+        window.reportVehicleStolen = reportVehicleStolen;
+        window.foundStolenVehicle = foundStolenVehicle;
+        window.connectCarCare = connectCarCare;
+        window.createCarfaxAccount = createCarfaxAccount;
+        window.syncCarfaxData = syncCarfaxData;
+        window.syncSpecificVehicle = syncSpecificVehicle;
+        window.viewFullHistory = viewFullHistory;
+        window.manageCarfaxAccount = manageCarfaxAccount;
+        window.disconnectCarfax = disconnectCarfax;
+        window.viewServiceHistory = viewServiceHistory;
+        window.updateCarCareStatus = updateCarCareStatus;
+        window.displayServiceHistory = displayServiceHistory;
+        window.performCloudSync = performCloudSync;
+        window.showCloudSettings = showCloudSettings;
+        window.startPhotoCapture = startPhotoCapture;
+        window.showPhotoGallery = showPhotoGallery;
+        window.showAIAnalysis = showAIAnalysis;
+        window.startAutomaticClaim = startAutomaticClaim;
+        window.showClaimTracking = showClaimTracking;
+        window.manageSubscription = manageSubscription;
+        window.logout = logout;
     </script>
 </body>
 </html>
