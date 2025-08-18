@@ -439,6 +439,179 @@
             background: linear-gradient(135deg, #757575, #616161);
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .plan-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .plan-option {
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .plan-option:hover {
+            border-color: var(--primary);
+            background: var(--nav-selected);
+        }
+
+        .plan-option.selected {
+            border-color: var(--primary);
+            background: var(--nav-selected);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .plan-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .plan-reward {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .form-buttons .btn {
+            flex: 1;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header {
@@ -466,11 +639,20 @@
             .btn {
                 width: 100%;
             }
+
+            .plan-selector {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 480px) {
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -822,6 +1004,106 @@
             </div>
         </main>
 
+        <!-- Add Vehicle Modal -->
+        <div id="addVehicleModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">🚗 Add New Vehicle</h2>
+                    <button class="close-btn" onclick="closeVehicleModal()">&times;</button>
+                </div>
+                
+                <form id="vehicleForm">
+                    <div class="form-group">
+                        <label class="form-label">Year</label>
+                        <select class="form-control" id="vehicleYear" required>
+                            <option value="">Select Year</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Make</label>
+                        <select class="form-control" id="vehicleMake" required>
+                            <option value="">Select Make</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Model</label>
+                        <select class="form-control" id="vehicleModel" required>
+                            <option value="">Select Model</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Color</label>
+                        <select class="form-control" id="vehicleColor" required>
+                            <option value="">Select Color</option>
+                            <option value="Black">Black</option>
+                            <option value="White">White</option>
+                            <option value="Silver">Silver</option>
+                            <option value="Gray">Gray</option>
+                            <option value="Red">Red</option>
+                            <option value="Blue">Blue</option>
+                            <option value="Navy">Navy</option>
+                            <option value="Green">Green</option>
+                            <option value="Brown">Brown</option>
+                            <option value="Beige">Beige</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Orange">Orange</option>
+                            <option value="Yellow">Yellow</option>
+                            <option value="Purple">Purple</option>
+                            <option value="Maroon">Maroon</option>
+                            <option value="Charcoal">Charcoal</option>
+                            <option value="Pearl White">Pearl White</option>
+                            <option value="Metallic Gray">Metallic Gray</option>
+                            <option value="Midnight Blue">Midnight Blue</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">License Plate</label>
+                        <input type="text" class="form-control" id="vehicleLicense" placeholder="Enter license plate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Special Features / Trim Details (Optional)</label>
+                        <textarea class="form-control" id="vehicleFeatures" placeholder="e.g., Black Wing Edition, 20&quot; wheels, Sport Package, Sunroof, etc."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Protection Plan</label>
+                        <div class="plan-selector">
+                            <div class="plan-option" data-plan="BASIC" onclick="selectPlan('BASIC')">
+                                <div class="plan-emoji">🥉</div>
+                                <div class="plan-name">BASIC</div>
+                                <div class="plan-reward">$200 Reward</div>
+                            </div>
+                            <div class="plan-option" data-plan="GOLD" onclick="selectPlan('GOLD')">
+                                <div class="plan-emoji">🥈</div>
+                                <div class="plan-name">GOLD</div>
+                                <div class="plan-reward">$300 Reward</div>
+                            </div>
+                            <div class="plan-option" data-plan="PLATINUM" onclick="selectPlan('PLATINUM')">
+                                <div class="plan-emoji">🥇</div>
+                                <div class="plan-name">PLATINUM</div>
+                                <div class="plan-reward">$500 Reward</div>
+                            </div>
+                            <div class="plan-option" data-plan="DIAMOND" onclick="selectPlan('DIAMOND')">
+                                <div class="plan-emoji">💎</div>
+                                <div class="plan-name">DIAMOND</div>
+                                <div class="plan-reward">$750 Reward</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="closeVehicleModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Vehicle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <div class="nav-container" id="navContainer">
@@ -980,12 +1262,21 @@
                 'DIAMOND': '$750'
             }[vehicle.plan] || '$200';
 
+            let vehicleDetails = `🎨 Color: ${vehicle.color}
+🏷️ License: ${vehicle.license}`;
+
+            if (vehicle.features) {
+                vehicleDetails += `
+✨ Features: ${vehicle.features}`;
+            }
+
+            vehicleDetails += `
+${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
+📍 Status: ACTIVE`;
+
             card.innerHTML = `
                 <div class="vehicle-title">${planEmoji} ${vehicle.year} ${vehicle.make} ${vehicle.model}</div>
-                <div class="vehicle-details">🎨 Color: ${vehicle.color}
-🏷️ License: ${vehicle.license}
-${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
-📍 Status: ACTIVE</div>
+                <div class="vehicle-details">${vehicleDetails}</div>
                 <div class="btn-group">
                     <button class="btn btn-info" onclick="showVehicleDetails('${vehicle.id}')">📋 Details</button>
                     <button class="btn btn-warning" onclick="editVehicle('${vehicle.id}')">✏️ Edit</button>
@@ -1104,6 +1395,56 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
 
     <!-- Global Functions Script -->
     <script>
+        // Vehicle Data
+        const vehicleData = {
+            makes: {
+                'Acura': ['ILX', 'TLX', 'RDX', 'MDX', 'NSX'],
+                'Alfa Romeo': ['Giulia', 'Stelvio', 'Tonale'],
+                'Audi': ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron', 'RS3', 'RS5', 'RS7'],
+                'BMW': ['2 Series', '3 Series', '4 Series', '5 Series', '7 Series', '8 Series', 'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'M3', 'M4', 'M5', 'M8', 'i4', 'iX'],
+                'Buick': ['Encore', 'Encore GX', 'Envision', 'Enclave'],
+                'Cadillac': ['CT4', 'CT5', 'XT4', 'XT5', 'XT6', 'Escalade', 'Lyriq'],
+                'Chevrolet': ['Spark', 'Sonic', 'Malibu', 'Camaro', 'Corvette', 'Trax', 'Equinox', 'Blazer', 'Traverse', 'Tahoe', 'Suburban', 'Colorado', 'Silverado', 'Bolt'],
+                'Chrysler': ['300', 'Pacifica', 'Voyager'],
+                'Dodge': ['Charger', 'Challenger', 'Durango', 'Hornet'],
+                'Ferrari': ['Roma', 'F8 Tributo', 'SF90 Stradale', '812', 'Portofino', 'Purosangue'],
+                'Fiat': ['500', '500X'],
+                'Ford': ['Mustang', 'Escape', 'Edge', 'Explorer', 'Expedition', 'Bronco', 'Bronco Sport', 'F-150', 'F-250', 'F-350', 'Ranger', 'Maverick', 'Lightning'],
+                'Genesis': ['G70', 'G80', 'G90', 'GV60', 'GV70', 'GV80'],
+                'GMC': ['Terrain', 'Acadia', 'Yukon', 'Canyon', 'Sierra', 'Hummer EV'],
+                'Honda': ['Civic', 'Accord', 'Insight', 'HR-V', 'CR-V', 'Pilot', 'Passport', 'Ridgeline', 'Odyssey'],
+                'Hyundai': ['Accent', 'Elantra', 'Sonata', 'Venue', 'Kona', 'Tucson', 'Santa Fe', 'Palisade', 'Ioniq', 'Ioniq 5', 'Ioniq 6'],
+                'Infiniti': ['Q50', 'Q60', 'QX50', 'QX55', 'QX60', 'QX80'],
+                'Jaguar': ['XE', 'XF', 'F-Type', 'E-Pace', 'F-Pace', 'I-Pace'],
+                'Jeep': ['Renegade', 'Compass', 'Cherokee', 'Grand Cherokee', 'Wrangler', 'Gladiator', 'Wagoneer', 'Grand Wagoneer'],
+                'Kia': ['Rio', 'Forte', 'K5', 'Stinger', 'Seltos', 'Sportage', 'Sorento', 'Telluride', 'Carnival', 'EV6', 'Niro'],
+                'Lamborghini': ['Huracán', 'Aventador', 'Urus', 'Revuelto'],
+                'Land Rover': ['Defender', 'Discovery', 'Discovery Sport', 'Range Rover', 'Range Rover Sport', 'Range Rover Velar', 'Range Rover Evoque'],
+                'Lexus': ['IS', 'ES', 'GS', 'LS', 'RC', 'LC', 'UX', 'NX', 'RX', 'GX', 'LX', 'RZ'],
+                'Lincoln': ['Corsair', 'Nautilus', 'Aviator', 'Navigator'],
+                'Lucid': ['Air', 'Gravity'],
+                'Maserati': ['Ghibli', 'Quattroporte', 'Levante', 'MC20', 'Grecale'],
+                'Mazda': ['Mazda3', 'Mazda6', 'CX-30', 'CX-5', 'CX-50', 'CX-9', 'CX-90', 'MX-5 Miata'],
+                'McLaren': ['570S', '720S', '765LT', 'Artura', 'GT'],
+                'Mercedes-Benz': ['A-Class', 'C-Class', 'E-Class', 'S-Class', 'CLA', 'CLS', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS', 'G-Class', 'EQB', 'EQE', 'EQS', 'AMG GT'],
+                'Mini': ['Cooper', 'Cooper S', 'Clubman', 'Countryman', 'Electric'],
+                'Mitsubishi': ['Mirage', 'Eclipse Cross', 'Outlander', 'Outlander Sport'],
+                'Nissan': ['Versa', 'Sentra', 'Altima', 'Maxima', 'Kicks', 'Rogue', 'Murano', 'Pathfinder', 'Armada', 'Frontier', 'Titan', 'Leaf', 'Ariya', 'Z'],
+                'Polestar': ['1', '2', '3'],
+                'Porsche': ['718 Cayman', '718 Boxster', '911', 'Panamera', 'Macan', 'Cayenne', 'Taycan'],
+                'Ram': ['1500', '2500', '3500', 'ProMaster'],
+                'Rivian': ['R1T', 'R1S'],
+                'Rolls-Royce': ['Ghost', 'Wraith', 'Dawn', 'Phantom', 'Cullinan', 'Spectre'],
+                'Subaru': ['Impreza', 'Legacy', 'WRX', 'BRZ', 'Crosstrek', 'Forester', 'Outback', 'Ascent', 'Solterra'],
+                'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
+                'Toyota': ['Corolla', 'Camry', 'Avalon', 'Prius', 'Mirai', 'GR86', 'Supra', 'C-HR', 'RAV4', 'Venza', 'Highlander', '4Runner', 'Sequoia', 'Land Cruiser', 'Tacoma', 'Tundra', 'bZ4X'],
+                'Volkswagen': ['Jetta', 'Passat', 'Arteon', 'Golf', 'Golf GTI', 'Golf R', 'Taos', 'Tiguan', 'Atlas', 'Atlas Cross Sport', 'ID.4'],
+                'Volvo': ['S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90', 'C40 Recharge']
+            }
+        };
+
+        let selectedPlan = null;
+
         // Navigation function
         function showContent(sectionId) {
             document.querySelectorAll('.content-section').forEach(section => {
@@ -1117,53 +1458,149 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
         }
 
-        // Vehicle Management Functions
-        function addVehicle() {
-            const year = prompt('Enter vehicle year:');
-            const make = prompt('Enter vehicle make:');
-            const model = prompt('Enter vehicle model:');
-            const color = prompt('Enter vehicle color:');
-            const license = prompt('Enter license plate:');
-            const plan = prompt('Enter protection plan (BASIC/GOLD/PLATINUM/DIAMOND):');
+        // Vehicle Modal Functions
+        function showVehicleModal() {
+            const modal = document.getElementById('addVehicleModal');
+            modal.classList.add('show');
+            populateYearDropdown();
+            populateMakeDropdown();
+            selectedPlan = null;
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
 
-            if (year && make && model && color && license && plan) {
-                const vehicleId = Date.now().toString();
-                const vehicle = {
-                    id: vehicleId,
-                    year,
-                    make,
-                    model,
-                    color,
-                    license,
-                    plan: plan.toUpperCase(),
-                    addedDate: new Date().toISOString()
-                };
+        function closeVehicleModal() {
+            const modal = document.getElementById('addVehicleModal');
+            modal.classList.remove('show');
+            document.getElementById('vehicleForm').reset();
+            selectedPlan = null;
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
 
-                if (window.firebaseRef && window.firebaseSet && window.currentUser) {
-                    const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
-                    window.firebaseSet(vehicleRef, vehicle)
-                        .then(() => {
-                            alert('✅ Vehicle added successfully!');
-                        })
-                        .catch((error) => {
-                            alert('❌ Error adding vehicle: ' + error.message);
-                        });
-                }
+        function populateYearDropdown() {
+            const yearSelect = document.getElementById('vehicleYear');
+            yearSelect.innerHTML = '<option value="">Select Year</option>';
+            
+            for (let year = 2026; year >= 2000; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
             }
         }
+
+        function populateMakeDropdown() {
+            const makeSelect = document.getElementById('vehicleMake');
+            makeSelect.innerHTML = '<option value="">Select Make</option>';
+            
+            Object.keys(vehicleData.makes).sort().forEach(make => {
+                const option = document.createElement('option');
+                option.value = make;
+                option.textContent = make;
+                makeSelect.appendChild(option);
+            });
+
+            makeSelect.addEventListener('change', function() {
+                populateModelDropdown(this.value);
+            });
+        }
+
+        function populateModelDropdown(make) {
+            const modelSelect = document.getElementById('vehicleModel');
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            
+            if (make && vehicleData.makes[make]) {
+                vehicleData.makes[make].forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            }
+        }
+
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`[data-plan="${plan}"]`).classList.add('selected');
+        }
+
+        // Updated Add Vehicle Function
+        function addVehicle() {
+            showVehicleModal();
+        }
+
+        // Form submission handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const vehicleForm = document.getElementById('vehicleForm');
+            if (vehicleForm) {
+                vehicleForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    if (!selectedPlan) {
+                        alert('Please select a protection plan');
+                        return;
+                    }
+
+                    const year = document.getElementById('vehicleYear').value;
+                    const make = document.getElementById('vehicleMake').value;
+                    const model = document.getElementById('vehicleModel').value;
+                    const color = document.getElementById('vehicleColor').value;
+                    const license = document.getElementById('vehicleLicense').value;
+                    const features = document.getElementById('vehicleFeatures').value;
+
+                    const vehicleId = Date.now().toString();
+                    const vehicle = {
+                        id: vehicleId,
+                        year,
+                        make,
+                        model,
+                        color,
+                        license,
+                        features,
+                        plan: selectedPlan,
+                        addedDate: new Date().toISOString()
+                    };
+
+                    if (window.firebaseRef && window.firebaseSet && window.currentUser) {
+                        const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
+                        window.firebaseSet(vehicleRef, vehicle)
+                            .then(() => {
+                                alert('✅ Vehicle added successfully!');
+                                closeVehicleModal();
+                            })
+                            .catch((error) => {
+                                alert('❌ Error adding vehicle: ' + error.message);
+                            });
+                    }
+                });
+            }
+        });
 
         function showVehicleDetails(vehicleId) {
             const vehicle = window.userVehicles.find(v => v.id === vehicleId);
             if (vehicle) {
-                alert(`📋 VEHICLE DETAILS\n\n` +
+                let details = `📋 VEHICLE DETAILS\n\n` +
                       `🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
                       `🎨 Color: ${vehicle.color}\n` +
                       `🏷️ License: ${vehicle.license}\n` +
-                      `📋 Plan: ${vehicle.plan}\n` +
-                      `📅 Added: ${new Date(vehicle.addedDate).toLocaleDateString()}\n\n` +
+                      `📋 Plan: ${vehicle.plan}\n`;
+                
+                if (vehicle.features) {
+                    details += `✨ Features: ${vehicle.features}\n`;
+                }
+                
+                details += `📅 Added: ${new Date(vehicle.addedDate).toLocaleDateString()}\n\n` +
                       `🛡️ Protection Level: ACTIVE\n` +
                       `📱 Community Network: CONNECTED\n` +
-                      `🔔 Push Notifications: ENABLED`);
+                      `🔔 Push Notifications: ENABLED`;
+                      
+                alert(details);
             }
         }
 
