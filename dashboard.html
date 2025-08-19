@@ -927,7 +927,7 @@
                     <div class="card">
                         <h2 class="card-title">
                             <span class="card-icon">🔧</span>
-                            Carfax CarCare Status
+                            Carfax Car Care Status
                         </h2>
                         <div id="carfax-quick-status">
                             <!-- Will be populated by JavaScript -->
@@ -1017,7 +1017,7 @@
                 <div class="card">
                     <h2 class="card-title">
                         <span class="card-icon">🔧</span>
-                        Vehicle Maintenance Hub - Powered by Carfax
+                        Vehicle Maintenance Hub - Powered by Carfax Car Care
                     </h2>
                     
                     <div id="carfax-connection-status" class="carfax-connection-status">
@@ -1028,7 +1028,7 @@
                         <div class="stat-box">
                             <div class="stat-icon">🔗</div>
                             <div class="stat-value" id="carcare-status">Not Connected</div>
-                            <div class="stat-label">CarCare Status</div>
+                            <div class="stat-label">Car Care Status</div>
                         </div>
                         <div class="stat-box">
                             <div class="stat-icon">🚗</div>
@@ -1050,24 +1050,25 @@
                     <!-- Not Connected State -->
                     <div id="carfax-not-connected" style="display: none;">
                         <div style="background: var(--surface); border-radius: 10px; padding: 20px; margin: 20px 0;">
-                            <h3 style="color: var(--primary); margin-bottom: 15px;">🆓 Connect FREE Carfax CarCare</h3>
+                            <h3 style="color: var(--primary); margin-bottom: 15px;">🆓 Connect FREE Carfax Car Care</h3>
                             <p style="color: var(--text-secondary); margin-bottom: 15px;">
-                                Get complete vehicle maintenance tracking and service history at no cost!
+                                Carfax Car Care is a completely FREE service for tracking your vehicle's maintenance - no credit card required!
                             </p>
                             <ul style="list-style: none; padding: 0;">
                                 <li style="margin-bottom: 8px;">✅ Complete service history tracking</li>
                                 <li style="margin-bottom: 8px;">✅ Maintenance reminders and alerts</li>
                                 <li style="margin-bottom: 8px;">✅ Service cost monitoring</li>
                                 <li style="margin-bottom: 8px;">✅ Recall notifications</li>
-                                <li style="margin-bottom: 8px;">✅ Automatic VIN-based history lookup</li>
+                                <li style="margin-bottom: 8px;">✅ Find recommended shops near you</li>
+                                <li style="margin-bottom: 8px;">✅ Track your vehicle's value</li>
                             </ul>
                         </div>
                         <div class="btn-group">
                             <button class="btn btn-carfax" onclick="connectCarfax()">
-                                🔗 Connect Carfax Account
+                                🔗 Connect Carfax Car Care
                             </button>
                             <button class="btn btn-success" onclick="createCarfaxAccount()">
-                                🆓 Create FREE Account
+                                🆓 Sign Up FREE
                             </button>
                         </div>
                     </div>
@@ -1100,10 +1101,10 @@
 
                         <div class="btn-group" style="margin-top: 20px;">
                             <button class="btn btn-info" onclick="syncCarfaxData()">
-                                🔄 Sync CarCare Data
+                                🔄 Sync Car Care Data
                             </button>
                             <button class="btn btn-success" onclick="openCarfaxDashboard()">
-                                📊 Open Carfax Dashboard
+                                📊 Open Carfax Car Care
                             </button>
                             <button class="btn btn-warning" onclick="addServiceRecord()">
                                 ➕ Add Service Record
@@ -1240,7 +1241,7 @@
                         Member Since: <span id="member-since">January 2025</span><br><br>
 
                         <strong>🔧 Connected Services:</strong><br>
-                        • Carfax CarCare: <span id="carfax-connection-settings">Not Connected</span><br>
+                        • Carfax Car Care: <span id="carfax-connection-settings">Not Connected</span><br>
                         • Insurance Partner: Coming Soon<br>
                         • GPS Tracking: Coming Q3 2025<br><br>
 
@@ -1317,8 +1318,8 @@
 
                 <div class="form-group">
                     <label class="form-label">VIN (Vehicle Identification Number)</label>
-                    <input type="text" class="form-control" id="vehicleVIN" placeholder="17-character VIN (for Carfax integration)" maxlength="17" style="text-transform: uppercase;">
-                    <small style="color: var(--text-secondary); font-size: 12px;">Required for Carfax CarCare service history</small>
+                    <input type="text" class="form-control" id="vehicleVIN" placeholder="17-character VIN (for Carfax Car Care)" maxlength="17" style="text-transform: uppercase;">
+                    <small style="color: var(--text-secondary); font-size: 12px;">Required for FREE Carfax Car Care maintenance tracking</small>
                 </div>
 
                 <div class="form-group">
@@ -1489,7 +1490,7 @@
                     connectionStatus.classList.add('carfax-connected');
                     connectionStatus.innerHTML = `
                         <div style="flex: 1;">
-                            <strong style="color: var(--success);">✅ Carfax CarCare Connected</strong><br>
+                            <strong style="color: var(--success);">✅ Carfax Car Care Connected</strong><br>
                             <small>Last synced: ${new Date().toLocaleString()}</small>
                         </div>
                         <button class="btn btn-info" onclick="syncCarfaxData()" style="padding: 8px 16px;">
@@ -1502,7 +1503,7 @@
                 if (quickStatus) {
                     quickStatus.innerHTML = `
                         <div class="carfax-badge">
-                            ✅ Carfax CarCare Connected
+                            ✅ Carfax Car Care Connected
                         </div>
                         <div style="margin: 15px 0;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
@@ -1540,8 +1541,8 @@
                     connectionStatus.classList.remove('carfax-connected');
                     connectionStatus.innerHTML = `
                         <div style="flex: 1;">
-                            <strong>🔗 Connect Carfax CarCare for FREE</strong><br>
-                            <small>Get complete vehicle maintenance tracking and service history</small>
+                            <strong>🔗 Connect Carfax Car Care for FREE</strong><br>
+                            <small>Track maintenance, get recall alerts, and monitor service costs</small>
                         </div>
                         <button class="btn btn-carfax" onclick="connectCarfax()" style="padding: 8px 16px;">
                             Connect Now
@@ -1553,10 +1554,10 @@
                 if (quickStatus) {
                     quickStatus.innerHTML = `
                         <div class="carfax-badge disconnected">
-                            🔗 Carfax CarCare Not Connected
+                            🔗 Carfax Car Care Not Connected
                         </div>
                         <p style="color: var(--text-secondary); margin: 15px 0;">
-                            Connect your FREE Carfax CarCare account to track service history, get maintenance alerts, and monitor recalls.
+                            Connect your FREE Carfax Car Care account to track maintenance, get recall alerts, and find recommended shops.
                         </p>
                     `;
                 }
@@ -1568,45 +1569,46 @@
         }
 
         function connectCarfax() {
-            // Open Carfax login in popup window
+            // Open Carfax Car Care service login in popup window
             const carfaxWindow = window.open(
-                'https://www.carfax.com/signin',
-                'CarfaxLogin',
-                'width=600,height=700,left=200,top=100'
+                'https://www.carfax.com/service',
+                'CarfaxCarCare',
+                'width=800,height=700,left=200,top=100'
             );
             
             // Show connection instructions
-            alert(`🔗 CONNECTING TO CARFAX CARCARE\n\n` +
-                  `1. Sign in to your Carfax account in the new window\n` +
+            alert(`🔗 CONNECTING TO CARFAX CAR CARE\n\n` +
+                  `1. Sign in to your Carfax Car Care account in the new window\n` +
                   `2. If you don't have an account, create one for FREE\n` +
-                  `3. Once logged in, authorize CarTrace Pro access\n` +
-                  `4. Return here to complete setup\n\n` +
-                  `Note: Keep the Carfax window open during setup`);
+                  `3. Add your vehicle(s) using your VIN\n` +
+                  `4. Once setup is complete, return here\n\n` +
+                  `Note: Carfax Car Care is a FREE service for tracking maintenance`);
             
             // Simulate OAuth callback after delay
             setTimeout(() => {
-                if (confirm('Have you successfully logged in to Carfax?')) {
+                if (confirm('Have you successfully logged in to Carfax Car Care?')) {
                     simulateCarfaxConnection();
                 }
             }, 5000);
         }
 
         function createCarfaxAccount() {
-            // Open Carfax signup
+            // Open Carfax Car Care signup
             window.open(
-                'https://www.carfax.com/signin?intent=register',
-                'CarfaxSignup',
-                'width=600,height=700,left=200,top=100'
+                'https://www.carfax.com/service',
+                'CarfaxCarCareSignup',
+                'width=800,height=700,left=200,top=100'
             );
             
-            alert(`🆓 CREATE FREE CARFAX CARCARE ACCOUNT\n\n` +
-                  `Benefits of Carfax CarCare:\n` +
-                  `✅ Track all service history\n` +
-                  `✅ Get maintenance reminders\n` +
-                  `✅ Monitor recall alerts\n` +
-                  `✅ Track service costs\n` +
-                  `✅ Maintain vehicle value\n\n` +
-                  `After creating your account, click "Connect Carfax Account"`);
+            alert(`🆓 CREATE FREE CARFAX CAR CARE ACCOUNT\n\n` +
+                  `Carfax Car Care is completely FREE and includes:\n` +
+                  `✅ Service history tracking\n` +
+                  `✅ Maintenance reminders\n` +
+                  `✅ Recall monitoring\n` +
+                  `✅ Service cost tracking\n` +
+                  `✅ Shop recommendations\n` +
+                  `✅ Vehicle value tracking\n\n` +
+                  `Click "Sign Up" on the Carfax Car Care page to get started!`);
         }
 
         function simulateCarfaxConnection() {
@@ -1614,7 +1616,7 @@
             carfaxConnected = true;
             localStorage.setItem('carfaxConnected', 'true');
             
-            // Store sample Carfax data
+            // Store sample Carfax Car Care data
             carfaxData = {
                 vehicles: userVehicles,
                 serviceHistory: generateSampleServiceHistory(),
@@ -1633,9 +1635,10 @@
                 });
             }
             
-            alert(`✅ CARFAX CARCARE CONNECTED!\n\n` +
-                  `Your account has been successfully linked.\n` +
-                  `Service history is now being synced...`);
+            alert(`✅ CARFAX CAR CARE CONNECTED!\n\n` +
+                  `Your FREE Carfax Car Care account has been successfully linked.\n` +
+                  `Service history and maintenance tracking is now active.\n\n` +
+                  `You can manage your vehicles at carfax.com/service`);
             
             updateCarfaxDisplay();
         }
@@ -1826,9 +1829,9 @@
                 displayUpcomingMaintenance();
                 
                 syncBtn.disabled = false;
-                syncBtn.innerHTML = '🔄 Sync CarCare Data';
+                syncBtn.innerHTML = '🔄 Sync Car Care Data';
                 
-                alert('✅ Carfax data synced successfully!');
+                alert('✅ Carfax Car Care data synced successfully!');
             }, 2000);
         }
 
@@ -1858,7 +1861,7 @@
         }
 
         function openCarfaxDashboard() {
-            window.open('https://www.carfax.com/mycarfax/service', '_blank');
+            window.open('https://www.carfax.com/service', '_blank');
         }
 
         function addServiceRecord() {
@@ -1891,7 +1894,7 @@
         }
 
         function disconnectCarfax() {
-            if (confirm('Are you sure you want to disconnect your Carfax CarCare account?')) {
+            if (confirm('Are you sure you want to disconnect your Carfax Car Care account?\n\nYou can reconnect anytime for free.')) {
                 carfaxConnected = false;
                 carfaxData = null;
                 localStorage.removeItem('carfaxConnected');
@@ -1902,7 +1905,7 @@
                 }
                 
                 updateCarfaxDisplay();
-                alert('✅ Carfax CarCare disconnected successfully');
+                alert('✅ Carfax Car Care disconnected successfully\n\nYou can reconnect anytime at carfax.com/service');
             }
         }
 
@@ -2012,7 +2015,7 @@
             const features = document.getElementById('vehicleFeatures').value;
 
             if (!vin || vin.length !== 17) {
-                alert('⚠️ VIN Required for Carfax Integration\n\nPlease enter a valid 17-character VIN to enable Carfax CarCare service history tracking.');
+                alert('⚠️ VIN Required for Carfax Car Care Integration\n\nPlease enter a valid 17-character VIN to enable FREE Carfax Car Care maintenance tracking.');
                 return;
             }
 
@@ -2035,10 +2038,10 @@
                 const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
                 window.firebaseSet(vehicleRef, vehicle)
                     .then(() => {
-                        // If Carfax is connected, prompt to sync
+                        // If Carfax Car Care is connected, prompt to sync
                         if (carfaxConnected && vin) {
                             setTimeout(() => {
-                                if (confirm('Would you like to sync this vehicle with Carfax CarCare to retrieve its service history?')) {
+                                if (confirm('Would you like to sync this vehicle with Carfax Car Care to track its maintenance?')) {
                                     syncVehicleWithCarfax(vehicle);
                                 }
                             }, 500);
@@ -2056,7 +2059,7 @@
                 updateVehicleCount();
                 
                 if (carfaxConnected && vin) {
-                    if (confirm('Would you like to sync this vehicle with Carfax CarCare?')) {
+                    if (confirm('Would you like to sync this vehicle with Carfax Car Care?')) {
                         syncVehicleWithCarfax(vehicle);
                     }
                 }
@@ -2067,17 +2070,18 @@
         }
 
         function syncVehicleWithCarfax(vehicle) {
-            alert(`🔄 SYNCING WITH CARFAX...\n\n` +
+            alert(`🔄 SYNCING WITH CARFAX CAR CARE...\n\n` +
                   `VIN: ${vehicle.vin}\n` +
                   `Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}\n\n` +
-                  `Retrieving service history...`);
+                  `Retrieving maintenance history from Carfax Car Care...`);
             
-            // Simulate fetching Carfax data
+            // Simulate fetching Carfax Car Care data
             setTimeout(() => {
-                alert(`✅ CARFAX SYNC COMPLETE!\n\n` +
+                alert(`✅ CARFAX CAR CARE SYNC COMPLETE!\n\n` +
                       `Found 5 service records\n` +
                       `No open recalls\n` +
-                      `Next service due in 2,847 miles`);
+                      `Next service due in 2,847 miles\n\n` +
+                      `View full details at carfax.com/service`);
                 
                 // Refresh maintenance display
                 if (carfaxData) {
@@ -2132,7 +2136,7 @@
                 
                 if (carfaxConnected) {
                     vehicleDetails += `
-📋 Carfax: Connected`;
+📋 Carfax Car Care: Connected`;
                 }
             }
 
@@ -2147,7 +2151,7 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
 
             let carfaxButton = '';
             if (vehicle.vin && carfaxConnected) {
-                carfaxButton = `<button class="btn btn-carfax" onclick="viewVehicleCarfax('${vehicle.vin}')" style="padding: 8px 16px; font-size: 14px;">📋 View Carfax</button>`;
+                carfaxButton = `<button class="btn btn-carfax" onclick="viewVehicleCarfax('${vehicle.vin}')" style="padding: 8px 16px; font-size: 14px;">📋 View Car Care</button>`;
             }
 
             card.innerHTML = `
@@ -2165,14 +2169,15 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
         }
 
         function viewVehicleCarfax(vin) {
-            alert(`📋 CARFAX REPORT - VIN: ${vin}\n\n` +
+            alert(`📋 CARFAX CAR CARE - VIN: ${vin}\n\n` +
                   `✅ No accidents reported\n` +
                   `✅ 1 owner\n` +
                   `✅ Personal vehicle\n` +
                   `✅ Service records available\n` +
                   `✅ No open recalls\n\n` +
                   `Last Service: Oil change at 45,230 miles\n` +
-                  `Next Due: Oil change in 2,847 miles`);
+                  `Next Due: Oil change in 2,847 miles\n\n` +
+                  `View full details at carfax.com/service`);
         }
 
         // Update Vehicle Count
@@ -2306,7 +2311,7 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                       `• 47,892 users notified\n` +
                       `• Push notifications sent\n` +
                       `• Recovery team dispatched\n` +
-                      (carfaxConnected && selectedVehicle.vin ? `• Carfax theft report filed\n` : '') +
+                      (carfaxConnected && selectedVehicle.vin ? `• Carfax Car Care theft alert sent\n` : '') +
                       `\n🚧 Future: GPS tracking coming Q3 2025`);
             }
         }
@@ -2339,7 +2344,7 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                   `• Community network statistics\n` +
                   `• Recovery success metrics\n` +
                   `• Network activity analysis\n` +
-                  (carfaxConnected ? `• Carfax maintenance summary\n` : '') +
+                  (carfaxConnected ? `• Carfax Car Care maintenance summary\n` : '') +
                   `\n🚧 Future: Advanced GPS analytics coming soon!`);
         }
 
