@@ -359,68 +359,6 @@
             font-style: italic;
         }
 
-        /* Charts */
-        .chart-container {
-            background: var(--surface);
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-
-        .chart-visual {
-            text-align: center;
-            font-size: 1.2rem;
-            padding: 2rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-
-        /* Progress Bars */
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: #e0e0e0;
-            border-radius: 3px;
-            overflow: hidden;
-            margin: 0.5rem 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--success);
-            transition: width 0.3s ease;
-        }
-
-        /* Feature Lists */
-        .feature-list {
-            margin: 1rem 0;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .feature-item::before {
-            content: "✅";
-            margin-right: 0.5rem;
-        }
-
-        /* Coming Soon Banner */
-        .coming-soon-banner {
-            background: var(--warning);
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
         /* CarCare Status Badge */
         .carcare-badge {
             display: inline-flex;
@@ -706,237 +644,12 @@
                     </div>
                 </div>
 
-                <!-- Live Analytics Dashboard -->
-                <div class="card">
-                    <h2 class="card-title">📈 Live Analytics Dashboard</h2>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-icon">⚡</div>
-                            <div class="stat-value" id="response-time">0.8ms</div>
-                            <div class="stat-label">Response Time</div>
-                            <div class="stat-trend">↗ Improving</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">📊</div>
-                            <div class="stat-value" id="data-points">1,247</div>
-                            <div class="stat-label">Data Points</div>
-                            <div class="stat-trend">↗ Live</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">🎯</div>
-                            <div class="stat-value" id="recovery-rate">96.1%</div>
-                            <div class="stat-label">Recovery Rate</div>
-                            <div class="stat-trend">Industry Leading</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">😊</div>
-                            <div class="stat-value" id="satisfaction">98%</div>
-                            <div class="stat-label">User Satisfaction</div>
-                            <div class="stat-trend">Excellent</div>
-                        </div>
-                    </div>
-                    <div class="live-indicator">
-                        <div class="live-dot"></div>
-                        <span>Live updates every 3 seconds • Last: <span id="last-update">Just now</span></span>
-                    </div>
-                </div>
-
-                <!-- Vehicle Maintenance Hub with CarCare -->
-                <div class="card">
-                    <h2 class="card-title">🔧 Vehicle Maintenance Hub</h2>
-                    <div id="carcare-status">
-                        <div class="carcare-badge disconnected" id="carcareBadge">
-                            🔗 CarCare Status: Not Connected
-                        </div>
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-icon" id="carcare-status-icon">🔗</div>
-                            <div class="stat-value" id="carcare-status-text">Not Connected</div>
-                            <div class="stat-label">CarCare Status</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">🚗</div>
-                            <div class="stat-value" id="maintenance-vehicles">0</div>
-                            <div class="stat-label">Vehicles</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">📋</div>
-                            <div class="stat-value" id="service-records">0</div>
-                            <div class="stat-label">Service Records</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">🔔</div>
-                            <div class="stat-value" id="maintenance-alerts">0</div>
-                            <div class="stat-label">Active Alerts</div>
-                        </div>
-                    </div>
-                    <div class="feature-list">
-                        <div>🆓 Powered by FREE Carfax CarCare:</div>
-                        <div class="feature-item">Complete service history tracking</div>
-                        <div class="feature-item">Maintenance reminders and alerts</div>
-                        <div class="feature-item">Service cost monitoring</div>
-                        <div class="feature-item">Recall notifications and safety updates</div>
-                        <div class="feature-item">Automatic VIN-based history lookup</div>
-                    </div>
-                    <div id="carcare-connection-area">
-                        <div class="btn-group">
-                            <button class="btn btn-primary" id="connectCarCareBtn">🔗 Connect CarCare Account</button>
-                            <button class="btn btn-success" id="carfaxSignupBtn">🆓 Create FREE CarCare Account</button>
-                            <button class="btn btn-info" id="viewServiceHistoryBtn">📋 View Service History</button>
-                        </div>
-                    </div>
-                    <div id="carcare-connected-area" style="display: none;">
-                        <div class="btn-group">
-                            <button class="btn btn-info" id="syncCarfaxBtn">🔄 Sync CarCare Data</button>
-                            <button class="btn btn-success" id="viewFullHistoryBtn">📋 View Full History</button>
-                            <button class="btn btn-warning" id="manageCarfaxBtn">⚙️ Manage Account</button>
-                            <button class="btn btn-danger" id="disconnectCarfaxBtn">🔌 Disconnect</button>
-                        </div>
-                    </div>
-                    <div id="service-history-display" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--surface); border-radius: 8px;">
-                        <!-- Service history will be displayed here -->
-                    </div>
-                </div>
-
-                <!-- Cloud Sync & Collaboration -->
-                <div class="card">
-                    <h2 class="card-title">☁️ Cloud Sync & Collaboration</h2>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-icon">☁️</div>
-                            <div class="stat-value">99.8%</div>
-                            <div class="stat-label">Sync Accuracy</div>
-                            <div class="stat-trend">🟢 Excellent</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">📱</div>
-                            <div class="stat-value">3</div>
-                            <div class="stat-label">Devices Synced</div>
-                            <div class="stat-trend">🔄 Real-time</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">⏰</div>
-                            <div class="stat-value">2m ago</div>
-                            <div class="stat-label">Last Sync</div>
-                            <div class="stat-trend">📊 Auto</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">💾</div>
-                            <div class="stat-value">87%</div>
-                            <div class="stat-label">Cloud Storage</div>
-                            <div class="stat-trend">📈 Optimal</div>
-                        </div>
-                    </div>
-                    <div class="feature-list">
-                        <div>🌐 Enterprise Cloud Synchronization Status:</div>
-                        <div class="feature-item">Mobile App: Connected (this device)</div>
-                        <div class="feature-item">Web Dashboard: Synced (last active 2m ago)</div>
-                        <div class="feature-item">API Integration: Active (insurance partner)</div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-info" id="performCloudSyncBtn">🔄 Force Sync</button>
-                        <button class="btn btn-success" id="showCloudSettingsBtn">☁️ Cloud Settings</button>
-                    </div>
-                </div>
-
-                <!-- AI Photo Evidence Center -->
-                <div class="card">
-                    <h2 class="card-title">📸 AI Photo Evidence Center</h2>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-icon">📸</div>
-                            <div class="stat-value">23</div>
-                            <div class="stat-label">Photos Stored</div>
-                            <div class="stat-trend">🔒 Encrypted</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">🤖</div>
-                            <div class="stat-value">100%</div>
-                            <div class="stat-label">AI Analyzed</div>
-                            <div class="stat-trend">⚡ Real-time</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">⚠️</div>
-                            <div class="stat-value">0</div>
-                            <div class="stat-label">Damage Detected</div>
-                            <div class="stat-trend">🟢 None</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">📋</div>
-                            <div class="stat-value">5</div>
-                            <div class="stat-label">Reports Generated</div>
-                            <div class="stat-trend">📧 Auto-sent</div>
-                        </div>
-                    </div>
-                    <div class="feature-list">
-                        <div>🤖 Advanced AI Photo Analysis Capabilities:</div>
-                        <div class="feature-item">Computer vision damage detection (99.3% accuracy)</div>
-                        <div class="feature-item">License plate OCR (supports 50+ countries)</div>
-                        <div class="feature-item">Automatic photo categorization by incident type</div>
-                        <div class="feature-item">Insurance claim auto-generation</div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" id="startPhotoCaptureBtn">📸 Capture Evidence</button>
-                        <button class="btn btn-info" id="showPhotoGalleryBtn">🖼️ View Gallery</button>
-                        <button class="btn btn-success" id="showAIAnalysisBtn">🤖 AI Analysis</button>
-                    </div>
-                </div>
-
-                <!-- Smart Insurance Hub -->
-                <div class="card">
-                    <h2 class="card-title">🏛️ Smart Insurance Hub</h2>
-                    <div class="coming-soon-banner">
-                        🚧 COMING SOON - Insurance API Integration 🚧
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-icon">📋</div>
-                            <div class="stat-value">2</div>
-                            <div class="stat-label">Active Policies</div>
-                            <div class="stat-trend">🏛️ Connected</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">📊</div>
-                            <div class="stat-value">0</div>
-                            <div class="stat-label">Claims This Year</div>
-                            <div class="stat-trend">🟢 None</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">⚡</div>
-                            <div class="stat-value">2.1h</div>
-                            <div class="stat-label">Avg Process Time</div>
-                            <div class="stat-trend">🚀 Instant</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-icon">💰</div>
-                            <div class="stat-value">23%</div>
-                            <div class="stat-label">Annual Savings</div>
-                            <div class="stat-trend">📉 vs Manual</div>
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-danger" id="startAutomaticClaimBtn">🚨 File Claim</button>
-                        <button class="btn btn-info" id="showClaimTrackingBtn">📊 Track Claims</button>
-                    </div>
-                </div>
-
                 <!-- Emergency Response Center -->
                 <div class="card emergency-card">
                     <h2 class="card-title">🚨 Emergency Response Center</h2>
-                    <div class="feature-list">
-                        <div>Professional vehicle recovery services with insurance integration and community network support.</div>
-                        <div class="feature-item">Average Response Time: 4.3 minutes</div>
-                        <div class="feature-item">Recovery Success Rate: 96.1%</div>
-                        <div class="feature-item">Active Community Network: 47,892 users</div>
-                        <div class="feature-item">24/7 Professional Support Available</div>
-                    </div>
                     <div class="btn-group">
-                        <button class="btn btn-large" style="background: #fff; color: #ee5a24; font-weight: bold;" id="reportStolenBtn">🚨 REPORT VEHICLE STOLEN</button>
-                        <button class="btn btn-large" style="background: #fff; color: #00b894;" id="foundStolenBtn">🔍 I FOUND A STOLEN VEHICLE</button>
-                    </div>
-                    <div style="text-align: center; margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
-                        🆘 For immediate emergencies, always contact local authorities (911) first.
+                        <button class="btn btn-large" style="background: #fff; color: #ee5a24; font-weight: bold;" onclick="reportVehicleStolen()">🚨 REPORT VEHICLE STOLEN</button>
+                        <button class="btn btn-large" style="background: #fff; color: #00b894;" onclick="foundStolenVehicle()">🔍 I FOUND A STOLEN VEHICLE</button>
                     </div>
                 </div>
             </div>
@@ -946,47 +659,10 @@
                 <div class="card">
                     <h2 class="card-title">🚗 My Vehicles</h2>
                     <div class="btn-group">
-                        <button class="btn btn-primary btn-large" id="addVehicleBtn">➕ Add New Vehicle</button>
+                        <button class="btn btn-primary btn-large" onclick="showVehicleModal()">➕ Add New Vehicle</button>
                     </div>
                     <div id="vehicles-list">
                         <!-- Vehicles will be loaded here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recovery Content -->
-            <div id="recovery-content" class="content-section">
-                <div class="card emergency-card">
-                    <h2 class="card-title">🚨 Professional Recovery Center</h2>
-                    <div style="text-align: center; margin-bottom: 1.5rem;">
-                        <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">24/7 Emergency Response • Insurance Integration • Community Network</div>
-                        <div style="opacity: 0.9;">🟢 ALL SYSTEMS OPERATIONAL</div>
-                    </div>
-                    <div class="feature-list">
-                        <div>📱 Community-Powered Recovery Protocol:</div>
-                        <div class="feature-item">1️⃣ Contact 911 FIRST (Required by law)</div>
-                        <div class="feature-item">2️⃣ Use CarTrace Pro emergency reporting</div>
-                        <div class="feature-item">3️⃣ Insurance claim auto-filed</div>
-                        <div class="feature-item">4️⃣ Community network alerted (47,892 users)</div>
-                        <div class="feature-item">5️⃣ Push notifications sent to all app users</div>
-                        <div class="feature-item">6️⃣ Recovery team dispatched</div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-large" style="background: #fff; color: #ee5a24;" id="reportStolenBtn2">🚨 REPORT VEHICLE STOLEN</button>
-                        <button class="btn btn-large" style="background: #fff; color: #00b894;" id="foundStolenBtn2">🔍 I FOUND A STOLEN VEHICLE</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Alerts Content -->
-            <div id="alerts-content" class="content-section">
-                <div class="card">
-                    <h2 class="card-title">🔔 Security Operations Center</h2>
-                    <div style="text-align: center; margin-bottom: 1.5rem; color: var(--success);">
-                        🟢 ALL SYSTEMS SECURE • Real-time Monitoring Active
-                    </div>
-                    <div id="alerts-list">
-                        <!-- Alert items will be added here -->
                     </div>
                 </div>
             </div>
@@ -1002,18 +678,9 @@
                             <strong>Account Type:</strong> CarTrace Pro Premium<br>
                             <strong>Member Since:</strong> <span id="memberSince">Loading...</span>
                         </div>
-                        
-                        <h3>🔧 App Settings:</h3>
-                        <div class="feature-list">
-                            <div class="feature-item">Notifications: Enabled</div>
-                            <div class="feature-item">Auto-Lock: 30 seconds</div>
-                            <div class="feature-item">Biometric Login: Enabled</div>
-                            <div class="feature-item">Emergency Contacts: 3 configured</div>
-                        </div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-primary btn-large" id="manageSubscriptionBtn">💎 Manage Subscription</button>
-                        <button class="btn btn-secondary" id="logoutBtn2">🚪 Sign Out</button>
+                        <button class="btn btn-secondary" onclick="logout()">🚪 Sign Out</button>
                     </div>
                 </div>
             </div>
@@ -1027,7 +694,7 @@
                     <button class="close-btn" onclick="closeVehicleModal()">&times;</button>
                 </div>
                 
-                <form id="vehicleForm">
+                <form id="vehicleForm" onsubmit="handleVehicleSubmit(event)">
                     <div class="form-group">
                         <label class="form-label">Year</label>
                         <select class="form-control" id="vehicleYear" required>
@@ -1037,7 +704,7 @@
 
                     <div class="form-group">
                         <label class="form-label">Make</label>
-                        <select class="form-control" id="vehicleMake" required>
+                        <select class="form-control" id="vehicleMake" required onchange="populateModelDropdown(this.value)">
                             <option value="">Select Make</option>
                         </select>
                     </div>
@@ -1068,10 +735,6 @@
                             <option value="Yellow">Yellow</option>
                             <option value="Purple">Purple</option>
                             <option value="Maroon">Maroon</option>
-                            <option value="Charcoal">Charcoal</option>
-                            <option value="Pearl White">Pearl White</option>
-                            <option value="Metallic Gray">Metallic Gray</option>
-                            <option value="Midnight Blue">Midnight Blue</option>
                         </select>
                     </div>
 
@@ -1082,8 +745,7 @@
 
                     <div class="form-group">
                         <label class="form-label">VIN (Vehicle Identification Number)</label>
-                        <input type="text" class="form-control" id="vehicleVIN" placeholder="17-character VIN (for Carfax integration)" maxlength="17" style="text-transform: uppercase;">
-                        <small style="color: #666; font-size: 0.85rem;">Optional but recommended for Carfax service history</small>
+                        <input type="text" class="form-control" id="vehicleVIN" placeholder="17-character VIN (optional)" maxlength="17" style="text-transform: uppercase;">
                     </div>
 
                     <div class="form-group">
@@ -1128,29 +790,432 @@
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <div class="nav-container" id="navContainer">
-                <div class="nav-item active" data-section="dashboard">
+                <div class="nav-item active" data-section="dashboard" onclick="showContent('dashboard')">
                     <div class="nav-icon">📊</div>
                     <div class="nav-label">Dashboard</div>
                 </div>
-                <div class="nav-item" data-section="vehicles">
+                <div class="nav-item" data-section="vehicles" onclick="showContent('vehicles')">
                     <div class="nav-icon">🚗</div>
                     <div class="nav-label">Vehicles</div>
                 </div>
-                <div class="nav-item" data-section="recovery">
-                    <div class="nav-icon">🚨</div>
-                    <div class="nav-label">Recovery</div>
-                </div>
-                <div class="nav-item" data-section="alerts">
-                    <div class="nav-icon">🔔</div>
-                    <div class="nav-label">Alerts</div>
-                </div>
-                <div class="nav-item" data-section="settings">
+                <div class="nav-item" data-section="settings" onclick="showContent('settings')">
                     <div class="nav-icon">⚙️</div>
                     <div class="nav-label">Settings</div>
                 </div>
             </div>
         </nav>
     </div>
+
+    <!-- Global Variables and Functions (Before Firebase) -->
+    <script>
+        // Vehicle Data
+        const vehicleData = {
+            makes: {
+                'Acura': ['ILX', 'TLX', 'RDX', 'MDX', 'NSX'],
+                'Alfa Romeo': ['Giulia', 'Stelvio', 'Tonale'],
+                'Audi': ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron'],
+                'BMW': ['2 Series', '3 Series', '4 Series', '5 Series', '7 Series', '8 Series', 'X1', 'X3', 'X5', 'X7', 'M3', 'M5'],
+                'Buick': ['Encore', 'Encore GX', 'Envision', 'Enclave'],
+                'Cadillac': ['CT4', 'CT5', 'XT4', 'XT5', 'XT6', 'Escalade', 'Lyriq'],
+                'Chevrolet': ['Spark', 'Malibu', 'Camaro', 'Corvette', 'Trax', 'Equinox', 'Blazer', 'Traverse', 'Tahoe', 'Suburban', 'Colorado', 'Silverado'],
+                'Chrysler': ['300', 'Pacifica', 'Voyager'],
+                'Dodge': ['Charger', 'Challenger', 'Durango', 'Hornet'],
+                'Ford': ['Mustang', 'Escape', 'Edge', 'Explorer', 'Expedition', 'Bronco', 'F-150', 'F-250', 'Ranger', 'Maverick'],
+                'Genesis': ['G70', 'G80', 'G90', 'GV60', 'GV70', 'GV80'],
+                'GMC': ['Terrain', 'Acadia', 'Yukon', 'Canyon', 'Sierra', 'Hummer EV'],
+                'Honda': ['Civic', 'Accord', 'Insight', 'HR-V', 'CR-V', 'Pilot', 'Passport', 'Ridgeline', 'Odyssey'],
+                'Hyundai': ['Accent', 'Elantra', 'Sonata', 'Venue', 'Kona', 'Tucson', 'Santa Fe', 'Palisade', 'Ioniq'],
+                'Infiniti': ['Q50', 'Q60', 'QX50', 'QX55', 'QX60', 'QX80'],
+                'Jaguar': ['XE', 'XF', 'F-Type', 'E-Pace', 'F-Pace', 'I-Pace'],
+                'Jeep': ['Renegade', 'Compass', 'Cherokee', 'Grand Cherokee', 'Wrangler', 'Gladiator', 'Wagoneer'],
+                'Kia': ['Rio', 'Forte', 'K5', 'Stinger', 'Seltos', 'Sportage', 'Sorento', 'Telluride', 'Carnival', 'EV6'],
+                'Lamborghini': ['Huracán', 'Aventador', 'Urus', 'Revuelto'],
+                'Land Rover': ['Defender', 'Discovery', 'Discovery Sport', 'Range Rover', 'Range Rover Sport', 'Range Rover Velar'],
+                'Lexus': ['IS', 'ES', 'GS', 'LS', 'RC', 'LC', 'UX', 'NX', 'RX', 'GX', 'LX'],
+                'Lincoln': ['Corsair', 'Nautilus', 'Aviator', 'Navigator'],
+                'Mazda': ['Mazda3', 'Mazda6', 'CX-30', 'CX-5', 'CX-50', 'CX-9', 'CX-90', 'MX-5 Miata'],
+                'Mercedes-Benz': ['A-Class', 'C-Class', 'E-Class', 'S-Class', 'CLA', 'CLS', 'GLA', 'GLC', 'GLE', 'GLS', 'G-Class'],
+                'Mini': ['Cooper', 'Cooper S', 'Clubman', 'Countryman'],
+                'Mitsubishi': ['Mirage', 'Eclipse Cross', 'Outlander', 'Outlander Sport'],
+                'Nissan': ['Versa', 'Sentra', 'Altima', 'Maxima', 'Kicks', 'Rogue', 'Murano', 'Pathfinder', 'Armada', 'Frontier', 'Titan', 'Leaf', 'Ariya'],
+                'Porsche': ['718 Cayman', '718 Boxster', '911', 'Panamera', 'Macan', 'Cayenne', 'Taycan'],
+                'Ram': ['1500', '2500', '3500', 'ProMaster'],
+                'Subaru': ['Impreza', 'Legacy', 'WRX', 'BRZ', 'Crosstrek', 'Forester', 'Outback', 'Ascent'],
+                'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
+                'Toyota': ['Corolla', 'Camry', 'Avalon', 'Prius', 'GR86', 'Supra', 'C-HR', 'RAV4', 'Venza', 'Highlander', '4Runner', 'Sequoia', 'Tacoma', 'Tundra'],
+                'Volkswagen': ['Jetta', 'Passat', 'Arteon', 'Golf', 'Golf GTI', 'Taos', 'Tiguan', 'Atlas'],
+                'Volvo': ['S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90']
+            }
+        };
+
+        // Global variables
+        let selectedPlan = null;
+        let currentUser = null;
+        let userVehicles = [];
+
+        // Initialize dropdowns when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing...');
+            initializeDropdowns();
+        });
+
+        // Initialize Dropdowns
+        function initializeDropdowns() {
+            populateYearDropdown();
+            populateMakeDropdown();
+        }
+
+        // Populate Year Dropdown
+        function populateYearDropdown() {
+            const yearSelect = document.getElementById('vehicleYear');
+            if (!yearSelect) return;
+            
+            yearSelect.innerHTML = '<option value="">Select Year</option>';
+            
+            for (let year = 2026; year >= 2000; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // Populate Make Dropdown
+        function populateMakeDropdown() {
+            const makeSelect = document.getElementById('vehicleMake');
+            if (!makeSelect) return;
+            
+            makeSelect.innerHTML = '<option value="">Select Make</option>';
+            
+            Object.keys(vehicleData.makes).sort().forEach(make => {
+                const option = document.createElement('option');
+                option.value = make;
+                option.textContent = make;
+                makeSelect.appendChild(option);
+            });
+        }
+
+        // Populate Model Dropdown
+        function populateModelDropdown(make) {
+            const modelSelect = document.getElementById('vehicleModel');
+            if (!modelSelect) return;
+            
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            
+            if (make && vehicleData.makes[make]) {
+                vehicleData.makes[make].forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Select Plan
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            const selectedOption = document.querySelector(`[data-plan="${plan}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
+        }
+
+        // Show Vehicle Modal
+        function showVehicleModal() {
+            console.log('Opening vehicle modal...');
+            const modal = document.getElementById('addVehicleModal');
+            if (modal) {
+                modal.classList.add('show');
+                initializeDropdowns(); // Re-initialize dropdowns when modal opens
+            }
+        }
+
+        // Close Vehicle Modal
+        function closeVehicleModal() {
+            const modal = document.getElementById('addVehicleModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+            document.getElementById('vehicleForm').reset();
+            selectedPlan = null;
+            document.querySelectorAll('.plan-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+        }
+
+        // Handle Vehicle Form Submit
+        function handleVehicleSubmit(event) {
+            event.preventDefault();
+            
+            if (!selectedPlan) {
+                alert('Please select a protection plan');
+                return;
+            }
+
+            const year = document.getElementById('vehicleYear').value;
+            const make = document.getElementById('vehicleMake').value;
+            const model = document.getElementById('vehicleModel').value;
+            const color = document.getElementById('vehicleColor').value;
+            const license = document.getElementById('vehicleLicense').value;
+            const vin = document.getElementById('vehicleVIN').value.toUpperCase();
+            const features = document.getElementById('vehicleFeatures').value;
+
+            const vehicleId = Date.now().toString();
+            const vehicle = {
+                id: vehicleId,
+                year,
+                make,
+                model,
+                color,
+                license,
+                vin: vin || null,
+                features,
+                plan: selectedPlan,
+                addedDate: new Date().toISOString()
+            };
+
+            // Save to Firebase if available
+            if (window.firebaseRef && window.firebaseSet && window.currentUser) {
+                const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
+                window.firebaseSet(vehicleRef, vehicle)
+                    .then(() => {
+                        alert('✅ Vehicle added successfully!');
+                        closeVehicleModal();
+                    })
+                    .catch((error) => {
+                        alert('❌ Error adding vehicle: ' + error.message);
+                    });
+            } else {
+                // Save locally if Firebase not available
+                userVehicles.push(vehicle);
+                updateVehicleDisplay();
+                alert('✅ Vehicle added successfully (local only)!');
+                closeVehicleModal();
+            }
+        }
+
+        // Show Content Section
+        function showContent(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(sectionId + '-content');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const targetNav = document.querySelector(`[data-section="${sectionId}"]`);
+            if (targetNav) {
+                targetNav.classList.add('active');
+            }
+        }
+
+        // Update Vehicle Display
+        function updateVehicleDisplay() {
+            const vehiclesList = document.getElementById('vehicles-list');
+            if (!vehiclesList) return;
+            
+            vehiclesList.innerHTML = '';
+            
+            if (!userVehicles || userVehicles.length === 0) {
+                vehiclesList.innerHTML = '<p style="text-align: center; color: #757575; padding: 2rem;">No vehicles added yet. Click "Add New Vehicle" to get started!</p>';
+                document.getElementById('vehicle-count').textContent = '0';
+                return;
+            }
+
+            document.getElementById('vehicle-count').textContent = userVehicles.length;
+
+            userVehicles.forEach(vehicle => {
+                const vehicleCard = createVehicleCard(vehicle);
+                vehiclesList.appendChild(vehicleCard);
+            });
+        }
+
+        // Create Vehicle Card
+        function createVehicleCard(vehicle) {
+            const card = document.createElement('div');
+            card.className = 'vehicle-card';
+            
+            const planEmoji = {
+                'BASIC': '🥉',
+                'GOLD': '🥈',
+                'PLATINUM': '🥇',
+                'DIAMOND': '💎'
+            }[vehicle.plan] || '🚗';
+
+            const rewardAmount = {
+                'BASIC': '$200',
+                'GOLD': '$300',
+                'PLATINUM': '$500',
+                'DIAMOND': '$750'
+            }[vehicle.plan] || '$200';
+
+            let vehicleDetails = `🎨 Color: ${vehicle.color}
+🏷️ License: ${vehicle.license}`;
+
+            if (vehicle.vin) {
+                vehicleDetails += `
+🔑 VIN: ${vehicle.vin}`;
+            }
+
+            if (vehicle.features) {
+                vehicleDetails += `
+✨ Features: ${vehicle.features}`;
+            }
+
+            vehicleDetails += `
+${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
+📍 Status: ACTIVE`;
+
+            card.innerHTML = `
+                <div class="vehicle-title">${planEmoji} ${vehicle.year} ${vehicle.make} ${vehicle.model}</div>
+                <div class="vehicle-details">${vehicleDetails}</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showVehicleDetails('${vehicle.id}')">📋 Details</button>
+                    <button class="btn btn-danger" onclick="removeVehicle('${vehicle.id}')">🗑️ Remove</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Show Vehicle Details
+        function showVehicleDetails(vehicleId) {
+            const vehicle = userVehicles.find(v => v.id === vehicleId);
+            if (vehicle) {
+                let details = `📋 VEHICLE DETAILS\n\n` +
+                      `🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
+                      `🎨 Color: ${vehicle.color}\n` +
+                      `🏷️ License: ${vehicle.license}\n`;
+                
+                if (vehicle.vin) {
+                    details += `🔑 VIN: ${vehicle.vin}\n`;
+                }
+                
+                details += `📋 Plan: ${vehicle.plan}\n`;
+                
+                if (vehicle.features) {
+                    details += `✨ Features: ${vehicle.features}\n`;
+                }
+                
+                details += `📅 Added: ${new Date(vehicle.addedDate).toLocaleDateString()}`;
+                      
+                alert(details);
+            }
+        }
+
+        // Remove Vehicle
+        function removeVehicle(vehicleId) {
+            const vehicle = userVehicles.find(v => v.id === vehicleId);
+            if (!vehicle) return;
+            
+            if (confirm(`Are you sure you want to remove this vehicle?\n\n🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n🏷️ License: ${vehicle.license}`)) {
+                if (window.firebaseRef && window.firebaseRemove && window.currentUser) {
+                    const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
+                    window.firebaseRemove(vehicleRef)
+                        .then(() => {
+                            alert('✅ Vehicle removed successfully!');
+                        })
+                        .catch((error) => {
+                            alert('❌ Error removing vehicle: ' + error.message);
+                        });
+                } else {
+                    // Remove locally
+                    userVehicles = userVehicles.filter(v => v.id !== vehicleId);
+                    updateVehicleDisplay();
+                    alert('✅ Vehicle removed successfully!');
+                }
+            }
+        }
+
+        // Report Vehicle Stolen
+        function reportVehicleStolen() {
+            if (!userVehicles || userVehicles.length === 0) {
+                alert('❌ No vehicles found!\n\nPlease add a vehicle first before reporting it stolen.');
+                return;
+            }
+
+            if (!confirm('🚨 EMERGENCY PROTOCOL\n\n' +
+                        '⚠️ Have you contacted 911 first?\n\n' +
+                        'You must report to police before using recovery services.')) {
+                alert('📞 Please call 911 first, then return to CarTrace Pro.');
+                return;
+            }
+
+            let selectedVehicle = null;
+            
+            if (userVehicles.length === 1) {
+                selectedVehicle = userVehicles[0];
+            } else {
+                let vehicleOptions = 'Select the stolen vehicle:\n\n';
+                userVehicles.forEach((v, i) => {
+                    vehicleOptions += `${i + 1}. ${v.year} ${v.make} ${v.model} (${v.license})\n`;
+                });
+                
+                const selection = prompt(vehicleOptions + '\nEnter number:');
+                if (selection && !isNaN(selection)) {
+                    selectedVehicle = userVehicles[parseInt(selection) - 1];
+                }
+            }
+
+            if (selectedVehicle) {
+                const caseId = 'CVR-' + Date.now();
+                alert(`🚨 THEFT REPORT ACTIVATED\n\n` +
+                      `✅ Case ID: ${caseId}\n` +
+                      `🚗 Vehicle: ${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}\n` +
+                      `🏷️ License: ${selectedVehicle.license}\n\n` +
+                      `📱 Community Alert Status:\n` +
+                      `• 47,892 users notified\n` +
+                      `• Push notifications sent\n` +
+                      `• Recovery team dispatched`);
+            }
+        }
+
+        // Found Stolen Vehicle
+        function foundStolenVehicle() {
+            const licensePlate = prompt('Enter the license plate of the found vehicle:');
+            const location = prompt('Enter the current location/address:');
+            
+            if (licensePlate && location) {
+                const reportId = 'FVR-' + Date.now();
+                alert(`📋 FOUND VEHICLE REPORT SUBMITTED\n\n` +
+                      `🏷️ License Plate: ${licensePlate}\n` +
+                      `📍 Location: ${location}\n\n` +
+                      `✅ Report ID: ${reportId}\n` +
+                      `✅ Authorities notified\n` +
+                      `💰 Reward eligibility: Under review\n\n` +
+                      `Thank you for helping our community!`);
+            }
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to sign out?')) {
+                if (window.firebaseSignOut && window.firebaseAuth) {
+                    window.firebaseSignOut(window.firebaseAuth).then(() => {
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        window.location.href = 'cartrace_homepage.html';
+                    }).catch((error) => {
+                        console.error('Logout error:', error);
+                        window.location.href = 'cartrace_homepage.html';
+                    });
+                } else {
+                    // If Firebase not available, just redirect
+                    window.location.href = 'cartrace_homepage.html';
+                }
+            }
+        }
+    </script>
 
     <!-- Firebase Module Script -->
     <script type="module">
@@ -1188,1040 +1253,28 @@
         window.firebaseOff = off;
         window.firebaseSignOut = signOut;
 
-        // Global variables
-        let currentUser = null;
-        let userVehicles = [];
-        let carcareConnected = false;
-
-        // Real-time data variables
-        let networkUptime = 99.97;
-        let responseTime = 0.8;
-        let securityScore = 95;
-        let dataPoints = 1247;
-
         // Check authentication state
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                currentUser = user;
-                window.currentUser = user; // Make it globally available
+                window.currentUser = user;
                 
                 // Update UI with user info
-                document.getElementById('userDisplay').textContent = user.email;
-                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userDisplay').textContent = user.email || 'User';
+                document.getElementById('userEmail').textContent = user.email || 'Not set';
                 document.getElementById('memberSince').textContent = new Date(user.metadata.creationTime).toLocaleDateString();
                 
-                // Load user data
-                loadUserData();
-                startRealTimeUpdates();
+                // Load vehicles
+                const vehiclesRef = ref(database, `vehicles/${user.uid}`);
+                onValue(vehiclesRef, (snapshot) => {
+                    const data = snapshot.val();
+                    window.userVehicles = data ? Object.values(data) : [];
+                    updateVehicleDisplay();
+                });
             } else {
                 // Redirect to login page if not authenticated
                 window.location.href = 'cartrace_homepage.html';
             }
         });
-
-        // Load user data
-        async function loadUserData() {
-            try {
-                // Load vehicles
-                const vehiclesRef = ref(database, `vehicles/${currentUser.uid}`);
-                onValue(vehiclesRef, (snapshot) => {
-                    const data = snapshot.val();
-                    userVehicles = data ? Object.values(data) : [];
-                    window.userVehicles = userVehicles; // Make globally available
-                    updateVehicleDisplay();
-                    updateVehicleCount();
-                });
-
-                // Load CarCare status
-                const carcareRef = ref(database, `carcare/${currentUser.uid}`);
-                const carcareSnapshot = await get(carcareRef);
-                if (carcareSnapshot.exists()) {
-                    carcareConnected = carcareSnapshot.val().connected || false;
-                    window.carcareConnected = carcareConnected;
-                    updateCarCareStatus();
-                }
-
-                // Load alerts
-                loadAlerts();
-            } catch (error) {
-                console.error('Error loading user data:', error);
-            }
-        }
-
-        // Update vehicle display
-        function updateVehicleDisplay() {
-            const vehiclesList = document.getElementById('vehicles-list');
-            vehiclesList.innerHTML = '';
-            
-            if (userVehicles.length === 0) {
-                vehiclesList.innerHTML = '<p style="text-align: center; color: #757575; padding: 2rem;">No vehicles added yet. Click "Add New Vehicle" to get started!</p>';
-                return;
-            }
-
-            userVehicles.forEach(vehicle => {
-                const vehicleCard = createVehicleCard(vehicle);
-                vehiclesList.appendChild(vehicleCard);
-            });
-        }
-
-        // Update vehicle display (moved to global scope)
-        function updateVehicleDisplay() {
-            const vehiclesList = document.getElementById('vehicles-list');
-            if (!vehiclesList) return;
-            
-            vehiclesList.innerHTML = '';
-            
-            if (!window.userVehicles || window.userVehicles.length === 0) {
-                vehiclesList.innerHTML = '<p style="text-align: center; color: #757575; padding: 2rem;">No vehicles added yet. Click "Add New Vehicle" to get started!</p>';
-                return;
-            }
-
-            window.userVehicles.forEach(vehicle => {
-                const vehicleCard = createVehicleCard(vehicle);
-                vehiclesList.appendChild(vehicleCard);
-            });
-        }
-
-        // Update vehicle count (moved to global scope)
-        function updateVehicleCount() {
-            const vehicleCount = window.userVehicles ? window.userVehicles.length : 0;
-            document.getElementById('vehicle-count').textContent = vehicleCount;
-            document.getElementById('maintenance-vehicles').textContent = vehicleCount;
-        }
-
-        // Create vehicle card
-        function createVehicleCard(vehicle) {
-            const card = document.createElement('div');
-            card.className = 'vehicle-card';
-            
-            const planEmoji = {
-                'BASIC': '🥉',
-                'GOLD': '🥈',
-                'PLATINUM': '🥇',
-                'DIAMOND': '💎'
-            }[vehicle.plan] || '🚗';
-
-            const rewardAmount = {
-                'BASIC': '$200',
-                'GOLD': '$300',
-                'PLATINUM': '$500',
-                'DIAMOND': '$750'
-            }[vehicle.plan] || '$200';
-
-            let vehicleDetails = `🎨 Color: ${vehicle.color}
-🏷️ License: ${vehicle.license}`;
-
-            if (vehicle.vin) {
-                vehicleDetails += `
-🔑 VIN: ${vehicle.vin}`;
-            }
-
-            if (vehicle.features) {
-                vehicleDetails += `
-✨ Features: ${vehicle.features}`;
-            }
-
-            vehicleDetails += `
-${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
-📍 Status: ACTIVE`;
-
-            // Add Carfax sync button if VIN exists
-            let carfaxButton = '';
-            if (vehicle.vin) {
-                carfaxButton = `<button class="btn btn-success" onclick="syncSpecificVehicle('${vehicle.vin}')">🔄 Sync Carfax</button>`;
-            }
-
-            card.innerHTML = `
-                <div class="vehicle-title">${planEmoji} ${vehicle.year} ${vehicle.make} ${vehicle.model}</div>
-                <div class="vehicle-details">${vehicleDetails}</div>
-                <div class="btn-group">
-                    <button class="btn btn-info" onclick="showVehicleDetails('${vehicle.id}')">📋 Details</button>
-                    ${carfaxButton}
-                    <button class="btn btn-warning" onclick="editVehicle('${vehicle.id}')">✏️ Edit</button>
-                    <button class="btn btn-danger" onclick="removeVehicle('${vehicle.id}')">🗑️ Remove</button>
-                </div>
-            `;
-            
-            return card;
-        }
-
-        // Update vehicle count
-        function updateVehicleCount() {
-            document.getElementById('vehicle-count').textContent = userVehicles.length;
-            document.getElementById('maintenance-vehicles').textContent = userVehicles.length;
-        }
-
-        // Update CarCare status
-        function updateCarCareStatus() {
-            const statusBadge = document.querySelector('.carcare-badge');
-            const statusIcon = document.getElementById('carcare-status-icon');
-            const statusText = document.getElementById('carcare-status-text');
-            
-            if (carcareConnected) {
-                statusBadge.classList.remove('disconnected');
-                statusBadge.innerHTML = '✅ CarCare Status: Connected';
-                statusIcon.textContent = '✅';
-                statusText.textContent = 'Connected';
-                document.getElementById('service-records').textContent = '12';
-                document.getElementById('maintenance-alerts').textContent = '2';
-            } else {
-                statusBadge.classList.add('disconnected');
-                statusBadge.innerHTML = '🔗 CarCare Status: Not Connected';
-                statusIcon.textContent = '🔗';
-                statusText.textContent = 'Not Connected';
-                document.getElementById('service-records').textContent = '0';
-                document.getElementById('maintenance-alerts').textContent = '0';
-            }
-        }
-
-        // Load alerts
-        function loadAlerts() {
-            const alertsList = document.getElementById('alerts-list');
-            const sampleAlerts = [
-                {
-                    icon: '🟢',
-                    title: 'Security Scan Complete',
-                    description: 'All vehicles - No threats detected',
-                    time: '2 min ago'
-                },
-                {
-                    icon: '🔄',
-                    title: 'System Update',
-                    description: 'CarTrace Pro v3.1 installed successfully',
-                    time: '15 min ago'
-                },
-                {
-                    icon: '🛡️',
-                    title: 'Network Security Check',
-                    description: 'Community network scanned - All secure',
-                    time: '1 hour ago'
-                }
-            ];
-
-            alertsList.innerHTML = '';
-            sampleAlerts.forEach(alert => {
-                const alertItem = createAlertItem(alert);
-                alertsList.appendChild(alertItem);
-            });
-        }
-
-        // Create alert item
-        function createAlertItem(alert) {
-            const item = document.createElement('div');
-            item.className = 'alert-item';
-            item.innerHTML = `
-                <div class="alert-icon">${alert.icon}</div>
-                <div class="alert-content">
-                    <div class="alert-title">${alert.title}</div>
-                    <div class="alert-desc">${alert.description}</div>
-                    <div class="alert-time">${alert.time}</div>
-                </div>
-            `;
-            return item;
-        }
-
-        // Real-time updates
-        function startRealTimeUpdates() {
-            setInterval(updateLiveData, 3000);
-        }
-
-        function updateLiveData() {
-            const random = Math.random();
-            
-            if (random < 0.4) {
-                networkUptime = Math.max(99.90, Math.min(99.99, networkUptime + (Math.random() - 0.5) * 0.02));
-                responseTime = Math.max(0.5, Math.min(1.2, responseTime + (Math.random() - 0.5) * 0.1));
-                securityScore = Math.max(90, Math.min(100, securityScore + Math.floor((Math.random() - 0.5) * 3)));
-                dataPoints += Math.floor(Math.random() * 10);
-            }
-
-            document.getElementById('network-uptime').textContent = networkUptime.toFixed(2) + '%';
-            document.getElementById('response-time').textContent = responseTime.toFixed(1) + 'ms';
-            document.getElementById('security-score').textContent = securityScore;
-            document.getElementById('data-points').textContent = dataPoints.toLocaleString();
-            document.getElementById('active-users').textContent = (47892 + Math.floor(Math.random() * 100)).toLocaleString();
-            
-            const now = new Date();
-            document.getElementById('last-update').textContent = now.toLocaleTimeString();
-        }
-
-        // Make functions globally available
-        window.updateVehicleDisplay = updateVehicleDisplay;
-        window.updateCarCareStatus = updateCarCareStatus;
-        window.loadAlerts = loadAlerts;
-    </script>
-
-    <!-- Global Functions Script -->
-    <script>
-        // Vehicle Data
-        const vehicleData = {
-            makes: {
-                'Acura': ['ILX', 'TLX', 'RDX', 'MDX', 'NSX'],
-                'Alfa Romeo': ['Giulia', 'Stelvio', 'Tonale'],
-                'Audi': ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron', 'RS3', 'RS5', 'RS7'],
-                'BMW': ['2 Series', '3 Series', '4 Series', '5 Series', '7 Series', '8 Series', 'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'M3', 'M4', 'M5', 'M8', 'i4', 'iX'],
-                'Buick': ['Encore', 'Encore GX', 'Envision', 'Enclave'],
-                'Cadillac': ['CT4', 'CT5', 'XT4', 'XT5', 'XT6', 'Escalade', 'Lyriq'],
-                'Chevrolet': ['Spark', 'Sonic', 'Malibu', 'Camaro', 'Corvette', 'Trax', 'Equinox', 'Blazer', 'Traverse', 'Tahoe', 'Suburban', 'Colorado', 'Silverado', 'Bolt'],
-                'Chrysler': ['300', 'Pacifica', 'Voyager'],
-                'Dodge': ['Charger', 'Challenger', 'Durango', 'Hornet'],
-                'Ferrari': ['Roma', 'F8 Tributo', 'SF90 Stradale', '812', 'Portofino', 'Purosangue'],
-                'Fiat': ['500', '500X'],
-                'Ford': ['Mustang', 'Escape', 'Edge', 'Explorer', 'Expedition', 'Bronco', 'Bronco Sport', 'F-150', 'F-250', 'F-350', 'Ranger', 'Maverick', 'Lightning'],
-                'Genesis': ['G70', 'G80', 'G90', 'GV60', 'GV70', 'GV80'],
-                'GMC': ['Terrain', 'Acadia', 'Yukon', 'Canyon', 'Sierra', 'Hummer EV'],
-                'Honda': ['Civic', 'Accord', 'Insight', 'HR-V', 'CR-V', 'Pilot', 'Passport', 'Ridgeline', 'Odyssey'],
-                'Hyundai': ['Accent', 'Elantra', 'Sonata', 'Venue', 'Kona', 'Tucson', 'Santa Fe', 'Palisade', 'Ioniq', 'Ioniq 5', 'Ioniq 6'],
-                'Infiniti': ['Q50', 'Q60', 'QX50', 'QX55', 'QX60', 'QX80'],
-                'Jaguar': ['XE', 'XF', 'F-Type', 'E-Pace', 'F-Pace', 'I-Pace'],
-                'Jeep': ['Renegade', 'Compass', 'Cherokee', 'Grand Cherokee', 'Wrangler', 'Gladiator', 'Wagoneer', 'Grand Wagoneer'],
-                'Kia': ['Rio', 'Forte', 'K5', 'Stinger', 'Seltos', 'Sportage', 'Sorento', 'Telluride', 'Carnival', 'EV6', 'Niro'],
-                'Lamborghini': ['Huracán', 'Aventador', 'Urus', 'Revuelto'],
-                'Land Rover': ['Defender', 'Discovery', 'Discovery Sport', 'Range Rover', 'Range Rover Sport', 'Range Rover Velar', 'Range Rover Evoque'],
-                'Lexus': ['IS', 'ES', 'GS', 'LS', 'RC', 'LC', 'UX', 'NX', 'RX', 'GX', 'LX', 'RZ'],
-                'Lincoln': ['Corsair', 'Nautilus', 'Aviator', 'Navigator'],
-                'Lucid': ['Air', 'Gravity'],
-                'Maserati': ['Ghibli', 'Quattroporte', 'Levante', 'MC20', 'Grecale'],
-                'Mazda': ['Mazda3', 'Mazda6', 'CX-30', 'CX-5', 'CX-50', 'CX-9', 'CX-90', 'MX-5 Miata'],
-                'McLaren': ['570S', '720S', '765LT', 'Artura', 'GT'],
-                'Mercedes-Benz': ['A-Class', 'C-Class', 'E-Class', 'S-Class', 'CLA', 'CLS', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS', 'G-Class', 'EQB', 'EQE', 'EQS', 'AMG GT'],
-                'Mini': ['Cooper', 'Cooper S', 'Clubman', 'Countryman', 'Electric'],
-                'Mitsubishi': ['Mirage', 'Eclipse Cross', 'Outlander', 'Outlander Sport'],
-                'Nissan': ['Versa', 'Sentra', 'Altima', 'Maxima', 'Kicks', 'Rogue', 'Murano', 'Pathfinder', 'Armada', 'Frontier', 'Titan', 'Leaf', 'Ariya', 'Z'],
-                'Polestar': ['1', '2', '3'],
-                'Porsche': ['718 Cayman', '718 Boxster', '911', 'Panamera', 'Macan', 'Cayenne', 'Taycan'],
-                'Ram': ['1500', '2500', '3500', 'ProMaster'],
-                'Rivian': ['R1T', 'R1S'],
-                'Rolls-Royce': ['Ghost', 'Wraith', 'Dawn', 'Phantom', 'Cullinan', 'Spectre'],
-                'Subaru': ['Impreza', 'Legacy', 'WRX', 'BRZ', 'Crosstrek', 'Forester', 'Outback', 'Ascent', 'Solterra'],
-                'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
-                'Toyota': ['Corolla', 'Camry', 'Avalon', 'Prius', 'Mirai', 'GR86', 'Supra', 'C-HR', 'RAV4', 'Venza', 'Highlander', '4Runner', 'Sequoia', 'Land Cruiser', 'Tacoma', 'Tundra', 'bZ4X'],
-                'Volkswagen': ['Jetta', 'Passat', 'Arteon', 'Golf', 'Golf GTI', 'Golf R', 'Taos', 'Tiguan', 'Atlas', 'Atlas Cross Sport', 'ID.4'],
-                'Volvo': ['S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90', 'C40 Recharge']
-            }
-        };
-
-        let selectedPlan = null;
-
-        // Navigation function
-        function showContent(sectionId) {
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionId + '-content').classList.add('active');
-            
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
-        }
-
-        // Vehicle Modal Functions
-        function showVehicleModal() {
-            const modal = document.getElementById('addVehicleModal');
-            modal.classList.add('show');
-            populateYearDropdown();
-            populateMakeDropdown();
-            selectedPlan = null;
-            document.querySelectorAll('.plan-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-        }
-
-        function closeVehicleModal() {
-            const modal = document.getElementById('addVehicleModal');
-            modal.classList.remove('show');
-            document.getElementById('vehicleForm').reset();
-            selectedPlan = null;
-            document.querySelectorAll('.plan-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-        }
-
-        function populateYearDropdown() {
-            const yearSelect = document.getElementById('vehicleYear');
-            yearSelect.innerHTML = '<option value="">Select Year</option>';
-            
-            for (let year = 2026; year >= 2000; year--) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
-            }
-        }
-
-        function populateMakeDropdown() {
-            const makeSelect = document.getElementById('vehicleMake');
-            makeSelect.innerHTML = '<option value="">Select Make</option>';
-            
-            Object.keys(vehicleData.makes).sort().forEach(make => {
-                const option = document.createElement('option');
-                option.value = make;
-                option.textContent = make;
-                makeSelect.appendChild(option);
-            });
-
-            makeSelect.addEventListener('change', function() {
-                populateModelDropdown(this.value);
-            });
-        }
-
-        function populateModelDropdown(make) {
-            const modelSelect = document.getElementById('vehicleModel');
-            modelSelect.innerHTML = '<option value="">Select Model</option>';
-            
-            if (make && vehicleData.makes[make]) {
-                vehicleData.makes[make].forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model;
-                    option.textContent = model;
-                    modelSelect.appendChild(option);
-                });
-            }
-        }
-
-        function selectPlan(plan) {
-            selectedPlan = plan;
-            document.querySelectorAll('.plan-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            document.querySelector(`[data-plan="${plan}"]`).classList.add('selected');
-        }
-
-        // Updated Add Vehicle Function
-        function addVehicle() {
-            showVehicleModal();
-        }
-
-        // Form submission handler
-        document.addEventListener('DOMContentLoaded', function() {
-            const vehicleForm = document.getElementById('vehicleForm');
-            if (vehicleForm) {
-                vehicleForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    if (!selectedPlan) {
-                        alert('Please select a protection plan');
-                        return;
-                    }
-
-                    const year = document.getElementById('vehicleYear').value;
-                    const make = document.getElementById('vehicleMake').value;
-                    const model = document.getElementById('vehicleModel').value;
-                    const color = document.getElementById('vehicleColor').value;
-                    const license = document.getElementById('vehicleLicense').value;
-                    const vin = document.getElementById('vehicleVIN').value.toUpperCase();
-                    const features = document.getElementById('vehicleFeatures').value;
-
-                    const vehicleId = Date.now().toString();
-                    const vehicle = {
-                        id: vehicleId,
-                        year,
-                        make,
-                        model,
-                        color,
-                        license,
-                        vin: vin || null,
-                        features,
-                        plan: selectedPlan,
-                        addedDate: new Date().toISOString()
-                    };
-
-                    if (window.firebaseRef && window.firebaseSet && window.currentUser) {
-                        const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
-                        window.firebaseSet(vehicleRef, vehicle)
-                            .then(() => {
-                                alert('✅ Vehicle added successfully!');
-                                closeVehicleModal();
-                                
-                                // If VIN provided and Carfax connected, auto-sync
-                                if (vin && window.carcareConnected) {
-                                    alert('🔄 Auto-syncing Carfax service history for this VIN...');
-                                    syncSpecificVehicle(vin);
-                                }
-                            })
-                            .catch((error) => {
-                                alert('❌ Error adding vehicle: ' + error.message);
-                            });
-                    }
-                });
-            }
-        });
-
-        // Sync specific vehicle with Carfax
-        function syncSpecificVehicle(vin) {
-            if (vin && vin.length === 17) {
-                // Simulate fetching Carfax data for this VIN
-                setTimeout(() => {
-                    const serviceHistory = [
-                        { date: '2024-10-15', service: 'Oil Change', mileage: '45,230', cost: '$47.99' },
-                        { date: '2024-08-20', service: 'Tire Rotation', mileage: '43,100', cost: '$29.99' }
-                    ];
-                    
-                    if (window.firebaseRef && window.firebaseSet && window.currentUser) {
-                        const historyRef = window.firebaseRef(window.firebaseDatabase, `service-history/${window.currentUser.uid}/${vin}`);
-                        window.firebaseSet(historyRef, serviceHistory).then(() => {
-                            alert('✅ Carfax history synced for VIN: ' + vin);
-                        });
-                    }
-                }, 1000);
-            }
-        }
-
-        function showVehicleDetails(vehicleId) {
-            const vehicle = window.userVehicles.find(v => v.id === vehicleId);
-            if (vehicle) {
-                let details = `📋 VEHICLE DETAILS\n\n` +
-                      `🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
-                      `🎨 Color: ${vehicle.color}\n` +
-                      `🏷️ License: ${vehicle.license}\n`;
-                
-                if (vehicle.vin) {
-                    details += `🔑 VIN: ${vehicle.vin}\n`;
-                }
-                
-                details += `📋 Plan: ${vehicle.plan}\n`;
-                
-                if (vehicle.features) {
-                    details += `✨ Features: ${vehicle.features}\n`;
-                }
-                
-                details += `📅 Added: ${new Date(vehicle.addedDate).toLocaleDateString()}\n\n` +
-                      `🛡️ Protection Level: ACTIVE\n` +
-                      `📱 Community Network: CONNECTED\n` +
-                      `🔔 Push Notifications: ENABLED`;
-                
-                if (vehicle.vin && window.carcareConnected) {
-                    details += `\n\n🔧 Carfax Service History: Available`;
-                }
-                      
-                alert(details);
-            }
-        }
-
-        function editVehicle(vehicleId) {
-            const vehicle = window.userVehicles.find(v => v.id === vehicleId);
-            if (vehicle) {
-                const newColor = prompt('Enter new color (current: ' + vehicle.color + '):', vehicle.color);
-                const newLicense = prompt('Enter new license plate (current: ' + vehicle.license + '):', vehicle.license);
-                const newVIN = prompt('Enter VIN (current: ' + (vehicle.vin || 'Not set') + '):', vehicle.vin || '');
-                const newPlan = prompt('Enter new plan (BASIC/GOLD/PLATINUM/DIAMOND) (current: ' + vehicle.plan + '):', vehicle.plan);
-
-                if (newColor && newLicense && newPlan) {
-                    vehicle.color = newColor;
-                    vehicle.license = newLicense;
-                    vehicle.vin = newVIN.toUpperCase() || vehicle.vin;
-                    vehicle.plan = newPlan.toUpperCase();
-
-                    if (window.firebaseRef && window.firebaseSet && window.currentUser) {
-                        const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
-                        window.firebaseSet(vehicleRef, vehicle)
-                            .then(() => {
-                                alert('✅ Vehicle updated successfully!');
-                                
-                                // If VIN was added and Carfax is connected, offer to sync
-                                if (newVIN && window.carcareConnected && !vehicle.vin) {
-                                    if (confirm('Would you like to sync Carfax service history for this VIN?')) {
-                                        syncSpecificVehicle(newVIN);
-                                    }
-                                }
-                            })
-                            .catch((error) => {
-                                alert('❌ Error updating vehicle: ' + error.message);
-                            });
-                    }
-                }
-            }
-        }
-
-        function removeVehicle(vehicleId) {
-            if (!vehicleId) {
-                console.error('No vehicle ID provided');
-                return;
-            }
-            
-            const vehicle = window.userVehicles.find(v => v.id === vehicleId);
-            if (!vehicle) {
-                alert('❌ Vehicle not found');
-                return;
-            }
-            
-            if (confirm(`Are you sure you want to remove this vehicle?\n\n🚗 ${vehicle.year} ${vehicle.make} ${vehicle.model}\n🏷️ License: ${vehicle.license}`)) {
-                if (window.firebaseRef && window.firebaseRemove && window.currentUser && window.firebaseDatabase) {
-                    const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
-                    window.firebaseRemove(vehicleRef)
-                        .then(() => {
-                            alert('✅ Vehicle removed successfully!');
-                            // Update local array
-                            window.userVehicles = window.userVehicles.filter(v => v.id !== vehicleId);
-                            updateVehicleDisplay();
-                            updateVehicleCount();
-                        })
-                        .catch((error) => {
-                            console.error('Error removing vehicle:', error);
-                            alert('❌ Error removing vehicle: ' + error.message);
-                        });
-                } else {
-                    console.error('Firebase not properly initialized');
-                    alert('❌ Unable to remove vehicle. Please refresh the page and try again.');
-                }
-            }
-        }
-
-        // Report Stolen Vehicle
-        function reportVehicleStolen() {
-            if (!window.userVehicles || window.userVehicles.length === 0) {
-                alert('❌ No vehicles found!\n\nPlease add a vehicle first before reporting it stolen.');
-                return;
-            }
-
-            if (!confirm('🚨 EMERGENCY PROTOCOL\n\n' +
-                        '⚠️ Have you contacted 911 first?\n\n' +
-                        'You must report to police before using recovery services.')) {
-                alert('📞 Please call 911 first, then return to CarTrace Pro.');
-                return;
-            }
-
-            let selectedVehicle = null;
-            
-            if (window.userVehicles.length === 1) {
-                selectedVehicle = window.userVehicles[0];
-            } else {
-                let vehicleOptions = 'Select the stolen vehicle:\n\n';
-                window.userVehicles.forEach((v, i) => {
-                    vehicleOptions += `${i + 1}. ${v.year} ${v.make} ${v.model} (${v.license})\n`;
-                });
-                
-                const selection = prompt(vehicleOptions + '\nEnter number:');
-                if (selection && !isNaN(selection)) {
-                    selectedVehicle = window.userVehicles[parseInt(selection) - 1];
-                }
-            }
-
-            if (selectedVehicle) {
-                const caseId = 'CVR-' + Date.now();
-                
-                if (window.firebaseRef && window.firebaseSet && window.currentUser) {
-                    const reportRef = window.firebaseRef(window.firebaseDatabase, `stolen-reports/${window.currentUser.uid}/${caseId}`);
-                    window.firebaseSet(reportRef, {
-                        vehicleId: selectedVehicle.id,
-                        vehicle: selectedVehicle,
-                        reportTime: new Date().toISOString(),
-                        caseId: caseId,
-                        status: 'ACTIVE'
-                    }).then(() => {
-                        alert(`🚨 THEFT REPORT ACTIVATED\n\n` +
-                              `✅ Case ID: ${caseId}\n` +
-                              `🚗 Vehicle: ${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}\n` +
-                              `🏷️ License: ${selectedVehicle.license}\n\n` +
-                              `📱 Community Alert Status:\n` +
-                              `• 47,892 users notified\n` +
-                              `• Push notifications sent\n` +
-                              `• Recovery team dispatched\n\n` +
-                              `📧 Confirmation email sent`);
-                    });
-                }
-            }
-        }
-
-        // Found Stolen Vehicle
-        function foundStolenVehicle() {
-            const licensePlate = prompt('Enter the license plate of the found vehicle:');
-            const location = prompt('Enter the current location/address:');
-            
-            if (licensePlate && location) {
-                const reportId = 'FVR-' + Date.now();
-                
-                if (window.firebaseRef && window.firebaseSet && window.currentUser) {
-                    const foundRef = window.firebaseRef(window.firebaseDatabase, `found-reports/${reportId}`);
-                    window.firebaseSet(foundRef, {
-                        licensePlate,
-                        location,
-                        reportedBy: window.currentUser.email,
-                        reportTime: new Date().toISOString(),
-                        reportId
-                    }).then(() => {
-                        alert(`📋 FOUND VEHICLE REPORT SUBMITTED\n\n` +
-                              `🏷️ License Plate: ${licensePlate}\n` +
-                              `📍 Location: ${location}\n\n` +
-                              `✅ Report ID: ${reportId}\n` +
-                              `✅ Authorities notified\n` +
-                              `💰 Reward eligibility: Under review\n\n` +
-                              `Thank you for helping our community!`);
-                    });
-                }
-            }
-        }
-
-        // CarCare/Carfax Functions
-        function connectCarCare() {
-            // Open Carfax login in new window
-            const carfaxWindow = window.open('https://www.carfax.com/signin', 'CarfaxLogin', 'width=600,height=700');
-            
-            // Show instructions
-            alert('🔗 CONNECTING TO CARFAX CARCARE\n\n' +
-                  '1. Sign in to your Carfax account in the new window\n' +
-                  '2. If you don\'t have an account, create one for FREE\n' +
-                  '3. Once logged in, return here and click "Sync CarCare Data"\n' +
-                  '4. Enter your VIN to sync service history\n\n' +
-                  'Note: Keep the Carfax window open for syncing');
-            
-            // Enable sync button
-            setTimeout(() => {
-                const syncBtn = document.getElementById('syncCarfaxBtn');
-                if (syncBtn) {
-                    document.getElementById('carcare-connection-area').style.display = 'none';
-                    document.getElementById('carcare-connected-area').style.display = 'block';
-                }
-            }, 2000);
-        }
-
-        function createCarfaxAccount() {
-            // Open Carfax signup
-            window.open('https://www.carfax.com/signin?intent=register', 'CarfaxSignup', 'width=600,height=700');
-            
-            alert('🆓 CREATE FREE CARFAX CARCARE ACCOUNT\n\n' +
-                  'Benefits of Carfax CarCare:\n' +
-                  '✅ Track all service history\n' +
-                  '✅ Get maintenance reminders\n' +
-                  '✅ Monitor recall alerts\n' +
-                  '✅ Track service costs\n' +
-                  '✅ Maintain vehicle value\n\n' +
-                  'After creating your account, click "Connect CarCare Account"');
-        }
-
-        function syncCarfaxData() {
-            // Ask for VIN to sync specific vehicle
-            const vin = prompt('Enter your Vehicle VIN to sync Carfax history:\n\n' +
-                               'You can find your VIN:\n' +
-                               '• On the driver\'s side dashboard\n' +
-                               '• Driver\'s side door jamb\n' +
-                               '• Vehicle registration\n' +
-                               '• Insurance documents');
-            
-            if (vin && vin.length === 17) {
-                // Simulate syncing process
-                alert('🔄 SYNCING CARFAX DATA...\n\n' +
-                      'VIN: ' + vin + '\n\n' +
-                      'Please wait while we sync your service history...');
-                
-                // Store in Firebase
-                if (window.firebaseRef && window.firebaseSet && window.currentUser) {
-                    const carcareRef = window.firebaseRef(window.firebaseDatabase, `carcare/${window.currentUser.uid}`);
-                    window.firebaseSet(carcareRef, {
-                        connected: true,
-                        vin: vin,
-                        connectedDate: new Date().toISOString(),
-                        lastSync: new Date().toISOString()
-                    }).then(() => {
-                        window.carcareConnected = true;
-                        updateCarCareStatus();
-                        
-                        // Simulate fetched data
-                        const serviceHistory = [
-                            { date: '2024-10-15', service: 'Oil Change', mileage: '45,230', cost: '$47.99' },
-                            { date: '2024-08-20', service: 'Tire Rotation', mileage: '43,100', cost: '$29.99' },
-                            { date: '2024-06-10', service: 'Annual Inspection', mileage: '41,500', cost: '$85.00' },
-                            { date: '2024-03-05', service: 'Brake Service', mileage: '39,200', cost: '$325.00' },
-                            { date: '2023-12-15', service: 'Battery Replacement', mileage: '37,500', cost: '$189.99' }
-                        ];
-                        
-                        // Store service history
-                        const historyRef = window.firebaseRef(window.firebaseDatabase, `service-history/${window.currentUser.uid}/${vin}`);
-                        window.firebaseSet(historyRef, serviceHistory);
-                        
-                        alert('✅ CARFAX SYNC COMPLETE!\n\n' +
-                              'Found ' + serviceHistory.length + ' service records\n' +
-                              'Your maintenance history has been updated');
-                        
-                        displayServiceHistory(serviceHistory);
-                    });
-                }
-            } else if (vin) {
-                alert('❌ Invalid VIN\n\nPlease enter a valid 17-character VIN');
-            }
-        }
-
-        function displayServiceHistory(history) {
-            const displayArea = document.getElementById('service-history-display');
-            if (displayArea) {
-                let html = '<h3 style="margin-bottom: 1rem;">📋 Service History</h3>';
-                html += '<div style="display: grid; gap: 0.5rem;">';
-                
-                history.forEach(record => {
-                    html += `
-                        <div style="padding: 0.75rem; background: white; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <strong>${record.service}</strong><br>
-                                <small style="color: #666;">📅 ${record.date} • 🛣️ ${record.mileage} miles</small>
-                            </div>
-                            <div style="text-align: right;">
-                                <strong style="color: #4CAF50;">${record.cost}</strong>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += '</div>';
-                displayArea.innerHTML = html;
-                displayArea.style.display = 'block';
-            }
-        }
-
-        function viewFullHistory() {
-            window.open('https://www.carfax.com/mycarfax/service', 'CarfaxHistory', 'width=800,height=600');
-        }
-
-        function manageCarfaxAccount() {
-            window.open('https://www.carfax.com/mycarfax/account', 'CarfaxAccount', 'width=800,height=600');
-        }
-
-        function disconnectCarfax() {
-            if (confirm('Are you sure you want to disconnect your Carfax CarCare account?')) {
-                if (window.firebaseRef && window.firebaseRemove && window.currentUser) {
-                    const carcareRef = window.firebaseRef(window.firebaseDatabase, `carcare/${window.currentUser.uid}`);
-                    window.firebaseRemove(carcareRef).then(() => {
-                        window.carcareConnected = false;
-                        updateCarCareStatus();
-                        document.getElementById('carcare-connection-area').style.display = 'block';
-                        document.getElementById('carcare-connected-area').style.display = 'none';
-                        document.getElementById('service-history-display').style.display = 'none';
-                        alert('✅ Carfax CarCare disconnected successfully');
-                    });
-                }
-            }
-        }
-
-        function viewServiceHistory() {
-            if (!window.carcareConnected) {
-                alert('❌ CarCare not connected!\n\nPlease connect your CarCare account first.');
-                return;
-            }
-            
-            // Retrieve and display stored service history
-            if (window.firebaseRef && window.firebaseGet && window.currentUser) {
-                // Get the first VIN from carcare data
-                const carcareRef = window.firebaseRef(window.firebaseDatabase, `carcare/${window.currentUser.uid}`);
-                window.firebaseGet(carcareRef).then((snapshot) => {
-                    if (snapshot.exists() && snapshot.val().vin) {
-                        const vin = snapshot.val().vin;
-                        const historyRef = window.firebaseRef(window.firebaseDatabase, `service-history/${window.currentUser.uid}/${vin}`);
-                        window.firebaseGet(historyRef).then((historySnapshot) => {
-                            if (historySnapshot.exists()) {
-                                displayServiceHistory(historySnapshot.val());
-                            } else {
-                                alert('📋 No service history found\n\nClick "Sync CarCare Data" to update');
-                            }
-                        });
-                    }
-                });
-            }
-        }
-
-        // Update CarCare status with more details
-        function updateCarCareStatus() {
-            const statusBadge = document.querySelector('.carcare-badge');
-            const statusIcon = document.getElementById('carcare-status-icon');
-            const statusText = document.getElementById('carcare-status-text');
-            
-            if (window.carcareConnected) {
-                statusBadge.classList.remove('disconnected');
-                statusBadge.innerHTML = '✅ CarCare Status: Connected';
-                statusIcon.textContent = '✅';
-                statusText.textContent = 'Connected';
-                document.getElementById('service-records').textContent = '5';
-                document.getElementById('maintenance-alerts').textContent = '1';
-                
-                // Show connected area, hide connection area
-                document.getElementById('carcare-connection-area').style.display = 'none';
-                document.getElementById('carcare-connected-area').style.display = 'block';
-                
-                // Auto-load service history
-                viewServiceHistory();
-            } else {
-                statusBadge.classList.add('disconnected');
-                statusBadge.innerHTML = '🔗 CarCare Status: Not Connected';
-                statusIcon.textContent = '🔗';
-                statusText.textContent = 'Not Connected';
-                document.getElementById('service-records').textContent = '0';
-                document.getElementById('maintenance-alerts').textContent = '0';
-                
-                // Show connection area, hide connected area
-                document.getElementById('carcare-connection-area').style.display = 'block';
-                document.getElementById('carcare-connected-area').style.display = 'none';
-            }
-        }
-
-        // Load alerts (moved to global scope)
-        function loadAlerts() {
-            const alertsList = document.getElementById('alerts-list');
-            if (!alertsList) return;
-            
-            const sampleAlerts = [
-                {
-                    icon: '🟢',
-                    title: 'Security Scan Complete',
-                    description: 'All vehicles - No threats detected',
-                    time: '2 min ago'
-                },
-                {
-                    icon: '🔄',
-                    title: 'System Update',
-                    description: 'CarTrace Pro v3.1 installed successfully',
-                    time: '15 min ago'
-                },
-                {
-                    icon: '🛡️',
-                    title: 'Network Security Check',
-                    description: 'Community network scanned - All secure',
-                    time: '1 hour ago'
-                }
-            ];
-
-            alertsList.innerHTML = '';
-            sampleAlerts.forEach(alert => {
-                const alertItem = createAlertItem(alert);
-                alertsList.appendChild(alertItem);
-            });
-        }
-
-        // Create alert item (moved to global scope)
-        function createAlertItem(alert) {
-            const item = document.createElement('div');
-            item.className = 'alert-item';
-            item.innerHTML = `
-                <div class="alert-icon">${alert.icon}</div>
-                <div class="alert-content">
-                    <div class="alert-title">${alert.title}</div>
-                    <div class="alert-desc">${alert.description}</div>
-                    <div class="alert-time">${alert.time}</div>
-                </div>
-            `;
-            return item;
-        }
-
-        // Other functions
-        function performCloudSync() {
-            alert('🔄 CLOUD SYNCHRONIZATION\n\n✅ Sync completed successfully!');
-        }
-
-        function showCloudSettings() {
-            alert('☁️ CLOUD SETTINGS\n\n✅ Auto-sync: Enabled\n✅ Multi-device: Active');
-        }
-
-        function startPhotoCapture() {
-            alert('📸 PHOTO CAPTURE\n\nCamera feature coming soon!');
-        }
-
-        function showPhotoGallery() {
-            alert('🖼️ PHOTO GALLERY\n\n23 photos stored securely');
-        }
-
-        function showAIAnalysis() {
-            alert('🤖 AI ANALYSIS\n\nAll photos analyzed successfully');
-        }
-
-        function startAutomaticClaim() {
-            alert('🚨 INSURANCE CLAIM\n\nFeature coming soon!');
-        }
-
-        function showClaimTracking() {
-            alert('📊 CLAIM TRACKING\n\nNo active claims');
-        }
-
-        function manageSubscription() {
-            alert('💎 SUBSCRIPTION\n\nCarTrace Pro Premium Active');
-        }
-
-        function logout() {
-            if (confirm('Are you sure you want to sign out?')) {
-                if (window.firebaseSignOut && window.firebaseAuth) {
-                    window.firebaseSignOut(window.firebaseAuth).then(() => {
-                        localStorage.clear();
-                        sessionStorage.clear();
-                        window.location.href = 'cartrace_homepage.html';
-                    }).catch((error) => {
-                        console.error('Logout error:', error);
-                        window.location.href = 'cartrace_homepage.html';
-                    });
-                }
-            }
-        }
-
-        // Setup event listeners when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            // Navigation click handlers
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const section = this.getAttribute('data-section');
-                    showContent(section);
-                });
-            });
-
-            // Button click handlers
-            document.getElementById('logoutBtn').addEventListener('click', logout);
-            document.getElementById('logoutBtn2').addEventListener('click', logout);
-            document.getElementById('addVehicleBtn').addEventListener('click', addVehicle);
-            document.getElementById('reportStolenBtn').addEventListener('click', reportVehicleStolen);
-            document.getElementById('reportStolenBtn2').addEventListener('click', reportVehicleStolen);
-            document.getElementById('foundStolenBtn').addEventListener('click', foundStolenVehicle);
-            document.getElementById('foundStolenBtn2').addEventListener('click', foundStolenVehicle);
-            
-            // Carfax/CarCare buttons
-            document.getElementById('connectCarCareBtn').addEventListener('click', connectCarCare);
-            document.getElementById('carfaxSignupBtn').addEventListener('click', createCarfaxAccount);
-            document.getElementById('viewServiceHistoryBtn').addEventListener('click', viewServiceHistory);
-            document.getElementById('syncCarfaxBtn').addEventListener('click', syncCarfaxData);
-            document.getElementById('viewFullHistoryBtn').addEventListener('click', viewFullHistory);
-            document.getElementById('manageCarfaxBtn').addEventListener('click', manageCarfaxAccount);
-            document.getElementById('disconnectCarfaxBtn').addEventListener('click', disconnectCarfax);
-            
-            // Other buttons
-            document.getElementById('performCloudSyncBtn').addEventListener('click', performCloudSync);
-            document.getElementById('showCloudSettingsBtn').addEventListener('click', showCloudSettings);
-            document.getElementById('startPhotoCaptureBtn').addEventListener('click', startPhotoCapture);
-            document.getElementById('showPhotoGalleryBtn').addEventListener('click', showPhotoGallery);
-            document.getElementById('showAIAnalysisBtn').addEventListener('click', showAIAnalysis);
-            document.getElementById('startAutomaticClaimBtn').addEventListener('click', startAutomaticClaim);
-            document.getElementById('showClaimTrackingBtn').addEventListener('click', showClaimTracking);
-            document.getElementById('manageSubscriptionBtn').addEventListener('click', manageSubscription);
-        });
-        
-        // Make all functions globally available for onclick handlers
-        window.showContent = showContent;
-        window.showVehicleModal = showVehicleModal;
-        window.closeVehicleModal = closeVehicleModal;
-        window.selectPlan = selectPlan;
-        window.addVehicle = addVehicle;
-        window.showVehicleDetails = showVehicleDetails;
-        window.editVehicle = editVehicle;
-        window.removeVehicle = removeVehicle;
-        window.createVehicleCard = createVehicleCard;
-        window.updateVehicleDisplay = updateVehicleDisplay;
-        window.updateVehicleCount = updateVehicleCount;
-        window.loadAlerts = loadAlerts;
-        window.createAlertItem = createAlertItem;
-        window.reportVehicleStolen = reportVehicleStolen;
-        window.foundStolenVehicle = foundStolenVehicle;
-        window.connectCarCare = connectCarCare;
-        window.createCarfaxAccount = createCarfaxAccount;
-        window.syncCarfaxData = syncCarfaxData;
-        window.syncSpecificVehicle = syncSpecificVehicle;
-        window.viewFullHistory = viewFullHistory;
-        window.manageCarfaxAccount = manageCarfaxAccount;
-        window.disconnectCarfax = disconnectCarfax;
-        window.viewServiceHistory = viewServiceHistory;
-        window.updateCarCareStatus = updateCarCareStatus;
-        window.displayServiceHistory = displayServiceHistory;
-        window.performCloudSync = performCloudSync;
-        window.showCloudSettings = showCloudSettings;
-        window.startPhotoCapture = startPhotoCapture;
-        window.showPhotoGallery = showPhotoGallery;
-        window.showAIAnalysis = showAIAnalysis;
-        window.startAutomaticClaim = startAutomaticClaim;
-        window.showClaimTracking = showClaimTracking;
-        window.manageSubscription = manageSubscription;
-        window.logout = logout;
     </script>
 </body>
 </html>
