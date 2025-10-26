@@ -1524,6 +1524,20 @@
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', function() {
             console.log('Dashboard loaded, initializing...');
+            
+            // Load vehicles from localStorage first (immediate display while Firebase loads)
+            const localVehicles = localStorage.getItem('cartraceVehicles');
+            if (localVehicles) {
+                try {
+                    userVehicles = JSON.parse(localVehicles);
+                    console.log('Loaded vehicles from localStorage:', userVehicles);
+                    updateVehicleDisplay();
+                    updateVehicleCount();
+                } catch (e) {
+                    console.error('Error parsing localStorage vehicles:', e);
+                }
+            }
+            
             initializeDropdowns();
             startRealTimeUpdates();
             updateSyncStatus();
@@ -2776,10 +2790,37 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                 // Load vehicles
                 const vehiclesRef = ref(database, `vehicles/${user.uid}`);
                 onValue(vehiclesRef, (snapshot) => {
+                    console.log('Firebase snapshot received:', snapshot.val());
                     const data = snapshot.val();
-                    window.userVehicles = data ? Object.values(data) : [];
+                    
+                    if (data) {
+                        // Convert Firebase object to array properly
+                        window.userVehicles = Object.keys(data).map(key => ({
+                            ...data[key],
+                            id: data[key].id || key // Ensure id is preserved
+                        }));
+                        console.log('Vehicles loaded from Firebase:', window.userVehicles);
+                        
+                        // Sync to localStorage for offline access
+                        localStorage.setItem('cartraceVehicles', JSON.stringify(window.userVehicles));
+                    } else {
+                        window.userVehicles = [];
+                        console.log('No vehicles found in Firebase');
+                        localStorage.setItem('cartraceVehicles', JSON.stringify([]));
+                    }
+                    
                     updateVehicleDisplay();
                     updateVehicleCount();
+                }, (error) => {
+                    console.error('Firebase error loading vehicles:', error);
+                    // Fallback to local storage if Firebase fails
+                    const localVehicles = localStorage.getItem('cartraceVehicles');
+                    if (localVehicles) {
+                        window.userVehicles = JSON.parse(localVehicles);
+                        console.log('Loaded vehicles from local storage:', window.userVehicles);
+                        updateVehicleDisplay();
+                        updateVehicleCount();
+                    }
                 });
                 
                 // Load Carfax connection status
