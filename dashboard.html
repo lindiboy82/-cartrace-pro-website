@@ -1078,10 +1078,9 @@
                         <strong style="color: #dc2626; font-size: 18px;">Emergency Protocol:</strong><br><br>
                         1️⃣ Contact 911 FIRST (Required by law)<br>
                         2️⃣ Use CarTrace Pro emergency reporting<br>
-                        3️⃣ Insurance claim auto-filed<br>
-                        4️⃣ Community network alerted (47,892 users)<br>
-                        5️⃣ Push notifications sent to all app users<br>
-                        6️⃣ Recovery team dispatched<br><br>
+                        3️⃣ Community network alerted (47,892 users)<br>
+                        4️⃣ Push notifications sent to all app users<br>
+                        5️⃣ Recovery team dispatched<br><br>
                         
                         <strong>🎯 Current Success Rate:</strong> 96.1% recovery via community<br>
                         <strong>👥 Network Size:</strong> 47,892 active community members<br>
@@ -1674,46 +1673,75 @@
         }
 
         function connectCarfax() {
+            // Show clear instructions before opening Carfax
+            const proceed = confirm('🔗 CONNECT TO CARFAX CAR CARE (FREE)\n\n' +
+                  'This will open the official Carfax Car Care website where you can:\n\n' +
+                  '✅ Sign in to your existing FREE account\n' +
+                  '✅ Or create a new FREE account (no credit card required)\n' +
+                  '✅ Add your vehicle(s) using your VIN\n' +
+                  '✅ Access maintenance tracking, recalls, and service history\n\n' +
+                  'After you sign in at carfax.com, return here and click OK to link your account.\n\n' +
+                  'Ready to connect?');
+            
+            if (!proceed) return;
+            
             // Open Carfax Car Care service login in popup window
             const carfaxWindow = window.open(
                 'https://www.carfax.com/service',
                 'CarfaxCarCare',
-                'width=800,height=700,left=200,top=100'
+                'width=900,height=800,left=100,top=50'
             );
             
-            // Show connection instructions
-            alert(`🔗 CONNECTING TO CARFAX CAR CARE\n\n` +
-                  `1. Sign in to your Carfax Car Care account in the new window\n` +
-                  `2. If you don't have an account, create one for FREE\n` +
-                  `3. Add your vehicle(s) using your VIN\n` +
-                  `4. Once setup is complete, return here\n\n` +
-                  `Note: Carfax Car Care is a FREE service for tracking maintenance`);
+            if (!carfaxWindow) {
+                alert('⚠️ Popup was blocked!\n\nPlease allow popups for this site and try again, or manually visit:\nhttps://www.carfax.com/service');
+                return;
+            }
             
-            // Simulate OAuth callback after delay
+            // Wait for user to complete Carfax setup
             setTimeout(() => {
-                if (confirm('Have you successfully logged in to Carfax Car Care?')) {
+                if (confirm('✅ Have you successfully logged in to your Carfax Car Care account?\n\n' +
+                           'If YES, click OK to complete the connection.\n' +
+                           'If NO, click Cancel and complete your Carfax setup first.')) {
                     simulateCarfaxConnection();
+                } else {
+                    alert('No problem! Complete your Carfax Car Care setup, then click "Connect Carfax Car Care" again to link your account.');
                 }
-            }, 5000);
+            }, 8000); // Give user more time to sign in
         }
 
         function createCarfaxAccount() {
+            // Show clear sign-up information
+            const proceed = confirm('🆓 CREATE FREE CARFAX CAR CARE ACCOUNT\n\n' +
+                  'Carfax Car Care is 100% FREE and includes:\n\n' +
+                  '✅ Complete service history tracking\n' +
+                  '✅ Automatic maintenance reminders\n' +
+                  '✅ Active recall monitoring\n' +
+                  '✅ Service cost tracking\n' +
+                  '✅ Recommended shop finder\n' +
+                  '✅ Vehicle value tracking\n\n' +
+                  'No credit card required, ever!\n\n' +
+                  'Ready to create your FREE account?');
+            
+            if (!proceed) return;
+            
             // Open Carfax Car Care signup
-            window.open(
+            const carfaxWindow = window.open(
                 'https://www.carfax.com/service',
                 'CarfaxCarCareSignup',
-                'width=800,height=700,left=200,top=100'
+                'width=900,height=800,left=100,top=50'
             );
             
-            alert(`🆓 CREATE FREE CARFAX CAR CARE ACCOUNT\n\n` +
-                  `Carfax Car Care is completely FREE and includes:\n` +
-                  `✅ Service history tracking\n` +
-                  `✅ Maintenance reminders\n` +
-                  `✅ Recall monitoring\n` +
-                  `✅ Service cost tracking\n` +
-                  `✅ Shop recommendations\n` +
-                  `✅ Vehicle value tracking\n\n` +
-                  `Click "Sign Up" on the Carfax Car Care page to get started!`);
+            if (!carfaxWindow) {
+                alert('⚠️ Popup was blocked!\n\nPlease allow popups for this site and try again, or manually visit:\nhttps://www.carfax.com/service');
+                return;
+            }
+            
+            alert('📝 NEXT STEPS:\n\n' +
+                  '1. Click "Sign Up" on the Carfax page\n' +
+                  '2. Create your FREE account (no credit card needed)\n' +
+                  '3. Add your vehicle(s) using your VIN\n' +
+                  '4. Return here and click "Connect Carfax Car Care"\n\n' +
+                  'Take your time - your progress will be saved!');
         }
 
         function simulateCarfaxConnection() {
@@ -1741,9 +1769,13 @@
             }
             
             alert(`✅ CARFAX CAR CARE CONNECTED!\n\n` +
-                  `Your FREE Carfax Car Care account has been successfully linked.\n` +
-                  `Service history and maintenance tracking is now active.\n\n` +
-                  `You can manage your vehicles at carfax.com/service`);
+                  `Your Carfax Car Care account has been successfully linked to CarTrace Pro.\n\n` +
+                  `✅ Service history tracking active\n` +
+                  `✅ Maintenance reminders enabled\n` +
+                  `✅ Recall monitoring active\n\n` +
+                  `Manage your vehicles anytime at:\n` +
+                  `carfax.com/service\n\n` +
+                  `Your Carfax data will sync automatically with CarTrace Pro!`);
             
             updateCarfaxDisplay();
         }
@@ -2152,24 +2184,6 @@
             updatePhotoCount();
         }
 
-        // Check if recovery is active for a vehicle
-        function isRecoveryActive(vehicle) {
-            if (!vehicle.activationDate) return true; // Old vehicles without activation date are active
-            const now = new Date();
-            const activationDate = new Date(vehicle.activationDate);
-            return now >= activationDate;
-        }
-
-        // Get days remaining until recovery is active
-        function getDaysUntilActive(vehicle) {
-            if (!vehicle.activationDate) return 0;
-            const now = new Date();
-            const activationDate = new Date(vehicle.activationDate);
-            const diffTime = activationDate - now;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays > 0 ? diffDays : 0;
-        }
-
         // Select Plan
         function selectPlan(plan) {
             selectedPlan = plan;
@@ -2230,9 +2244,6 @@
             }
 
             const vehicleId = Date.now().toString();
-            const addedDate = new Date();
-            const activationDate = new Date(addedDate.getTime() + (5 * 24 * 60 * 60 * 1000)); // 5 days from now
-            
             const vehicle = {
                 id: vehicleId,
                 year,
@@ -2244,9 +2255,7 @@
                 features,
                 plan: selectedPlan,
                 photos: vehiclePhotos.map(p => p.data), // Add photos to vehicle
-                addedDate: addedDate.toISOString(),
-                activationDate: activationDate.toISOString(), // Recovery becomes active after 5 days
-                recoveryActive: false // Will be true after 5 days
+                addedDate: new Date().toISOString()
             };
 
             // Save to Firebase if available
@@ -2254,9 +2263,6 @@
                 const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
                 window.firebaseSet(vehicleRef, vehicle)
                     .then(() => {
-                        // Firebase onValue listener will automatically update the display
-                        console.log('Vehicle saved to Firebase successfully');
-                        
                         // If Carfax Car Care is connected and VIN provided, prompt to sync
                         if (carfaxConnected && vin) {
                             setTimeout(() => {
@@ -2265,19 +2271,7 @@
                                 }
                             }, 500);
                         }
-                        
-                        const activationDateFormatted = new Date(vehicle.activationDate).toLocaleDateString('en-US', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                        });
-                        
-                        alert(`✅ Vehicle added successfully!\n\n` +
-                              `⏳ WAITING PERIOD NOTICE:\n` +
-                              `Recovery protection will activate in 5 days on ${activationDateFormatted}.\n\n` +
-                              `This waiting period prevents fraud and ensures fair coverage for all members.\n\n` +
-                              `Your vehicle is now protected under the ${selectedPlan} plan!`);
+                        alert('✅ Vehicle added successfully!');
                         closeVehicleModal();
                     })
                     .catch((error) => {
@@ -2289,17 +2283,10 @@
                         updateVehicleDisplay();
                         updateVehicleCount();
                         
-                        const activationDateFormatted = new Date(vehicle.activationDate).toLocaleDateString('en-US', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
-                        });
-                        
                         if (error.code === 'PERMISSION_DENIED') {
-                            alert(`⚠️ Firebase permissions not configured.\n\nYour vehicle has been saved locally for now. To sync across devices, please update your Firebase database rules.\n\n✅ Vehicle added successfully!\n\n⏳ Recovery protection will activate in 5 days on ${activationDateFormatted}.`);
+                            alert('⚠️ Firebase permissions not configured.\n\nYour vehicle has been saved locally for now. To sync across devices, please update your Firebase database rules.\n\n✅ Vehicle added successfully!');
                         } else {
-                            alert(`⚠️ Could not sync to cloud.\n\nYour vehicle has been saved locally.\n\n✅ Vehicle added successfully!\n\n⏳ Recovery protection will activate in 5 days on ${activationDateFormatted}.`);
+                            alert('⚠️ Could not sync to cloud.\n\nYour vehicle has been saved locally.\n\n✅ Vehicle added successfully!');
                         }
                         closeVehicleModal();
                     });
@@ -2316,18 +2303,7 @@
                     }
                 }
                 
-                const activationDateFormatted = new Date(vehicle.activationDate).toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                });
-                
-                alert(`✅ Vehicle added successfully!\n\n` +
-                      `⏳ WAITING PERIOD NOTICE:\n` +
-                      `Recovery protection will activate in 5 days on ${activationDateFormatted}.\n\n` +
-                      `This waiting period prevents fraud and ensures fair coverage for all members.\n\n` +
-                      `Your vehicle is now protected under the ${selectedPlan} plan!`);
+                alert('✅ Vehicle added successfully!');
                 closeVehicleModal();
             }
         }
@@ -2408,21 +2384,9 @@
 ✨ Features: ${vehicle.features}`;
             }
 
-            // Check recovery activation status
-            const recoveryIsActive = isRecoveryActive(vehicle);
-            const daysRemaining = getDaysUntilActive(vehicle);
-            
-            let recoveryStatus = '';
-            if (recoveryIsActive) {
-                recoveryStatus = '🛡️ Recovery: ACTIVE';
-            } else {
-                const activationDate = new Date(vehicle.activationDate).toLocaleDateString();
-                recoveryStatus = `⏳ Recovery: Activates in ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} (${activationDate})`;
-            }
-
             vehicleDetails += `
 ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
-${recoveryStatus}`;
+📍 Status: ACTIVE`;
 
             // Create photo gallery HTML if photos exist
             let photoGalleryHTML = '';
@@ -2650,9 +2614,7 @@ ${recoveryStatus}`;
             } else {
                 let vehicleOptions = 'Select the stolen vehicle:\n\n';
                 userVehicles.forEach((v, i) => {
-                    const recoveryActive = isRecoveryActive(v);
-                    const statusIcon = recoveryActive ? '🛡️' : '⏳';
-                    vehicleOptions += `${i + 1}. ${statusIcon} ${v.year} ${v.make} ${v.model} (${v.license})${!recoveryActive ? ' - Pending' : ''}\n`;
+                    vehicleOptions += `${i + 1}. ${v.year} ${v.make} ${v.model} (${v.license})\n`;
                 });
                 
                 const selection = prompt(vehicleOptions + '\nEnter number:');
@@ -2662,29 +2624,6 @@ ${recoveryStatus}`;
             }
 
             if (selectedVehicle) {
-                // Check if recovery is active for this vehicle
-                if (!isRecoveryActive(selectedVehicle)) {
-                    const daysRemaining = getDaysUntilActive(selectedVehicle);
-                    const activationDate = new Date(selectedVehicle.activationDate).toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    });
-                    
-                    alert(`⏳ RECOVERY NOT YET ACTIVE\n\n` +
-                          `❌ Your ${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model} is still in the waiting period.\n\n` +
-                          `⏰ Recovery activates in: ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''}\n` +
-                          `📅 Activation date: ${activationDate}\n\n` +
-                          `This 5-day waiting period prevents fraud and ensures fair coverage for all members.\n\n` +
-                          `💡 You can still:\n` +
-                          `• Report the theft to police (911)\n` +
-                          `• File an insurance claim\n` +
-                          `• Contact local authorities\n\n` +
-                          `CarTrace Pro recovery services will be available after the activation date.`);
-                    return;
-                }
-                
                 const caseId = 'CVR-' + Date.now();
                 alert(`🚨 THEFT REPORT ACTIVATED\n\n` +
                       `✅ Case ID: ${caseId}\n` +
@@ -2838,9 +2777,7 @@ ${recoveryStatus}`;
                 const vehiclesRef = ref(database, `vehicles/${user.uid}`);
                 onValue(vehiclesRef, (snapshot) => {
                     const data = snapshot.val();
-                    userVehicles = data ? Object.values(data) : [];
-                    window.userVehicles = userVehicles; // Keep both in sync
-                    console.log(`Loaded ${userVehicles.length} vehicles from Firebase`);
+                    window.userVehicles = data ? Object.values(data) : [];
                     updateVehicleDisplay();
                     updateVehicleCount();
                 });
