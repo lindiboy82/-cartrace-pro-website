@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarTrace Pro - Community-Powered Vehicle Recovery</title>
+    <meta name="description" content="Free community-driven app that helps find stolen cars while rewarding helpers. Join thousands protecting their neighborhoods.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><radialGradient id="globeGrad" cx="50%" cy="40%" r="70%"><stop offset="0%" style="stop-color:%23a8c8ec"/><stop offset="100%" style="stop-color:%232563eb"/></radialGradient></defs><circle cx="200" cy="220" r="140" fill="url(%23globeGrad)"/><g stroke="white" stroke-width="3" fill="none"><circle cx="200" cy="220" r="140"/><ellipse cx="200" cy="220" rx="140" ry="70"/><ellipse cx="200" cy="220" rx="70" ry="140"/><line x1="60" y1="220" x2="340" y2="220"/><line x1="200" y1="80" x2="200" y2="360"/></g><path d="M200 80 L230 160 L200 200 Z" fill="%23dc2626"/><ellipse cx="210" cy="130" rx="18" ry="18" fill="white"/></svg>') center/contain no-repeat;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            min-width: 200px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #4f46e5;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            font-size: 1.2rem;
+            padding: 1.25rem 2.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Emergency Alert Box */
+        .emergency-alert {
+            background: white;
+            color: #333;
+            padding: 2.5rem;
+            border-radius: 15px;
+            max-width: 500px;
+            margin: 3rem auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 3px solid #ef4444;
+        }
+
+        .emergency-alert h2 {
+            color: #ef4444;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .emergency-alert p {
+            margin-bottom: 1.5rem;
+            color: #6b7280;
+        }
+
+        /* Trust Badges */
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        .trust-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .trust-badge strong {
+            font-size: 1.1rem;
+        }
+
+        /* Live Metrics */
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .stat-live {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .cta-buttons {
+            margin-top: 3rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Success Stories Section */
+        .success-stories {
+            padding: 80px 0;
+            background: #f8fafc;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #4f46e5;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            position: relative;
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .story-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .story-info h3 {
+            font-size: 1.2rem;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .story-meta {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .verified-badge {
+            background: #10b981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .story-content {
+            color: #374151;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .story-stats {
+            display: flex;
+            gap: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .story-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .story-stat strong {
+            color: #4f46e5;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+            padding: 2rem;
+            background: #f8fafc;
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        .step-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .step h3 {
+            color: #4f46e5;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .step p {
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        /* Insurance Partners Section */
+        .insurance-partners {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #4f46e5 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .partner-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .partner-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .partner-benefit {
+            background: rgba(255,255,255,0.1);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        /* Response Time Dashboard */
+        .response-metrics {
+            padding: 80px 0;
+            background: #f8fafc;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4f46e5;
+            margin: 1rem 0;
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .metric-trend {
+            color: #10b981;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .stories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>CarTrace Pro</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#success-stories">Success Stories</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#metrics">Performance</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <div class="auth-buttons" id="authButtons">
+                <a href="auth.html?mode=login" class="btn btn-secondary">Sign In</a>
+                <a href="auth.html?mode=signup" class="btn btn-primary">Join Free</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <h1>Your Car Was Stolen?<br>We'll Help You Find It</h1>
+            <p class="hero-subtitle">
+                Community-powered vehicle recovery with 96.1% success rate. 47,000+ members watching for your vehicle.
+            </p>
+
+            <!-- EMERGENCY BUTTON - Most Prominent -->
+            <div class="emergency-alert">
+                <h2>🚨 My Car Was Just Stolen</h2>
+                <p>Get immediate help from our community of 47,000+ watchers. Report takes less than 60 seconds.</p>
+                <a href="auth.html?mode=emergency" class="btn btn-danger btn-large">REPORT STOLEN CAR NOW</a>
+                <p style="margin-top: 1rem; font-size: 0.9rem;">✓ Free to report  ✓ Instant community alert  ✓ $200-$750 reward for recovery</p>
+            </div>
+
+            <!-- Trust Badges -->
+            <div class="trust-badges">
+                <div class="trust-badge">
+                    <span>✓</span>
+                    <strong>2,847 Recoveries</strong>
+                </div>
+                <div class="trust-badge">
+                    <span>✓</span>
+                    <strong>96.1% Success Rate</strong>
+                </div>
+                <div class="trust-badge">
+                    <span>✓</span>
+                    <strong>$1.2M Paid in Rewards</strong>
+                </div>
+            </div>
+
+            <!-- Live Stats -->
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">2,847</span>
+                    <span class="stat-label">Vehicles Recovered</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">47K+</span>
+                    <span class="stat-label">Community Members<span class="stat-live"></span></span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">$1.2M</span>
+                    <span class="stat-label">Rewards Paid</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">0.8ms</span>
+                    <span class="stat-label">Avg Response Time<span class="stat-live"></span></span>
+                </div>
+            </div>
+
+            <div class="cta-buttons" id="ctaButtons">
+                <a href="auth.html" class="btn btn-success btn-large">🆓 Join Free Community</a>
+                <a href="#how-it-works" class="btn btn-primary btn-large">🔍 How It Works</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real Success Stories -->
+    <section class="success-stories" id="success-stories">
+        <div class="container">
+            <h2 class="section-title">Real Stories, Real Recoveries</h2>
+            <p class="section-subtitle">
+                See how our community has helped thousands recover their stolen vehicles
+            </p>
+
+            <div class="stories-grid">
+                <!-- Founder's Story -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">🛠️</div>
+                        <div class="story-info">
+                            <h3>Lindi (Founder)</h3>
+                            <div class="story-meta">
+                                Naples, FL • <span class="verified-badge">✓ Verified Founder</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        "Ten years ago, my car was stolen. Police couldn't help. I found it myself days later - it had been used in an armed robbery. That experience drove me to spend a decade building this platform. No one should have to go through what I did. Now we've helped recover 2,847 vehicles and counting."
+                    </div>
+                    <div class="story-stats">
+                        <div class="story-stat">
+                            <span>⏱️</span>
+                            <strong>10 years</strong> of development
+                        </div>
+                        <div class="story-stat">
+                            <span>🎯</span>
+                            <strong>Personal</strong> experience
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Story 1 -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">👨</div>
+                        <div class="story-info">
+                            <h3>Marcus T.</h3>
+                            <div class="story-meta">
+                                Fort Myers, FL • <span class="verified-badge">✓ Verified Recovery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        "My F-150 was stolen from my driveway at 3 AM. Posted the alert on CarTrace and within 4 hours, a community member spotted it at a gas station 15 miles away. Police recovered it with zero damage. Paid the helper $300 from my Gold plan reward. This app saved me $45,000!"
+                    </div>
+                    <div class="story-stats">
+                        <div class="story-stat">
+                            <span>⏱️</span>
+                            <strong>4 hours</strong> to recovery
+                        </div>
+                        <div class="story-stat">
+                            <span>💰</span>
+                            <strong>$300</strong> reward paid
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Story 2 -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">👩</div>
+                        <div class="story-info">
+                            <h3>Sarah K.</h3>
+                            <div class="story-meta">
+                                Miami, FL • <span class="verified-badge">✓ Verified Recovery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        "As a single mom, my Honda Civic is everything. When it was stolen, I was devastated. The CarTrace community found it in 6 hours. Someone even drove to check the location for me. I'm beyond grateful - this community is amazing!"
+                    </div>
+                    <div class="story-stats">
+                        <div class="story-stat">
+                            <span>⏱️</span>
+                            <strong>6 hours</strong> to recovery
+                        </div>
+                        <div class="story-stat">
+                            <span>👥</span>
+                            <strong>Community</strong> support
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Story 3 - Helper Perspective -->
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">🎖️</div>
+                        <div class="story-info">
+                            <h3>James R.</h3>
+                            <div class="story-meta">
+                                Tampa, FL • <span class="verified-badge">✓ Top Reporter</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        "I've helped recover 7 vehicles so far just by keeping my eyes open during my daily commute. Made over $1,400 in rewards. It feels great knowing I'm helping people while earning some extra cash. This is community protection done right."
+                    </div>
+                    <div class="story-stats">
+                        <div class="story-stat">
+                            <span>🏆</span>
+                            <strong>7 vehicles</strong> helped recover
+                        </div>
+                        <div class="story-stat">
+                            <span>💰</span>
+                            <strong>$1,400</strong> earned
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Response Time Metrics -->
+    <section class="response-metrics" id="metrics">
+        <div class="container">
+            <h2 class="section-title">Live Platform Performance</h2>
+            <p class="section-subtitle">
+                Real-time metrics showing how fast our community responds to stolen vehicle alerts
+            </p>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Average First Sighting</div>
+                    <div class="metric-value">2.3h</div>
+                    <div class="metric-trend">↓ 15% from last month</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Average Recovery Time</div>
+                    <div class="metric-value">8.7h</div>
+                    <div class="metric-trend">↓ 22% from last month</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Active Watchers Now</div>
+                    <div class="metric-value">47,892</div>
+                    <div class="metric-trend">↑ 1,247 this week</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Recovery Success Rate</div>
+                    <div class="metric-value">96.1%</div>
+                    <div class="metric-trend">Industry Leading</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Alert Distribution Time</div>
+                    <div class="metric-value">0.8ms</div>
+                    <div class="metric-trend">Real-time notifications</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">This Month's Recoveries</div>
+                    <div class="metric-value">143</div>
+                    <div class="metric-trend">↑ 31 from last month</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How CarTrace Pro Works</h2>
+            <p class="section-subtitle">
+                Simple, community-driven vehicle recovery that benefits everyone
+            </p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-icon">🚨</div>
+                    <h3>1. Report Instantly</h3>
+                    <p>Hit the emergency button and describe your stolen vehicle. Takes less than 60 seconds. Alert goes out to 47,000+ community members immediately.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">👀</div>
+                    <h3>2. Community Watches</h3>
+                    <p>Thousands of eyes across Florida (expanding nationwide) watch for your vehicle while going about their day. They check license plates, make, and model.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">📍</div>
+                    <h3>3. Location Reported</h3>
+                    <p>When someone spots your vehicle, they report the location with photo evidence. You get notified instantly and can alert police with exact location.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-icon">💰</div>
+                    <h3>4. Reward & Recovery</h3>
+                    <p>Once your vehicle is recovered, you pay the reward ($200-$750 based on your plan) to the helper. Everyone wins - you get your car back, they get rewarded.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insurance Partners -->
+    <section class="insurance-partners">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">Trusted by Insurance Partners</h2>
+            <p class="section-subtitle" style="color: rgba(255,255,255,0.9);">
+                Leading insurance providers recognize CarTrace Pro as a credible recovery solution
+            </p>
+
+            <div class="partners-grid">
+                <div class="partner-card">
+                    <h4>🛡️ Insurance Integration</h4>
+                    <div class="partner-benefit">✓ Approved supplemental security</div>
+                    <div class="partner-benefit">✓ May reduce premiums</div>
+                    <div class="partner-benefit">✓ Claim documentation support</div>
+                </div>
+
+                <div class="partner-card">
+                    <h4>🔒 Verified Platform</h4>
+                    <div class="partner-benefit">✓ 99.97% network uptime</div>
+                    <div class="partner-benefit">✓ Encrypted data protection</div>
+                    <div class="partner-benefit">✓ GDPR compliant</div>
+                </div>
+
+                <div class="partner-card">
+                    <h4>📊 Proven Results</h4>
+                    <div class="partner-benefit">✓ 2,847 confirmed recoveries</div>
+                    <div class="partner-benefit">✓ 96.1% success rate</div>
+                    <div class="partner-benefit">✓ Fastest recovery times</div>
+                </div>
+
+                <div class="partner-card">
+                    <h4>🤝 Partnership Opportunities</h4>
+                    <div class="partner-benefit">✓ Custom integration available</div>
+                    <div class="partner-benefit">✓ API access for insurers</div>
+                    <div class="partner-benefit">✓ Bulk protection plans</div>
+                </div>
+            </div>
+
+            <p style="text-align: center; margin-top: 2rem; font-size: 1rem;">
+                Insurance provider? <a href="mailto:partnerships@cartracepro.com" style="color: white; text-decoration: underline;">Contact us about partnership opportunities</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Firebase Auth Script -->
+    <script type="module">
+        console.log('🏠 Enhanced Homepage Loading...');
+        
+        let authResolved = false;
+        
+        async function initializeAuth() {
+            console.log('🔥 Starting Firebase initialization...');
+            
+            try {
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js');
+                const { getAuth, onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js');
+                
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
+                    authDomain: "cartrace-pro.firebaseapp.com",
+                    databaseURL: "https://cartrace-pro-default-rtdb.firebaseio.com/",
+                    projectId: "cartrace-pro",
+                    storageBucket: "cartrace-pro.firebasestorage.app",
+                    messagingSenderId: "341907523496",
+                    appId: "1:341907523496:web:f10a87930d939cf3b8ff9d",
+                    measurementId: "G-X01QW112CD"
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    resolveAuthState(currentUser);
+                    return;
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (authResolved) return;
+                    resolveAuthState(user);
+                });
+
+                setTimeout(() => {
+                    if (!authResolved) {
+                        resolveAuthState(null);
+                    }
+                }, 3000);
+
+                window.homepageLogout = async function() {
+                    try {
+                        await signOut(auth);
+                        window.location.reload();
+                    } catch (error) {
+                        console.error('Logout error:', error);
+                        window.location.href = 'auth.html';
+                    }
+                };
+
+            } catch (error) {
+                console.error('❌ Firebase initialization failed:', error);
+                if (!authResolved) {
+                    resolveAuthState(null);
+                }
+            }
+        }
+
+        function resolveAuthState(user) {
+            if (authResolved) return;
+            authResolved = true;
+
+            if (user) {
+                setupLoggedInHomepage(user);
+            } else {
+                setupGuestHomepage();
+            }
+        }
+
+        function setupLoggedInHomepage(user) {
+            const authButtons = document.getElementById('authButtons');
+            if (authButtons) {
+                authButtons.innerHTML = `
+                    <button onclick="goToDashboard()" class="btn btn-primary">📊 Dashboard</button>
+                    <button onclick="homepageLogout()" class="btn btn-secondary">Sign Out</button>
+                `;
+            }
+            
+            const ctaButtons = document.getElementById('ctaButtons');
+            if (ctaButtons) {
+                ctaButtons.innerHTML = `
+                    <button onclick="goToDashboard()" class="btn btn-success btn-large">📊 View Dashboard</button>
+                    <a href="#success-stories" class="btn btn-primary btn-large">📖 Success Stories</a>
+                `;
+            }
+        }
+
+        function setupGuestHomepage() {
+            console.log('✅ Guest homepage loaded');
+        }
+        
+        window.goToDashboard = function() {
+            window.location.href = 'dashboard.html';
+        };
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAuth();
+        });
+    </script>
+</body>
+</html>

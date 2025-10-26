@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency - Report Stolen Car | CarTrace Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .emergency-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .emergency-header {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .emergency-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .emergency-header p {
+            opacity: 0.9;
+        }
+
+        .emergency-content {
+            padding: 2rem;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e5e7eb;
+            z-index: 0;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .step-circle.active {
+            background: #ef4444;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step-circle.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #111827;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ef4444;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .alert-box {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-box h3 {
+            color: #ef4444;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-box ul {
+            margin-left: 1.5rem;
+            color: #374151;
+        }
+
+        .alert-box li {
+            margin: 0.25rem 0;
+        }
+
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .success-screen.active {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .success-screen h2 {
+            color: #10b981;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .success-details {
+            background: #f3f4f6;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .success-details strong {
+            color: #ef4444;
+        }
+
+        .photo-upload {
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .photo-upload:hover {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .photo-upload input {
+            display: none;
+        }
+
+        .photo-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .photo-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .emergency-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .progress-bar {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="emergency-container">
+        <!-- Header -->
+        <div class="emergency-header">
+            <h1>🚨 Report Stolen Vehicle</h1>
+            <p>We'll alert 47,000+ community members immediately</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="emergency-content">
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress-step">
+                    <div class="step-circle active" id="step1Circle">1</div>
+                    <div class="step-label">Vehicle Info</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle" id="step2Circle">2</div>
+                    <div class="step-label">Theft Details</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle" id="step3Circle">3</div>
+                    <div class="step-label">Contact Info</div>
+                </div>
+            </div>
+
+            <!-- Emergency Form -->
+            <form id="emergencyForm">
+                <!-- Step 1: Vehicle Information -->
+                <div class="form-step active" id="step1">
+                    <h2 style="margin-bottom: 1.5rem; color: #111827;">Vehicle Information</h2>
+
+                    <div class="form-group">
+                        <label>License Plate <span class="required">*</span></label>
+                        <input type="text" id="licensePlate" placeholder="ABC1234" required>
+                        <div class="form-hint">Enter exactly as it appears on the plate</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Make <span class="required">*</span></label>
+                        <select id="make" required>
+                            <option value="">Select make...</option>
+                            <option value="Acura">Acura</option>
+                            <option value="BMW">BMW</option>
+                            <option value="Chevrolet">Chevrolet</option>
+                            <option value="Dodge">Dodge</option>
+                            <option value="Ford">Ford</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Hyundai">Hyundai</option>
+                            <option value="Jeep">Jeep</option>
+                            <option value="Kia">Kia</option>
+                            <option value="Lexus">Lexus</option>
+                            <option value="Mercedes-Benz">Mercedes-Benz</option>
+                            <option value="Nissan">Nissan</option>
+                            <option value="Ram">Ram</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Volkswagen">Volkswagen</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Model <span class="required">*</span></label>
+                        <input type="text" id="model" placeholder="e.g., Civic, F-150, Camry" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Year <span class="required">*</span></label>
+                        <input type="number" id="year" placeholder="2020" min="1900" max="2025" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Color <span class="required">*</span></label>
+                        <select id="color" required>
+                            <option value="">Select color...</option>
+                            <option value="Black">Black</option>
+                            <option value="White">White</option>
+                            <option value="Silver">Silver</option>
+                            <option value="Gray">Gray</option>
+                            <option value="Red">Red</option>
+                            <option value="Blue">Blue</option>
+                            <option value="Green">Green</option>
+                            <option value="Brown">Brown</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn btn-primary" onclick="nextStep(2)">Continue →</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Theft Details -->
+                <div class="form-step" id="step2">
+                    <h2 style="margin-bottom: 1.5rem; color: #111827;">Theft Details</h2>
+
+                    <div class="alert-box">
+                        <h3>⚠️ Important Information</h3>
+                        <ul>
+                            <li>Report the theft to police FIRST if you haven't already</li>
+                            <li>Get a police report number if possible</li>
+                            <li>The more details you provide, the faster we can help</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-group">
+                        <label>When was it stolen? <span class="required">*</span></label>
+                        <input type="datetime-local" id="stolenTime" required>
+                        <div class="form-hint">Approximate time is fine</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Where was it stolen from? <span class="required">*</span></label>
+                        <input type="text" id="stolenLocation" placeholder="123 Main St, Naples, FL" required>
+                        <div class="form-hint">Street address or general area</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Police Report Number</label>
+                        <input type="text" id="policeReport" placeholder="Optional - add later if needed">
+                        <div class="form-hint">If you have it</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Distinguishing Features</label>
+                        <textarea id="features" placeholder="Bumper stickers, dents, scratches, custom wheels, etc."></textarea>
+                        <div class="form-hint">Anything that makes your vehicle unique</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Upload Photos (Optional)</label>
+                        <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+                            <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotoUpload(event)">
+                            <div>📸 Click to upload photos</div>
+                            <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem;">
+                                Recent photos help community identify your vehicle
+                            </div>
+                        </div>
+                        <div class="photo-preview" id="photoPreview"></div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep(1)">← Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep(3)">Continue →</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Contact Information -->
+                <div class="form-step" id="step3">
+                    <h2 style="margin-bottom: 1.5rem; color: #111827;">Your Contact Information</h2>
+
+                    <div class="form-group">
+                        <label>Your Name <span class="required">*</span></label>
+                        <input type="text" id="ownerName" placeholder="John Smith" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number <span class="required">*</span></label>
+                        <input type="tel" id="phoneNumber" placeholder="(239) 555-1234" required>
+                        <div class="form-hint">For community members to contact you when spotted</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email <span class="required">*</span></label>
+                        <input type="email" id="email" placeholder="your@email.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reward Amount <span class="required">*</span></label>
+                        <select id="rewardAmount" required>
+                            <option value="">Select reward...</option>
+                            <option value="200">$200 - Basic Plan</option>
+                            <option value="300">$300 - Gold Plan</option>
+                            <option value="500">$500 - Platinum Plan</option>
+                            <option value="750">$750 - Diamond Plan</option>
+                        </select>
+                        <div class="form-hint">Choose your protection plan - reward paid only if vehicle is recovered</div>
+                    </div>
+
+                    <div class="form-group" style="background: #f3f4f6; padding: 1rem; border-radius: 8px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="termsAgree" required style="width: auto; margin-right: 0.5rem;">
+                            <span>I agree to pay the reward amount if my vehicle is recovered through community assistance <span class="required">*</span></span>
+                        </label>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
+                        <button type="submit" class="btn btn-primary">🚨 SEND ALERT NOW</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Success Screen -->
+            <div class="success-screen" id="successScreen">
+                <div class="success-icon">✅</div>
+                <h2>Alert Sent Successfully!</h2>
+                <p style="color: #6b7280; margin-bottom: 1.5rem;">
+                    Your stolen vehicle alert has been sent to 47,892 community members
+                </p>
+
+                <div class="success-details">
+                    <p><strong>What happens next:</strong></p>
+                    <ul style="margin-top: 1rem; color: #374151;">
+                        <li>✓ 47,892 members notified immediately</li>
+                        <li>✓ You'll receive SMS/email when someone spots your vehicle</li>
+                        <li>✓ Average first sighting: 2.3 hours</li>
+                        <li>✓ Average recovery: 8.7 hours</li>
+                        <li>✓ 96.1% recovery success rate</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fef2f2; padding: 1rem; border-radius: 8px; margin: 1.5rem 0; text-align: left;">
+                    <strong style="color: #ef4444;">Important:</strong>
+                    <p style="color: #374151; margin-top: 0.5rem; font-size: 0.9rem;">
+                        When someone reports a sighting, DO NOT confront the thief yourself. Contact police immediately with the location information.
+                    </p>
+                </div>
+
+                <button onclick="goToDashboard()" class="btn btn-primary" style="width: 100%;">
+                    Go to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
+            authDomain: "cartrace-pro.firebaseapp.com",
+            databaseURL: "https://cartrace-pro-default-rtdb.firebaseio.com/",
+            projectId: "cartrace-pro",
+            storageBucket: "cartrace-pro.firebasestorage.app",
+            messagingSenderId: "341907523496",
+            appId: "1:341907523496:web:f10a87930d939cf3b8ff9d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
+
+        let uploadedPhotos = [];
+
+        // Step navigation
+        window.nextStep = function(step) {
+            // Validate current step
+            const currentStep = document.querySelector('.form-step.active');
+            const inputs = currentStep.querySelectorAll('[required]');
+            let valid = true;
+
+            inputs.forEach(input => {
+                if (!input.value) {
+                    valid = false;
+                    input.style.borderColor = '#ef4444';
+                } else {
+                    input.style.borderColor = '#e5e7eb';
+                }
+            });
+
+            if (!valid) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Update progress
+            document.querySelector('.form-step.active').classList.remove('active');
+            document.getElementById('step' + step).classList.add('active');
+
+            // Update progress circles
+            for (let i = 1; i <= 3; i++) {
+                const circle = document.getElementById('step' + i + 'Circle');
+                if (i < step) {
+                    circle.classList.remove('active');
+                    circle.classList.add('completed');
+                    circle.textContent = '✓';
+                } else if (i === step) {
+                    circle.classList.remove('completed');
+                    circle.classList.add('active');
+                    circle.textContent = i;
+                } else {
+                    circle.classList.remove('active', 'completed');
+                    circle.textContent = i;
+                }
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.prevStep = function(step) {
+            nextStep(step);
+        };
+
+        // Photo upload handling
+        window.handlePhotoUpload = function(event) {
+            const files = event.target.files;
+            const preview = document.getElementById('photoPreview');
+
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedPhotos.push(e.target.result);
+                    
+                    const photoItem = document.createElement('div');
+                    photoItem.className = 'photo-item';
+                    photoItem.innerHTML = `
+                        <img src="${e.target.result}" alt="Vehicle photo">
+                        <button type="button" class="photo-remove" onclick="removePhoto(${uploadedPhotos.length - 1})">✕</button>
+                    `;
+                    preview.appendChild(photoItem);
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.removePhoto = function(index) {
+            uploadedPhotos.splice(index, 1);
+            const preview = document.getElementById('photoPreview');
+            preview.children[index].remove();
+        };
+
+        // Form submission
+        document.getElementById('emergencyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Get form data
+            const alertData = {
+                vehicleInfo: {
+                    licensePlate: document.getElementById('licensePlate').value.toUpperCase(),
+                    make: document.getElementById('make').value,
+                    model: document.getElementById('model').value,
+                    year: document.getElementById('year').value,
+                    color: document.getElementById('color').value
+                },
+                theftDetails: {
+                    stolenTime: document.getElementById('stolenTime').value,
+                    stolenLocation: document.getElementById('stolenLocation').value,
+                    policeReport: document.getElementById('policeReport').value || 'Not provided',
+                    features: document.getElementById('features').value || 'None specified',
+                    photos: uploadedPhotos
+                },
+                contactInfo: {
+                    name: document.getElementById('ownerName').value,
+                    phone: document.getElementById('phoneNumber').value,
+                    email: document.getElementById('email').value,
+                    rewardAmount: document.getElementById('rewardAmount').value
+                },
+                metadata: {
+                    reportedAt: Date.now(),
+                    status: 'ACTIVE',
+                    viewCount: 0,
+                    sightingCount: 0
+                }
+            };
+
+            try {
+                // Save to Firebase
+                const alertsRef = ref(database, 'stolenAlerts');
+                const newAlertRef = push(alertsRef);
+                
+                // Add user ID if authenticated
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        alertData.reportedBy = user.uid;
+                    }
+                    
+                    await set(newAlertRef, alertData);
+                    
+                    // Show success screen
+                    document.getElementById('emergencyForm').style.display = 'none';
+                    document.querySelector('.progress-bar').style.display = 'none';
+                    document.getElementById('successScreen').classList.add('active');
+                });
+
+            } catch (error) {
+                console.error('Error submitting alert:', error);
+                alert('There was an error submitting your report. Please try again or contact support.');
+            }
+        });
+
+        window.goToDashboard = function() {
+            window.location.href = 'dashboard.html';
+        };
+    </script>
+</body>
+</html>

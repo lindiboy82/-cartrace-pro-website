@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - CarTrace Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #333;
+        }
+
+        .analytics-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .analytics-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-header p {
+            opacity: 0.9;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4f46e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-trend {
+            font-size: 0.85rem;
+            color: #10b981;
+        }
+
+        .metric-trend.negative {
+            color: #ef4444;
+        }
+
+        .chart-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .heat-map {
+            width: 100%;
+            height: 500px;
+            background: #f3f4f6;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .heat-map-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .heat-map-controls select,
+        .heat-map-controls input {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            height: 100%;
+            gap: 0.5rem;
+            padding: 1rem;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+            transform: translateY(-5px);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .legend {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .stats-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .stats-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .time-filter {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .time-filter button {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .time-filter button.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .time-filter button:hover {
+            border-color: #4f46e5;
+        }
+
+        @media (max-width: 768px) {
+            .analytics-container {
+                padding: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .heat-map {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="analytics-container">
+        <!-- Header -->
+        <div class="analytics-header">
+            <h1>📊 Analytics Dashboard</h1>
+            <p>Real-time insights into theft patterns, recovery performance, and community engagement</p>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Recoveries (30d)</div>
+                <div class="metric-value" id="totalRecoveries">143</div>
+                <div class="metric-trend">↑ 31 from last month</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">Avg Recovery Time</div>
+                <div class="metric-value" id="avgRecoveryTime">8.7h</div>
+                <div class="metric-trend">↓ 22% faster</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">Success Rate</div>
+                <div class="metric-value" id="successRate">96.1%</div>
+                <div class="metric-trend">Industry Leading</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">Active Community</div>
+                <div class="metric-value" id="activeCommunity">47.8K</div>
+                <div class="metric-trend">↑ 1,247 this week</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">Avg First Sighting</div>
+                <div class="metric-value" id="firstSighting">2.3h</div>
+                <div class="metric-trend">↓ 15% faster</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">Rewards Paid (30d)</div>
+                <div class="metric-value" id="rewardsPaid">$47.2K</div>
+                <div class="metric-trend">↑ $12K from last month</div>
+            </div>
+        </div>
+
+        <!-- Theft Heat Map -->
+        <div class="chart-section">
+            <div class="chart-title">🗺️ Theft Heat Map - Florida</div>
+            
+            <div class="heat-map-controls">
+                <select id="timeRange">
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d" selected>Last 30 Days</option>
+                    <option value="90d">Last 90 Days</option>
+                    <option value="1y">Last Year</option>
+                </select>
+                <select id="cityFilter">
+                    <option value="all">All Cities</option>
+                    <option value="naples">Naples</option>
+                    <option value="fortmyers">Fort Myers</option>
+                    <option value="miami">Miami</option>
+                    <option value="tampa">Tampa</option>
+                    <option value="orlando">Orlando</option>
+                </select>
+                <select id="vehicleType">
+                    <option value="all">All Vehicles</option>
+                    <option value="sedan">Sedans</option>
+                    <option value="suv">SUVs</option>
+                    <option value="truck">Trucks</option>
+                    <option value="luxury">Luxury</option>
+                </select>
+            </div>
+
+            <div class="heat-map" id="heatMap">
+                <!-- Heat map will be rendered here with mapping library -->
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🗺️</div>
+                        <div>Heat map visualization</div>
+                        <div style="font-size: 0.85rem; margin-top: 0.5rem;">Integration with mapping library (Google Maps, Mapbox, or Leaflet)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #fecaca;"></div>
+                    <span>Low Risk (1-5 incidents)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #fb923c;"></div>
+                    <span>Medium Risk (6-15 incidents)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #dc2626;"></div>
+                    <span>High Risk (16+ incidents)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recovery Time Trends -->
+        <div class="chart-section">
+            <div class="chart-title">⏱️ Recovery Time Trends</div>
+            
+            <div class="time-filter">
+                <button class="active">7 Days</button>
+                <button>30 Days</button>
+                <button>90 Days</button>
+                <button>1 Year</button>
+            </div>
+
+            <div class="chart-container">
+                <div class="bar-chart" id="recoveryChart">
+                    <!-- Bars will be generated by JavaScript -->
+                    <div class="bar" style="height: 75%;">
+                        <div class="bar-value">6.2h</div>
+                        <div class="bar-label">Mon</div>
+                    </div>
+                    <div class="bar" style="height: 85%;">
+                        <div class="bar-value">7.1h</div>
+                        <div class="bar-label">Tue</div>
+                    </div>
+                    <div class="bar" style="height: 90%;">
+                        <div class="bar-value">8.5h</div>
+                        <div class="bar-label">Wed</div>
+                    </div>
+                    <div class="bar" style="height: 80%;">
+                        <div class="bar-value">6.8h</div>
+                        <div class="bar-label">Thu</div>
+                    </div>
+                    <div class="bar" style="height: 95%;">
+                        <div class="bar-value">9.2h</div>
+                        <div class="bar-label">Fri</div>
+                    </div>
+                    <div class="bar" style="height: 70%;">
+                        <div class="bar-value">5.9h</div>
+                        <div class="bar-label">Sat</div>
+                    </div>
+                    <div class="bar" style="height: 65%;">
+                        <div class="bar-value">5.4h</div>
+                        <div class="bar-label">Sun</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Performing Reporters -->
+        <div class="chart-section">
+            <div class="chart-title">🏆 Top Community Reporters</div>
+            
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Reporter</th>
+                        <th>Recoveries Helped</th>
+                        <th>Rewards Earned</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>James R.</td>
+                        <td>7</td>
+                        <td>$1,400</td>
+                        <td><span class="badge badge-success">✓ Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Maria G.</td>
+                        <td>5</td>
+                        <td>$950</td>
+                        <td><span class="badge badge-success">✓ Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>David L.</td>
+                        <td>4</td>
+                        <td>$800</td>
+                        <td><span class="badge badge-success">✓ Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Sarah K.</td>
+                        <td>3</td>
+                        <td>$600</td>
+                        <td><span class="badge badge-success">✓ Verified</span></td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Michael P.</td>
+                        <td>3</td>
+                        <td>$550</td>
+                        <td><span class="badge badge-success">✓ Verified</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Most Stolen Vehicles -->
+        <div class="chart-section">
+            <div class="chart-title">🚗 Most Targeted Vehicles (Last 30 Days)</div>
+            
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Make/Model</th>
+                        <th>Incidents</th>
+                        <th>Recovery Rate</th>
+                        <th>Avg Recovery Time</th>
+                        <th>Risk Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Honda Civic</td>
+                        <td>23</td>
+                        <td>95.7%</td>
+                        <td>7.2h</td>
+                        <td><span class="badge badge-danger">High</span></td>
+                    </tr>
+                    <tr>
+                        <td>Toyota Camry</td>
+                        <td>18</td>
+                        <td>94.4%</td>
+                        <td>8.1h</td>
+                        <td><span class="badge badge-danger">High</span></td>
+                    </tr>
+                    <tr>
+                        <td>Ford F-150</td>
+                        <td>15</td>
+                        <td>100%</td>
+                        <td>6.5h</td>
+                        <td><span class="badge badge-warning">Medium</span></td>
+                    </tr>
+                    <tr>
+                        <td>Nissan Altima</td>
+                        <td>12</td>
+                        <td>91.7%</td>
+                        <td>9.3h</td>
+                        <td><span class="badge badge-warning">Medium</span></td>
+                    </tr>
+                    <tr>
+                        <td>Chevrolet Silverado</td>
+                        <td>11</td>
+                        <td>100%</td>
+                        <td>5.8h</td>
+                        <td><span class="badge badge-warning">Medium</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase for real data
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
+            authDomain: "cartrace-pro.firebaseapp.com",
+            databaseURL: "https://cartrace-pro-default-rtdb.firebaseio.com/",
+            projectId: "cartrace-pro",
+            storageBucket: "cartrace-pro.firebasestorage.app",
+            messagingSenderId: "341907523496",
+            appId: "1:341907523496:web:f10a87930d939cf3b8ff9d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Listen for real-time updates
+        function initializeAnalytics() {
+            // Listen to stolen alerts for statistics
+            const alertsRef = ref(database, 'stolenAlerts');
+            onValue(alertsRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const alerts = snapshot.val();
+                    updateStatistics(alerts);
+                }
+            });
+        }
+
+        function updateStatistics(alerts) {
+            const alertsArray = Object.values(alerts);
+            
+            // Calculate active alerts
+            const activeAlerts = alertsArray.filter(a => a.status === 'ACTIVE');
+            const recoveredAlerts = alertsArray.filter(a => a.status === 'RECOVERED');
+            
+            // Update metrics
+            document.getElementById('totalRecoveries').textContent = recoveredAlerts.length;
+            
+            // Calculate average recovery time
+            const recoveryTimes = recoveredAlerts
+                .filter(a => a.recoveredAt && a.createdAt)
+                .map(a => (a.recoveredAt - a.createdAt) / (1000 * 60 * 60)); // hours
+            
+            if (recoveryTimes.length > 0) {
+                const avgTime = recoveryTimes.reduce((a, b) => a + b, 0) / recoveryTimes.length;
+                document.getElementById('avgRecoveryTime').textContent = avgTime.toFixed(1) + 'h';
+            }
+            
+            // Success rate
+            const successRate = (recoveredAlerts.length / alertsArray.length * 100).toFixed(1);
+            document.getElementById('successRate').textContent = successRate + '%';
+        }
+
+        // Time filter buttons
+        document.querySelectorAll('.time-filter button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.time-filter button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // Update chart based on selection
+            });
+        });
+
+        // Heat map controls
+        document.getElementById('timeRange').addEventListener('change', updateHeatMap);
+        document.getElementById('cityFilter').addEventListener('change', updateHeatMap);
+        document.getElementById('vehicleType').addEventListener('change', updateHeatMap);
+
+        function updateHeatMap() {
+            console.log('Updating heat map with filters...');
+            // Implementation would integrate with mapping library
+        }
+
+        // Initialize
+        initializeAnalytics();
+    </script>
+</body>
+</html>
