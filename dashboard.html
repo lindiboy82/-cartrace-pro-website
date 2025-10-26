@@ -2655,19 +2655,195 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
 
         // Found Vehicle
         function foundVehicle() {
-            const licensePlate = prompt('Enter the license plate of the found vehicle:');
-            const location = prompt('Enter the current location/address:');
-            
-            if (licensePlate && location) {
-                const reportId = 'FVR-' + Date.now();
-                alert(`📋 FOUND VEHICLE REPORT\n\n` +
-                      `🏷️ License: ${licensePlate}\n` +
-                      `📍 Location: ${location}\n\n` +
-                      `✅ Report ID: ${reportId}\n` +
-                      `✅ Authorities notified\n` +
-                      `💰 Reward eligibility: Under review\n\n` +
-                      `Thank you for helping our community!`);
+            // Step 1: Emergency Safety Check
+            if (!confirm('⚠️ FOUND A STOLEN VEHICLE - SAFETY FIRST!\n\n' +
+                        '🚨 CRITICAL SAFETY RULES:\n\n' +
+                        '❌ DO NOT approach the vehicle\n' +
+                        '❌ DO NOT confront anyone near it\n' +
+                        '❌ DO NOT touch or enter the vehicle\n' +
+                        '✅ DO stay at a safe distance\n' +
+                        '✅ DO call 911 immediately\n\n' +
+                        'Have you already called 911?\n\n' +
+                        'Click OK if YES, Cancel to call 911 first.')) {
+                alert('📞 CALL 911 NOW\n\nPlease call 911 to report the stolen vehicle location before proceeding.\n\nYour safety and proper law enforcement notification are required for reward eligibility.');
+                return;
             }
+            
+            // Step 2: Police Report Confirmation
+            if (!confirm('✅ 911 CALLED - NEXT STEP\n\n' +
+                        '📋 POLICE REPORT REQUIRED:\n\n' +
+                        'For reward eligibility, you must:\n' +
+                        '1. Give police your full name\n' +
+                        '2. Provide your contact information\n' +
+                        '3. File an official witness report\n\n' +
+                        'This creates the official record needed to verify your reward claim.\n\n' +
+                        'Have you given the police your name and filed a report?\n\n' +
+                        'Click OK if YES, Cancel if you need to do this first.')) {
+                alert('📝 IMPORTANT\n\nPlease provide your name to the responding officers and file a witness report.\n\nThis is required for reward payment verification.');
+                return;
+            }
+            
+            // Step 3: Safe Photo Documentation
+            alert('📸 PHOTO DOCUMENTATION - STAY SAFE!\n\n' +
+                  '⚠️ SAFETY GUIDELINES:\n\n' +
+                  '✅ Take photos from a SAFE DISTANCE\n' +
+                  '✅ DO NOT approach the vehicle\n' +
+                  '✅ Stay in a public, well-lit area\n' +
+                  '✅ If you feel unsafe, LEAVE IMMEDIATELY\n\n' +
+                  'Recommended Photos:\n' +
+                  '📸 License plate (from safe distance)\n' +
+                  '📸 Vehicle make/model/color\n' +
+                  '📸 Any visible damage or unique features\n' +
+                  '📸 Street signs showing location\n\n' +
+                  'Click OK when photos are complete (or skip if unsafe)');
+            
+            // Step 4: Wait for Police
+            if (!confirm('👮 WAIT FOR POLICE ARRIVAL\n\n' +
+                        '⚠️ IMPORTANT SAFETY STEPS:\n\n' +
+                        '1. Stay at a safe distance from vehicle\n' +
+                        '2. Remain in a public, visible location\n' +
+                        '3. Do not leave until police arrive\n' +
+                        '4. Provide your witness statement\n' +
+                        '5. Get the police report number\n\n' +
+                        'Have police arrived and taken your statement?\n\n' +
+                        'Click OK if YES, Cancel if still waiting.')) {
+                alert('⏳ PLEASE WAIT\n\nStay safe and wait for police to arrive.\n\nYou can return to this form after they take your statement and provide the report number.');
+                return;
+            }
+            
+            // Step 5: Collect Vehicle and Location Information
+            const licensePlate = prompt('🏷️ ENTER LICENSE PLATE:\n\nEnter the license plate number of the found vehicle:');
+            if (!licensePlate || licensePlate.trim() === '') {
+                alert('❌ License plate is required to file a found vehicle report.');
+                return;
+            }
+            
+            const location = prompt('📍 ENTER EXACT LOCATION:\n\nProvide the exact address or intersection where vehicle was found:\n\n(Be as specific as possible)');
+            if (!location || location.trim() === '') {
+                alert('❌ Location is required to file a found vehicle report.');
+                return;
+            }
+            
+            // Step 6: Police Report Information
+            alert('📋 POLICE REPORT INFORMATION\n\n' +
+                  'Now we need the official police report details to verify your reward claim.\n\n' +
+                  'You should have received:\n' +
+                  '• A police report number (e.g., 2025-12345)\n' +
+                  '• Officer name/badge number\n' +
+                  '• Department name\n\n' +
+                  'Please have this information ready for the next step.');
+            
+            const policeReportNumber = prompt('🔢 POLICE REPORT NUMBER:\n\nEnter the official police report number:\n\n(Required for reward verification)');
+            if (!policeReportNumber || policeReportNumber.trim() === '') {
+                alert('⚠️ REPORT NUMBER REQUIRED\n\nThe police report number is mandatory for reward payment.\n\n' +
+                      'If you don\'t have it yet:\n' +
+                      '• Ask the responding officer\n' +
+                      '• Call the police department\n' +
+                      '• Upload a photo of your report receipt\n\n' +
+                      'You can save your progress and add the report number later.');
+                return;
+            }
+            
+            const policeDepartment = prompt('👮 POLICE DEPARTMENT NAME:\n\nEnter the name of the police department that took the report:\n\n(e.g., "Naples Police Department", "Collier County Sheriff")');
+            if (!policeDepartment || policeDepartment.trim() === '') {
+                alert('❌ Police department name is required for verification.');
+                return;
+            }
+            
+            const officerName = prompt('👮 OFFICER INFORMATION (Optional):\n\nEnter officer name or badge number if available:\n\n(This helps speed up verification)') || 'Not provided';
+            
+            // Step 7: Witness Contact Information
+            alert('📞 CONTACT INFORMATION\n\n' +
+                  'For reward payment via Zelle, we need your contact information.\n\n' +
+                  'Required:\n' +
+                  '• Full legal name (must match report)\n' +
+                  '• Phone number or email for Zelle\n\n' +
+                  'Privacy: Your information is only used for reward verification and payment.');
+            
+            const witnessName = prompt('👤 YOUR FULL NAME:\n\nEnter your full legal name:\n\n(Must match the name on police report)');
+            if (!witnessName || witnessName.trim() === '') {
+                alert('❌ Your name is required to process the reward.');
+                return;
+            }
+            
+            const zelleContact = prompt('💰 ZELLE PAYMENT INFO:\n\nEnter your phone number OR email for Zelle payment:\n\n(Example: 239-555-1234 or email@example.com)');
+            if (!zelleContact || zelleContact.trim() === '') {
+                alert('❌ Zelle contact information is required to send your reward.');
+                return;
+            }
+            
+            // Step 8: Photo Evidence Upload (Simulated)
+            if (confirm('📸 UPLOAD EVIDENCE (Optional but Recommended)\n\n' +
+                       'Do you have photos of the police report or vehicle to upload?\n\n' +
+                       'Recommended uploads:\n' +
+                       '• Photo of police report receipt\n' +
+                       '• Photos of vehicle (from safe distance)\n' +
+                       '• Location photos\n\n' +
+                       'Click OK to upload photos, Cancel to skip.')) {
+                alert('📤 PHOTO UPLOAD\n\n' +
+                      'In a future update, you\'ll be able to upload photos directly.\n\n' +
+                      'For now, please keep your photos ready. Our verification team may request them via email.');
+            }
+            
+            // Generate Report ID
+            const reportId = 'FVR-' + Date.now();
+            const submissionTime = new Date().toLocaleString();
+            
+            // Save to Firebase if available
+            const foundVehicleReport = {
+                reportId: reportId,
+                licensePlate: licensePlate.trim().toUpperCase(),
+                location: location.trim(),
+                policeReportNumber: policeReportNumber.trim(),
+                policeDepartment: policeDepartment.trim(),
+                officerInfo: officerName.trim(),
+                witnessName: witnessName.trim(),
+                zelleContact: zelleContact.trim(),
+                submittedBy: window.currentUser ? window.currentUser.email : 'Anonymous',
+                submittedAt: submissionTime,
+                status: 'PENDING_VERIFICATION',
+                verificationStatus: 'Awaiting PD confirmation',
+                rewardStatus: 'Pending'
+            };
+            
+            if (window.firebaseRef && window.firebaseSet && window.currentUser) {
+                const reportRef = window.firebaseRef(window.firebaseDatabase, `foundVehicleReports/${reportId}`);
+                window.firebaseSet(reportRef, foundVehicleReport)
+                    .then(() => {
+                        console.log('Found vehicle report saved to Firebase');
+                    })
+                    .catch((error) => {
+                        console.error('Error saving report:', error);
+                        localStorage.setItem('foundVehicleReport_' + reportId, JSON.stringify(foundVehicleReport));
+                    });
+            } else {
+                localStorage.setItem('foundVehicleReport_' + reportId, JSON.stringify(foundVehicleReport));
+            }
+            
+            // Final Confirmation
+            alert(`✅ FOUND VEHICLE REPORT SUBMITTED!\n\n` +
+                  `📋 Report ID: ${reportId}\n` +
+                  `🏷️ License Plate: ${licensePlate.trim().toUpperCase()}\n` +
+                  `📍 Location: ${location.trim()}\n` +
+                  `🔢 Police Report: ${policeReportNumber.trim()}\n` +
+                  `👮 Department: ${policeDepartment.trim()}\n` +
+                  `👤 Witness: ${witnessName.trim()}\n` +
+                  `💰 Zelle Contact: ${zelleContact.trim()}\n\n` +
+                  `⏳ VERIFICATION PROCESS:\n\n` +
+                  `1️⃣ Our team will verify with ${policeDepartment.trim()}\n` +
+                  `2️⃣ We'll confirm report #${policeReportNumber.trim()}\n` +
+                  `3️⃣ Match with vehicle owner's theft report\n` +
+                  `4️⃣ Process reward payment via Zelle\n\n` +
+                  `⏰ Verification typically takes 2-5 business days\n` +
+                  `💵 Reward amount: Based on vehicle's protection plan\n` +
+                  `   • Basic: $200\n` +
+                  `   • Gold: $300\n` +
+                  `   • Platinum: $500\n` +
+                  `   • Diamond: $750\n\n` +
+                  `📧 You'll receive email updates at:\n${window.currentUser ? window.currentUser.email : 'your registered email'}\n\n` +
+                  `🙏 Thank you for helping our community recover stolen vehicles!\n\n` +
+                  `Your report ID: ${reportId}\n` +
+                  `Save this number for reference.`);
         }
 
         // Generate Report
