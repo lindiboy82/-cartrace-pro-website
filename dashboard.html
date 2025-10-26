@@ -2654,7 +2654,7 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
         }
 
         // Found Vehicle
-        function foundVehicle() {
+        async function foundVehicle() {
             // Step 1: Emergency Safety Check
             if (!confirm('⚠️ FOUND A STOLEN VEHICLE - SAFETY FIRST!\n\n' +
                         '🚨 CRITICAL SAFETY RULES:\n\n' +
@@ -2718,7 +2718,109 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                 return;
             }
             
-            const location = prompt('📍 ENTER EXACT LOCATION:\n\nProvide the exact address or intersection where vehicle was found:\n\n(Be as specific as possible)');
+            // GPS Location Capture (especially for mobile devices)
+            let gpsCoordinates = null;
+            let gpsAccuracy = null;
+            let location = null;
+            
+            if (navigator.geolocation) {
+                const useGPS = confirm('📍 PRECISE GPS LOCATION\n\n' +
+                                      'For the most accurate location, we can use your device\'s GPS.\n\n' +
+                                      '✅ Why GPS is better:\n' +
+                                      '• Pinpoint accuracy (within 5-50 meters)\n' +
+                                      '• Faster reward verification\n' +
+                                      '• Helps police locate vehicle quickly\n' +
+                                      '• Proves you were at the scene\n\n' +
+                                      '🔒 Privacy: Location only used for this report\n\n' +
+                                      'Click OK to use GPS, Cancel to enter address manually.');
+                
+                if (useGPS) {
+                    alert('📡 GETTING GPS LOCATION...\n\nPlease wait while we get your precise location.\n\nThis may take 5-15 seconds.\n\n(Make sure location services are enabled on your device)');
+                    
+                    // Try to get GPS location with higher accuracy
+                    const gpsPromise = new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                gpsCoordinates = {
+                                    latitude: position.coords.latitude,
+                                    longitude: position.coords.longitude,
+                                    accuracy: position.coords.accuracy,
+                                    timestamp: new Date(position.timestamp).toISOString()
+                                };
+                                gpsAccuracy = position.coords.accuracy;
+                                resolve(gpsCoordinates);
+                            },
+                            (error) => {
+                                console.error('GPS error:', error);
+                                reject(error);
+                            },
+                            {
+                                enableHighAccuracy: true,
+                                timeout: 15000,
+                                maximumAge: 0
+                            }
+                        );
+                    });
+                    
+                    // Wait for GPS with timeout handling
+                    try {
+                        await gpsPromise;
+                        
+                        // Show GPS success with coordinates
+                        const accuracyText = gpsAccuracy < 20 ? 'EXCELLENT' : gpsAccuracy < 50 ? 'GOOD' : 'FAIR';
+                        alert(`✅ GPS LOCATION CAPTURED!\n\n` +
+                              `📍 Coordinates:\n` +
+                              `Latitude: ${gpsCoordinates.latitude.toFixed(6)}\n` +
+                              `Longitude: ${gpsCoordinates.longitude.toFixed(6)}\n` +
+                              `Accuracy: ${gpsAccuracy.toFixed(1)} meters (${accuracyText})\n\n` +
+                              `This precise location will be used for verification.\n\n` +
+                              `Next: Enter a street address or description to help identify the location.`);
+                        
+                        // Still ask for address/description for human-readable location
+                        location = prompt('📍 LOCATION DESCRIPTION:\n\n' +
+                                        'GPS coordinates captured! ✅\n\n' +
+                                        'Please also provide a street address or description:\n' +
+                                        '(e.g., "123 Main St" or "Walmart parking lot on Pine Ridge Rd")\n\n' +
+                                        'This helps police and vehicle owner identify the exact spot:');
+                        
+                        if (!location || location.trim() === '') {
+                            location = `GPS Location: ${gpsCoordinates.latitude.toFixed(6)}, ${gpsCoordinates.longitude.toFixed(6)}`;
+                        }
+                        
+                    } catch (error) {
+                        // GPS failed - fallback to manual entry
+                        let errorMessage = 'Unable to get GPS location.';
+                        if (error.code === 1) {
+                            errorMessage = 'Location permission denied.';
+                        } else if (error.code === 2) {
+                            errorMessage = 'Location unavailable.';
+                        } else if (error.code === 3) {
+                            errorMessage = 'Location request timed out.';
+                        }
+                        
+                        alert(`⚠️ GPS UNAVAILABLE\n\n` +
+                              `${errorMessage}\n\n` +
+                              `No problem! You can enter the address manually in the next step.\n\n` +
+                              `Make sure to be as specific as possible with the address or intersection.`);
+                        
+                        location = prompt('📍 ENTER EXACT LOCATION:\n\n' +
+                                        'Provide the exact address or intersection where vehicle was found:\n\n' +
+                                        '(Be as specific as possible - street address, nearby landmarks, etc.)');
+                    }
+                } else {
+                    // User declined GPS - use manual entry
+                    location = prompt('📍 ENTER EXACT LOCATION:\n\n' +
+                                    'Provide the exact address or intersection where vehicle was found:\n\n' +
+                                    '(Be as specific as possible - street address, nearby landmarks, parking lot name, etc.)');
+                }
+            } else {
+                // Browser doesn't support geolocation
+                alert('ℹ️ GPS NOT AVAILABLE\n\nYour device/browser doesn\'t support GPS location.\n\nYou\'ll enter the address manually in the next step.');
+                location = prompt('📍 ENTER EXACT LOCATION:\n\n' +
+                                'Provide the exact address or intersection where vehicle was found:\n\n' +
+                                '(Be as specific as possible)');
+            }
+            
             if (!location || location.trim() === '') {
                 alert('❌ Location is required to file a found vehicle report.');
                 return;
@@ -2794,6 +2896,9 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                 reportId: reportId,
                 licensePlate: licensePlate.trim().toUpperCase(),
                 location: location.trim(),
+                gpsCoordinates: gpsCoordinates,  // Contains lat, lng, accuracy, timestamp
+                gpsAccuracy: gpsAccuracy ? `${gpsAccuracy.toFixed(1)} meters` : null,
+                locationMethod: gpsCoordinates ? 'GPS' : 'Manual Entry',
                 policeReportNumber: policeReportNumber.trim(),
                 policeDepartment: policeDepartment.trim(),
                 officerInfo: officerName.trim(),
@@ -2821,10 +2926,22 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             }
             
             // Final Confirmation
+            let gpsInfo = '';
+            if (gpsCoordinates) {
+                const accuracyRating = gpsAccuracy < 20 ? '⭐⭐⭐ EXCELLENT' : gpsAccuracy < 50 ? '⭐⭐ GOOD' : '⭐ FAIR';
+                gpsInfo = `📡 GPS Location: CAPTURED ✅\n` +
+                         `   Lat: ${gpsCoordinates.latitude.toFixed(6)}\n` +
+                         `   Lng: ${gpsCoordinates.longitude.toFixed(6)}\n` +
+                         `   Accuracy: ${gpsAccuracy.toFixed(1)}m ${accuracyRating}\n`;
+            } else {
+                gpsInfo = `📡 GPS Location: Manual Entry\n`;
+            }
+            
             alert(`✅ FOUND VEHICLE REPORT SUBMITTED!\n\n` +
                   `📋 Report ID: ${reportId}\n` +
                   `🏷️ License Plate: ${licensePlate.trim().toUpperCase()}\n` +
                   `📍 Location: ${location.trim()}\n` +
+                  gpsInfo +
                   `🔢 Police Report: ${policeReportNumber.trim()}\n` +
                   `👮 Department: ${policeDepartment.trim()}\n` +
                   `👤 Witness: ${witnessName.trim()}\n` +
