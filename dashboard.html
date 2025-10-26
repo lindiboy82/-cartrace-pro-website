@@ -706,6 +706,13 @@
             margin-bottom: 0.25rem;
         }
 
+        .plan-price {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
         .plan-reward {
             font-size: 0.9rem;
             color: var(--text-secondary);
@@ -1426,21 +1433,25 @@
                         <div class="plan-option" data-plan="BASIC" onclick="selectPlan('BASIC')">
                             <div class="plan-emoji">🥉</div>
                             <div class="plan-name">BASIC</div>
+                            <div class="plan-price">$17.99/month</div>
                             <div class="plan-reward">$200 Reward</div>
                         </div>
                         <div class="plan-option" data-plan="GOLD" onclick="selectPlan('GOLD')">
                             <div class="plan-emoji">🥈</div>
                             <div class="plan-name">GOLD</div>
+                            <div class="plan-price">$24.99/month</div>
                             <div class="plan-reward">$300 Reward</div>
                         </div>
                         <div class="plan-option" data-plan="PLATINUM" onclick="selectPlan('PLATINUM')">
                             <div class="plan-emoji">🥇</div>
                             <div class="plan-name">PLATINUM</div>
+                            <div class="plan-price">$29.99/month</div>
                             <div class="plan-reward">$500 Reward</div>
                         </div>
                         <div class="plan-option" data-plan="DIAMOND" onclick="selectPlan('DIAMOND')">
                             <div class="plan-emoji">💎</div>
                             <div class="plan-name">DIAMOND</div>
+                            <div class="plan-price">$35.00/month</div>
                             <div class="plan-reward">$750 Reward</div>
                         </div>
                     </div>
@@ -2232,11 +2243,25 @@
                         closeVehicleModal();
                     })
                     .catch((error) => {
-                        alert('❌ Error adding vehicle: ' + error.message);
+                        console.error('Firebase error:', error);
+                        // Fallback to local storage if Firebase fails
+                        console.log('Falling back to local storage...');
+                        userVehicles.push(vehicle);
+                        localStorage.setItem('cartraceVehicles', JSON.stringify(userVehicles));
+                        updateVehicleDisplay();
+                        updateVehicleCount();
+                        
+                        if (error.code === 'PERMISSION_DENIED') {
+                            alert('⚠️ Firebase permissions not configured.\n\nYour vehicle has been saved locally for now. To sync across devices, please update your Firebase database rules.\n\n✅ Vehicle added successfully!');
+                        } else {
+                            alert('⚠️ Could not sync to cloud.\n\nYour vehicle has been saved locally.\n\n✅ Vehicle added successfully!');
+                        }
+                        closeVehicleModal();
                     });
             } else {
                 // Save locally if Firebase not available
                 userVehicles.push(vehicle);
+                localStorage.setItem('cartraceVehicles', JSON.stringify(userVehicles));
                 updateVehicleDisplay();
                 updateVehicleCount();
                 
