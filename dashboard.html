@@ -2152,6 +2152,24 @@
             updatePhotoCount();
         }
 
+        // Check if recovery is active for a vehicle
+        function isRecoveryActive(vehicle) {
+            if (!vehicle.activationDate) return true; // Old vehicles without activation date are active
+            const now = new Date();
+            const activationDate = new Date(vehicle.activationDate);
+            return now >= activationDate;
+        }
+
+        // Get days remaining until recovery is active
+        function getDaysUntilActive(vehicle) {
+            if (!vehicle.activationDate) return 0;
+            const now = new Date();
+            const activationDate = new Date(vehicle.activationDate);
+            const diffTime = activationDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays > 0 ? diffDays : 0;
+        }
+
         // Select Plan
         function selectPlan(plan) {
             selectedPlan = plan;
@@ -2212,6 +2230,9 @@
             }
 
             const vehicleId = Date.now().toString();
+            const addedDate = new Date();
+            const activationDate = new Date(addedDate.getTime() + (5 * 24 * 60 * 60 * 1000)); // 5 days from now
+            
             const vehicle = {
                 id: vehicleId,
                 year,
@@ -2223,7 +2244,9 @@
                 features,
                 plan: selectedPlan,
                 photos: vehiclePhotos.map(p => p.data), // Add photos to vehicle
-                addedDate: new Date().toISOString()
+                addedDate: addedDate.toISOString(),
+                activationDate: activationDate.toISOString(), // Recovery becomes active after 5 days
+                recoveryActive: false // Will be true after 5 days
             };
 
             // Save to Firebase if available
@@ -2231,6 +2254,9 @@
                 const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
                 window.firebaseSet(vehicleRef, vehicle)
                     .then(() => {
+                        // Firebase onValue listener will automatically update the display
+                        console.log('Vehicle saved to Firebase successfully');
+                        
                         // If Carfax Car Care is connected and VIN provided, prompt to sync
                         if (carfaxConnected && vin) {
                             setTimeout(() => {
@@ -2239,7 +2265,19 @@
                                 }
                             }, 500);
                         }
-                        alert('✅ Vehicle added successfully!');
+                        
+                        const activationDateFormatted = new Date(vehicle.activationDate).toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        });
+                        
+                        alert(`✅ Vehicle added successfully!\n\n` +
+                              `⏳ WAITING PERIOD NOTICE:\n` +
+                              `Recovery protection will activate in 5 days on ${activationDateFormatted}.\n\n` +
+                              `This waiting period prevents fraud and ensures fair coverage for all members.\n\n` +
+                              `Your vehicle is now protected under the ${selectedPlan} plan!`);
                         closeVehicleModal();
                     })
                     .catch((error) => {
@@ -2251,10 +2289,17 @@
                         updateVehicleDisplay();
                         updateVehicleCount();
                         
+                        const activationDateFormatted = new Date(vehicle.activationDate).toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        });
+                        
                         if (error.code === 'PERMISSION_DENIED') {
-                            alert('⚠️ Firebase permissions not configured.\n\nYour vehicle has been saved locally for now. To sync across devices, please update your Firebase database rules.\n\n✅ Vehicle added successfully!');
+                            alert(`⚠️ Firebase permissions not configured.\n\nYour vehicle has been saved locally for now. To sync across devices, please update your Firebase database rules.\n\n✅ Vehicle added successfully!\n\n⏳ Recovery protection will activate in 5 days on ${activationDateFormatted}.`);
                         } else {
-                            alert('⚠️ Could not sync to cloud.\n\nYour vehicle has been saved locally.\n\n✅ Vehicle added successfully!');
+                            alert(`⚠️ Could not sync to cloud.\n\nYour vehicle has been saved locally.\n\n✅ Vehicle added successfully!\n\n⏳ Recovery protection will activate in 5 days on ${activationDateFormatted}.`);
                         }
                         closeVehicleModal();
                     });
@@ -2271,7 +2316,18 @@
                     }
                 }
                 
-                alert('✅ Vehicle added successfully!');
+                const activationDateFormatted = new Date(vehicle.activationDate).toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                alert(`✅ Vehicle added successfully!\n\n` +
+                      `⏳ WAITING PERIOD NOTICE:\n` +
+                      `Recovery protection will activate in 5 days on ${activationDateFormatted}.\n\n` +
+                      `This waiting period prevents fraud and ensures fair coverage for all members.\n\n` +
+                      `Your vehicle is now protected under the ${selectedPlan} plan!`);
                 closeVehicleModal();
             }
         }
@@ -2352,9 +2408,21 @@
 ✨ Features: ${vehicle.features}`;
             }
 
+            // Check recovery activation status
+            const recoveryIsActive = isRecoveryActive(vehicle);
+            const daysRemaining = getDaysUntilActive(vehicle);
+            
+            let recoveryStatus = '';
+            if (recoveryIsActive) {
+                recoveryStatus = '🛡️ Recovery: ACTIVE';
+            } else {
+                const activationDate = new Date(vehicle.activationDate).toLocaleDateString();
+                recoveryStatus = `⏳ Recovery: Activates in ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} (${activationDate})`;
+            }
+
             vehicleDetails += `
 ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
-📍 Status: ACTIVE`;
+${recoveryStatus}`;
 
             // Create photo gallery HTML if photos exist
             let photoGalleryHTML = '';
@@ -2582,7 +2650,9 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             } else {
                 let vehicleOptions = 'Select the stolen vehicle:\n\n';
                 userVehicles.forEach((v, i) => {
-                    vehicleOptions += `${i + 1}. ${v.year} ${v.make} ${v.model} (${v.license})\n`;
+                    const recoveryActive = isRecoveryActive(v);
+                    const statusIcon = recoveryActive ? '🛡️' : '⏳';
+                    vehicleOptions += `${i + 1}. ${statusIcon} ${v.year} ${v.make} ${v.model} (${v.license})${!recoveryActive ? ' - Pending' : ''}\n`;
                 });
                 
                 const selection = prompt(vehicleOptions + '\nEnter number:');
@@ -2592,6 +2662,29 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
             }
 
             if (selectedVehicle) {
+                // Check if recovery is active for this vehicle
+                if (!isRecoveryActive(selectedVehicle)) {
+                    const daysRemaining = getDaysUntilActive(selectedVehicle);
+                    const activationDate = new Date(selectedVehicle.activationDate).toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                    
+                    alert(`⏳ RECOVERY NOT YET ACTIVE\n\n` +
+                          `❌ Your ${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model} is still in the waiting period.\n\n` +
+                          `⏰ Recovery activates in: ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''}\n` +
+                          `📅 Activation date: ${activationDate}\n\n` +
+                          `This 5-day waiting period prevents fraud and ensures fair coverage for all members.\n\n` +
+                          `💡 You can still:\n` +
+                          `• Report the theft to police (911)\n` +
+                          `• File an insurance claim\n` +
+                          `• Contact local authorities\n\n` +
+                          `CarTrace Pro recovery services will be available after the activation date.`);
+                    return;
+                }
+                
                 const caseId = 'CVR-' + Date.now();
                 alert(`🚨 THEFT REPORT ACTIVATED\n\n` +
                       `✅ Case ID: ${caseId}\n` +
@@ -2745,7 +2838,9 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                 const vehiclesRef = ref(database, `vehicles/${user.uid}`);
                 onValue(vehiclesRef, (snapshot) => {
                     const data = snapshot.val();
-                    window.userVehicles = data ? Object.values(data) : [];
+                    userVehicles = data ? Object.values(data) : [];
+                    window.userVehicles = userVehicles; // Keep both in sync
+                    console.log(`Loaded ${userVehicles.length} vehicles from Firebase`);
                     updateVehicleDisplay();
                     updateVehicleCount();
                 });
