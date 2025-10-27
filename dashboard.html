@@ -8,6 +8,10 @@
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
     
+    <!-- Leaflet for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -119,6 +123,17 @@
             font-size: 18px;
         }
 
+        /* Notification Badge */
+        .notification-badge {
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: auto;
+            animation: pulse 2s infinite;
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -163,6 +178,15 @@
             50% { opacity: 0.5; }
         }
 
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
         /* Cards */
         .cards-grid {
             display: grid;
@@ -196,196 +220,22 @@
 
         .card-icon {
             margin-right: 10px;
-            font-size: 20px;
+            font-size: 24px;
         }
 
-        /* Carfax Integration Styles */
-        .carfax-badge {
-            display: inline-flex
-
-;
-            align-items: center;
-            background: linear-gradient(135deg, var(--carfax-blue), var(--carfax-orange));
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .carfax-status {
-            padding: 15px;
-            background: rgba(0, 87, 184, 0.1);
-            border-left: 4px solid var(--carfax-blue);
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .carfax-connect-btn {
-            background: var(--carfax-blue);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .carfax-connect-btn:hover {
-            background: var(--carfax-orange);
-            transform: translateY(-2px);
-        }
-
-        .service-record {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 4px solid var(--carfax-blue);
-        }
-
-        .service-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .service-type {
-            font-weight: bold;
-            color: var(--carfax-blue);
-        }
-
-        .service-date {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .service-details {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .service-cost {
-            font-weight: bold;
-            color: var(--success);
-        }
-
-        .maintenance-alert {
-            background: rgba(239, 68, 68, 0.1);
-            border-left: 4px solid var(--danger);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .maintenance-warning {
-            background: rgba(245, 158, 11, 0.1);
-            border-left: 4px solid var(--warning);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .maintenance-info {
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 4px solid var(--info);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
-        }
-
-        .btn-secondary {
-            background: #6b7280;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #4b5563;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-        }
-
-        .btn-photo-upload {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-        }
-
-        .btn-photo-upload:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        /* Vehicle Card */
-        .vehicles-list {
+        /* Vehicle List */
+        .vehicle-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
+            gap: 20px;
         }
 
         .vehicle-card {
             background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary);
             position: relative;
-        }
-
-        .vehicle-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
 
         .vehicle-header {
@@ -395,103 +245,117 @@
             margin-bottom: 15px;
         }
 
-        .vehicle-title {
-            font-size: 20px;
-            font-weight: bold;
+        .vehicle-info h3 {
             color: var(--primary);
-        }
-
-        .vehicle-plan-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .plan-basic { background: #d1d5db; color: #1f2937; }
-        .plan-gold { background: #fbbf24; color: #78350f; }
-        .plan-platinum { background: #a78bfa; color: #4c1d95; }
-        .plan-diamond { background: linear-gradient(135deg, #06b6d4, #3b82f6); color: white; }
-
-        .vehicle-details {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            margin-bottom: 15px;
-            white-space: pre-line;
-        }
-
-        .photo-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-
-        .photo-thumbnail {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .photo-thumbnail:hover {
-            transform: scale(1.05);
-        }
-
-        .photo-preview-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .photo-preview {
-            position: relative;
-            width: 100%;
-            height: 120px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .photo-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .photo-preview-remove {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
+            margin-bottom: 5px;
         }
 
         .vehicle-actions {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
         }
 
-        .vehicle-actions button {
-            flex: 1;
-            padding: 10px;
+        .btn-small {
+            padding: 6px 12px;
             font-size: 13px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        /* Forms */
+        .btn-edit {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #2563eb;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .vehicle-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -503,7 +367,7 @@
             color: var(--text-primary);
         }
 
-        .form-control {
+        .form-input {
             width: 100%;
             padding: 12px;
             border: 2px solid #e5e7eb;
@@ -512,130 +376,207 @@
             transition: border-color 0.3s;
         }
 
-        .form-control:focus {
+        .form-input:focus {
             outline: none;
             border-color: var(--primary);
         }
 
-        .form-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .form-buttons button {
-            flex: 1;
-        }
-
-        /* Plan Selector */
-        .plan-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .plan-option {
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
             background: white;
-            border: 3px solid #e5e7eb;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Map Container */
+        #map {
+            height: 600px;
             border-radius: 12px;
-            padding: 20px 15px;
-            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .alert-popup {
+            padding: 10px;
+        }
+
+        .alert-popup h4 {
+            color: var(--danger);
+            margin-bottom: 8px;
+        }
+
+        .alert-popup p {
+            margin: 4px 0;
+            font-size: 13px;
+        }
+
+        .alert-popup .btn-small {
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        /* Alert Card */
+        .alert-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--danger);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .alert-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .alert-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .status-recovered {
+            background: #d1fae5;
+            color: var(--success);
+        }
+
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+            z-index: 2000;
+            border-left: 4px solid var(--danger);
+            animation: slideIn 0.3s ease-out;
+            display: none;
+        }
+
+        .notification-toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            color: var(--danger);
+            font-size: 16px;
+        }
+
+        .notification-body {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Insurance Portal Styles */
+        .insurance-portal {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .portal-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .portal-tab {
+            padding: 12px 24px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .plan-option:hover {
-            border-color: var(--primary);
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        .portal-tab.active {
+            background: var(--primary);
+            color: white;
         }
 
-        .plan-option.selected {
-            border-color: var(--primary);
-            background: rgba(79, 70, 229, 0.1);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        }
-
-        .plan-emoji {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-
-        .plan-name {
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .plan-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--text-primary);
-            margin-bottom: 5px;
-        }
-
-        .plan-reward {
-            font-size: 12px;
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
+        .insurance-login-form {
+            max-width: 500px;
+            margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            padding: 35px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        .modal-header {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-        }
-
-        .modal-header-icon {
-            margin-right: 12px;
-            font-size: 28px;
-        }
-
-        /* Content Sections */
-        .content-section {
+        .insurance-dashboard {
             display: none;
         }
 
-        .content-section.active {
+        .insurance-dashboard.active {
             display: block;
         }
 
-        /* Stats */
-        .stats-row {
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
@@ -653,113 +594,27 @@
             font-size: 32px;
             font-weight: bold;
             color: var(--primary);
-            margin-bottom: 5px;
         }
 
         .stat-label {
-            font-size: 14px;
             color: var(--text-secondary);
-        }
-
-        /* Profile Section */
-        .profile-card {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 600px;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: white;
-            margin: 0 auto 20px;
-        }
-
-        .profile-info {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .profile-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .profile-email {
-            color: var(--text-secondary);
-        }
-
-        .profile-details {
-            background: var(--surface);
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        .profile-detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .profile-detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .profile-detail-label {
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-
-        .profile-detail-value {
-            color: var(--text-primary);
+            margin-top: 5px;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .dashboard-container {
-                flex-direction: column;
-            }
-
             .sidebar {
-                width: 100%;
+                width: 70px;
             }
-
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
+            
+            .nav-link span {
+                display: none;
             }
-
-            .vehicles-list {
-                grid-template-columns: 1fr;
+            
+            .logo-section .app-title,
+            .logo-section .app-subtitle {
+                display: none;
             }
-
-            .plan-selector {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Utility Classes */
-        .text-center {
-            text-align: center;
-        }
-
-        .mt-20 {
-            margin-top: 20px;
-        }
-
-        .mb-20 {
-            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -770,99 +625,479 @@
             <div class="logo-section">
                 <div class="app-logo"></div>
                 <div class="app-title">CarTrace Pro</div>
-                <div class="app-subtitle">Community Vehicle Recovery</div>
-                <div class="sync-status" id="sync-status">⏳ Connecting to network...</div>
+                <div class="app-subtitle">Vehicle Protection Network</div>
+                <div class="sync-status" id="sync-status">⏳ Syncing...</div>
             </div>
-
-            <nav>
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="#" class="nav-link active" onclick="showSection('dashboard-section', event)">
-                            <span class="nav-icon">🏠</span>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="showSection('vehicles-section', event)">
-                            <span class="nav-icon">🚗</span>
-                            <span>My Vehicles</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="showSection('carfax-section', event)">
-                            <span class="nav-icon">📊</span>
-                            <span>Carfax Car Care</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="showSection('recovery-section', event)">
-                            <span class="nav-icon">🔍</span>
-                            <span>Found Vehicle</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="showSection('analytics-section', event)">
-                            <span class="nav-icon">📈</span>
-                            <span>Analytics</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="showSection('settings-section', event)">
-                            <span class="nav-icon">⚙️</span>
-                            <span>Settings</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" onclick="signOut()">
-                            <span class="nav-icon">🚪</span>
-                            <span>Sign Out</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a class="nav-link active" onclick="showSection('dashboard')">
+                        <span class="nav-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('vehicles')">
+                        <span class="nav-icon">🚗</span>
+                        <span>My Vehicles</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('map-alerts')">
+                        <span class="nav-icon">🗺️</span>
+                        <span>Map & Alerts</span>
+                        <span class="notification-badge" id="alert-badge">0</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('protection')">
+                        <span class="nav-icon">🛡️</span>
+                        <span>Protection Plans</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('found-vehicle')">
+                        <span class="nav-icon">🔍</span>
+                        <span>Found Vehicle</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('insurance')">
+                        <span class="nav-icon">🏢</span>
+                        <span>Insurance Portal</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('carfax')">
+                        <span class="nav-icon">📋</span>
+                        <span>Carfax Integration</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('analytics')">
+                        <span class="nav-icon">📊</span>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="showSection('settings')">
+                        <span class="nav-icon">⚙️</span>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="signOut()">
+                        <span class="nav-icon">🚪</span>
+                        <span>Sign Out</span>
+                    </a>
+                </li>
+            </ul>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <div class="header">
-                <div>
-                    <div class="header-title">Welcome to CarTrace Pro</div>
-                    <div style="color: var(--text-secondary); margin-top: 5px;" id="user-email">Loading...</div>
-                </div>
-                <div class="header-status">
-                    <span class="status-dot"></span>
-                    <span>Community Network Active</span>
-                </div>
-            </div>
-
             <!-- Dashboard Section -->
-            <div id="dashboard-section" class="content-section active">
+            <div class="content-section active" id="dashboard-section">
+                <div class="header">
+                    <div>
+                        <h1 class="header-title">Welcome Back!</h1>
+                        <p id="user-email">Loading...</p>
+                    </div>
+                    <div class="header-status">
+                        <span class="status-dot"></span>
+                        <span>Network Active</span>
+                    </div>
+                </div>
+
                 <div class="cards-grid">
                     <div class="card">
                         <div class="card-title">
                             <span class="card-icon">🚗</span>
                             Protected Vehicles
                         </div>
-                        <div class="stat-value" id="vehicle-count">0</div>
-                        <button class="btn btn-primary mt-20" onclick="openVehicleModal()">+ Add Vehicle</button>
+                        <div style="font-size: 36px; font-weight: bold; color: var(--primary); margin: 15px 0;">
+                            <span id="vehicle-count">0</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">
+                            Active protection plans
+                        </div>
                     </div>
 
                     <div class="card">
                         <div class="card-title">
                             <span class="card-icon">🌐</span>
-                            Network Uptime
+                            Network Status
                         </div>
-                        <div class="stat-value" id="network-uptime">99.97%</div>
-                        <div style="color: var(--text-secondary); margin-top: 10px;">Real-time monitoring active</div>
+                        <div style="font-size: 36px; font-weight: bold; color: var(--success); margin: 15px 0;">
+                            <span id="active-users">47,892</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">
+                            Active community members
+                        </div>
                     </div>
 
                     <div class="card">
                         <div class="card-title">
-                            <span class="card-icon">⚡</span>
+                            <span class="card-icon">🎯</span>
                             Response Time
                         </div>
-                        <div class="stat-value" id="response-time">0.8ms</div>
-                        <div style="color: var(--text-secondary); margin-top: 10px;">Average network latency</div>
+                        <div style="font-size: 36px; font-weight: bold; color: var(--info); margin: 15px 0;">
+                            <span id="response-time">0.8</span>ms
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">
+                            Average alert delivery
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="card-icon">🔔</span>
+                        Recent Alerts
+                    </div>
+                    <div id="recent-alerts">
+                        <p style="color: var(--text-secondary); text-align: center; padding: 20px;">
+                            No recent alerts in your area. Your vehicles are safe! ✅
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Vehicles Section -->
+            <div class="content-section" id="vehicles-section">
+                <div class="header">
+                    <h1 class="header-title">My Vehicles</h1>
+                    <button class="btn btn-primary" onclick="showAddVehicleModal()" style="width: auto;">
+                        + Add Vehicle
+                    </button>
+                </div>
+
+                <div class="vehicle-list" id="vehicle-list">
+                    <p style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                        No vehicles added yet. Click "Add Vehicle" to get started!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Map & Alerts Section -->
+            <div class="content-section" id="map-alerts-section">
+                <div class="header">
+                    <h1 class="header-title">Live Map & Stolen Vehicle Alerts</h1>
+                    <div class="header-status">
+                        <span class="status-dot"></span>
+                        <span>Real-Time Tracking Active</span>
+                    </div>
+                </div>
+
+                <div class="cards-grid" style="margin-bottom: 20px;">
+                    <div class="card">
+                        <div class="card-title">
+                            <span class="card-icon">🚨</span>
+                            Active Alerts
+                        </div>
+                        <div style="font-size: 36px; font-weight: bold; color: var(--danger); margin: 15px 0;">
+                            <span id="active-alerts-count">0</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">
+                            Stolen vehicles in your area
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">
+                            <span class="card-icon">📍</span>
+                            Your Location
+                        </div>
+                        <div style="font-size: 16px; font-weight: bold; color: var(--primary); margin: 15px 0;">
+                            <span id="user-location">Detecting...</span>
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">
+                            Current position
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">
+                            <span class="card-icon">✅</span>
+                            Recoveries
+                        </div>
+                        <div style="font-size: 36px; font-weight: bold; color: var(--success); margin: 15px 0;">
+                            1,247
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">
+                            Total vehicles recovered
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 20px;">
+                    <div id="map"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="card-icon">📋</span>
+                        Alert Details
+                    </div>
+                    <div id="alerts-list">
+                        <p style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                            No active alerts at this time.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Protection Plans Section -->
+            <div class="content-section" id="protection-section">
+                <div class="header">
+                    <h1 class="header-title">Protection Plans</h1>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card" style="border: 2px solid var(--info);">
+                        <div class="card-title">
+                            <span class="card-icon">🥉</span>
+                            Basic Protection
+                        </div>
+                        <div style="font-size: 32px; font-weight: bold; color: var(--primary); margin: 15px 0;">
+                            $17.99<span style="font-size: 16px;">/mo</span>
+                        </div>
+                        <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
+                            <li style="padding: 8px 0;">✅ Community alerts</li>
+                            <li style="padding: 8px 0;">✅ GPS tracking</li>
+                            <li style="padding: 8px 0;">✅ $200 recovery reward</li>
+                            <li style="padding: 8px 0;">✅ 24/7 support</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="startCheckout('basic')">Select Plan</button>
+                    </div>
+
+                    <div class="card" style="border: 2px solid var(--warning);">
+                        <div class="card-title">
+                            <span class="card-icon">🥈</span>
+                            Gold Protection
+                        </div>
+                        <div style="font-size: 32px; font-weight: bold; color: var(--primary); margin: 15px 0;">
+                            $24.99<span style="font-size: 16px;">/mo</span>
+                        </div>
+                        <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
+                            <li style="padding: 8px 0;">✅ All Basic features</li>
+                            <li style="padding: 8px 0;">✅ Priority alerts</li>
+                            <li style="padding: 8px 0;">✅ $300 recovery reward</li>
+                            <li style="padding: 8px 0;">✅ Insurance integration</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="startCheckout('gold')">Select Plan</button>
+                    </div>
+
+                    <div class="card" style="border: 2px solid #c0c0c0;">
+                        <div class="card-title">
+                            <span class="card-icon">🥇</span>
+                            Platinum Protection
+                        </div>
+                        <div style="font-size: 32px; font-weight: bold; color: var(--primary); margin: 15px 0;">
+                            $29.99<span style="font-size: 16px;">/mo</span>
+                        </div>
+                        <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
+                            <li style="padding: 8px 0;">✅ All Gold features</li>
+                            <li style="padding: 8px 0;">✅ Real-time tracking</li>
+                            <li style="padding: 8px 0;">✅ $500 recovery reward</li>
+                            <li style="padding: 8px 0;">✅ Carfax integration</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="startCheckout('platinum')">Select Plan</button>
+                    </div>
+
+                    <div class="card" style="border: 2px solid var(--primary);">
+                        <div class="card-title">
+                            <span class="card-icon">💎</span>
+                            Diamond Protection
+                        </div>
+                        <div style="font-size: 32px; font-weight: bold; color: var(--primary); margin: 15px 0;">
+                            $35.00<span style="font-size: 16px;">/mo</span>
+                        </div>
+                        <ul style="list-style: none; padding: 0; color: var(--text-secondary);">
+                            <li style="padding: 8px 0;">✅ All Platinum features</li>
+                            <li style="padding: 8px 0;">✅ Instant alerts</li>
+                            <li style="padding: 8px 0;">✅ $750 recovery reward</li>
+                            <li style="padding: 8px 0;">✅ Dedicated support</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="startCheckout('diamond')">Select Plan</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Found Vehicle Section -->
+            <div class="content-section" id="found-vehicle-section">
+                <div class="header">
+                    <h1 class="header-title">Report Found Stolen Vehicle</h1>
+                </div>
+
+                <div class="card">
+                    <p style="margin-bottom: 20px; color: var(--text-secondary);">
+                        Help recover stolen vehicles and earn rewards! If you've spotted a vehicle with an active theft alert, report it here.
+                    </p>
+
+                    <form id="found-vehicle-form">
+                        <div class="form-group">
+                            <label class="form-label">License Plate Number *</label>
+                            <input type="text" class="form-input" id="found-plate" required placeholder="Enter plate number">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Current Location *</label>
+                            <input type="text" class="form-input" id="found-location" required placeholder="Street address or landmark">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Police Report Number *</label>
+                            <input type="text" class="form-input" id="found-report" required placeholder="Report #">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Police Department *</label>
+                            <input type="text" class="form-input" id="found-department" required placeholder="Department name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Your Name *</label>
+                            <input type="text" class="form-input" id="found-witness" required placeholder="Full name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Zelle Contact (for reward payment) *</label>
+                            <input type="text" class="form-input" id="found-zelle" required placeholder="Email or phone">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit Report</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Insurance Portal Section -->
+            <div class="content-section" id="insurance-section">
+                <div class="header">
+                    <h1 class="header-title">Insurance Company Portal</h1>
+                </div>
+
+                <div class="insurance-portal">
+                    <div class="portal-tabs">
+                        <button class="portal-tab active" onclick="showInsuranceTab('login')">Sign In</button>
+                        <button class="portal-tab" onclick="showInsuranceTab('signup')">Register Company</button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <div id="insurance-login-tab" class="insurance-login-form">
+                        <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary);">
+                            Insurance Company Login
+                        </h2>
+                        <form id="insurance-login-form">
+                            <div class="form-group">
+                                <label class="form-label">Company Email</label>
+                                <input type="email" class="form-input" required placeholder="company@insurance.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-input" required placeholder="Enter password">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Sign In</button>
+                        </form>
+                    </div>
+
+                    <!-- Signup Form -->
+                    <div id="insurance-signup-tab" class="insurance-login-form" style="display: none;">
+                        <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary);">
+                            Register Your Insurance Company
+                        </h2>
+                        <form id="insurance-signup-form">
+                            <div class="form-group">
+                                <label class="form-label">Company Name</label>
+                                <input type="text" class="form-input" required placeholder="ABC Insurance Co.">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Company Email</label>
+                                <input type="email" class="form-input" required placeholder="contact@insurance.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">License Number</label>
+                                <input type="text" class="form-input" required placeholder="Insurance license #">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-input" required placeholder="(555) 123-4567">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-input" required placeholder="Create password">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register Company</button>
+                        </form>
+                    </div>
+
+                    <!-- Insurance Dashboard (shown after login) -->
+                    <div id="insurance-dashboard" class="insurance-dashboard">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">1,247</div>
+                                <div class="stat-label">Vehicles Recovered</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">$2.1M</div>
+                                <div class="stat-label">Claims Prevented</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">156</div>
+                                <div class="stat-label">Active Policies</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">98.5%</div>
+                                <div class="stat-label">Recovery Rate</div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">
+                                <span class="card-icon">📋</span>
+                                Recent Claims
+                            </div>
+                            <p style="color: var(--text-secondary); padding: 20px; text-align: center;">
+                                No pending claims at this time.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carfax Section -->
+            <div class="content-section" id="carfax-section">
+                <div class="header">
+                    <h1 class="header-title">Carfax Integration</h1>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="card-icon">📋</span>
+                        Connect Your Carfax Account
+                    </div>
+                    <p style="margin-bottom: 20px; color: var(--text-secondary);">
+                        Link your Carfax Car Care account for enhanced vehicle tracking and maintenance alerts.
+                    </p>
+                    <button class="btn btn-primary" onclick="connectCarfax()">Connect Carfax</button>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="content-section" id="analytics-section">
+                <div class="header">
+                    <h1 class="header-title">Network Analytics</h1>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">
+                            <span class="card-icon">⏱️</span>
+                            Network Uptime
+                        </div>
+                        <div style="font-size: 36px; font-weight: bold; color: var(--success); margin: 15px 0;">
+                            <span id="network-uptime">99.95</span>%
+                        </div>
                     </div>
 
                     <div class="card">
@@ -870,1486 +1105,623 @@
                             <span class="card-icon">🔒</span>
                             Security Score
                         </div>
-                        <div class="stat-value" id="security-score">95</div>
-                        <div style="color: var(--text-secondary); margin-top: 10px;">Encryption & protection level</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">
-                        <span class="card-icon">📊</span>
-                        Community Network Statistics
-                    </div>
-                    <div class="stats-row">
-                        <div class="stat-card">
-                            <div class="stat-value" id="active-users">47,892</div>
-                            <div class="stat-label">Active Users</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="data-points">1,247</div>
-                            <div class="stat-label">Data Points</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">24/7</div>
-                            <div class="stat-label">Monitoring</div>
-                        </div>
-                    </div>
-                    <div style="text-align: center; color: var(--text-secondary); font-size: 12px;">
-                        Last updated: <span id="last-update">--:--:--</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Vehicles Section -->
-            <div id="vehicles-section" class="content-section">
-                <div class="card">
-                    <div class="card-title">
-                        <span class="card-icon">🚗</span>
-                        My Protected Vehicles
-                    </div>
-                    <button class="btn btn-primary mb-20" onclick="openVehicleModal()">+ Add New Vehicle</button>
-                    <div class="vehicles-list" id="vehicles-list">
-                        <p style="text-align: center; color: var(--text-secondary); padding: 40px;">
-                            <span style="font-size: 64px;">🚗</span><br><br>
-                            No vehicles added yet<br>
-                            <small>Add your first vehicle to start community protection!</small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Carfax Car Care Section -->
-            <div id="carfax-section" class="content-section">
-                <div class="card">
-                    <div class="card-title">
-                        <span class="card-icon">📊</span>
-                        Carfax Car Care Integration
-                    </div>
-                    
-                    <div id="carfax-not-connected" style="display: none;">
-                        <div class="carfax-status">
-                            <h3 style="color: var(--carfax-blue); margin-bottom: 10px;">🚗 Connect Your Carfax Car Care Account</h3>
-                            <p style="margin-bottom: 15px;">Unlock comprehensive maintenance tracking, service history, and vehicle health monitoring by connecting your FREE Carfax Car Care account.</p>
-                            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 15px;">
-                                ✅ Track service history<br>
-                                ✅ Maintenance reminders<br>
-                                ✅ Recall notifications<br>
-                                ✅ Vehicle health reports
-                            </p>
-                            <button class="carfax-connect-btn" onclick="connectCarfax()">
-                                🔗 Connect Carfax Car Care (FREE)
-                            </button>
+                        <div style="font-size: 36px; font-weight: bold; color: var(--success); margin: 15px 0;">
+                            <span id="security-score">98</span>/100
                         </div>
                     </div>
 
-                    <div id="carfax-connected" style="display: none;">
-                        <div class="carfax-badge">
-                            ✅ Connected to Carfax Car Care
+                    <div class="card">
+                        <div class="card-title">
+                            <span class="card-icon">📊</span>
+                            Data Points
                         </div>
-
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
-                            <button class="btn btn-primary" onclick="syncCarfaxData()">
-                                🔄 Sync Car Care Data
-                            </button>
-                            <button class="btn btn-secondary" onclick="openCarfaxDashboard()">
-                                🌐 Open Carfax Dashboard
-                            </button>
-                            <button class="btn btn-success" onclick="addServiceRecord()">
-                                ➕ Add Service Record
-                            </button>
-                            <button class="btn btn-danger" onclick="disconnectCarfax()">
-                                🔌 Disconnect
-                            </button>
+                        <div style="font-size: 36px; font-weight: bold; color: var(--info); margin: 15px 0;">
+                            <span id="data-points">1,234,567</span>
                         </div>
-
-                        <h3 style="color: var(--primary); margin: 25px 0 15px;">📋 Service History</h3>
-                        <div id="service-history-list"></div>
-
-                        <h3 style="color: var(--primary); margin: 25px 0 15px;">⚠️ Maintenance Alerts</h3>
-                        <div id="maintenance-alerts-list"></div>
-
-                        <h3 style="color: var(--primary); margin: 25px 0 15px;">🔧 Upcoming Maintenance</h3>
-                        <div id="upcoming-maintenance-list"></div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Found Missing Vehicle Section -->
-            <div id="recovery-section" class="content-section">
-                <div class="card">
-                    <div class="card-title">
-                        <span class="card-icon">🔍</span>
-                        Report Found Missing Vehicle
-                    </div>
-                    <div style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 12px; border-left: 4px solid var(--success); margin-bottom: 25px;">
-                        <h3 style="color: var(--success); margin-bottom: 10px;">💰 Community Rewards</h3>
-                        <p style="margin-bottom: 10px;">Help recover stolen vehicles and earn rewards!</p>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 15px;">
-                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 24px;">🥉</div>
-                                <div style="font-weight: bold; color: var(--primary);">BASIC</div>
-                                <div style="color: var(--success); font-weight: bold;">$200</div>
-                            </div>
-                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 24px;">🥈</div>
-                                <div style="font-weight: bold; color: var(--primary);">GOLD</div>
-                                <div style="color: var(--success); font-weight: bold;">$300</div>
-                            </div>
-                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 24px;">🥇</div>
-                                <div style="font-weight: bold; color: var(--primary);">PLATINUM</div>
-                                <div style="color: var(--success); font-weight: bold;">$500</div>
-                            </div>
-                            <div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">
-                                <div style="font-size: 24px;">💎</div>
-                                <div style="font-weight: bold; color: var(--primary);">DIAMOND</div>
-                                <div style="color: var(--success); font-weight: bold;">$750</div>
-                            </div>
-                        </div>
-                        <p style="margin-top: 15px; font-size: 13px; color: var(--text-secondary);">
-                            Reward amount depends on the vehicle owner's protection plan
-                        </p>
-                    </div>
-                    <button class="btn btn-success" style="width: 100%;" onclick="reportFoundVehicle()">
-                        🚨 Report Found Missing Vehicle
-                    </button>
-                </div>
-            </div>
-
-            <!-- Analytics Section -->
-            <div id="analytics-section" class="content-section">
-                <div class="card">
-                    <div class="card-title">
-                        <span class="card-icon">📈</span>
-                        Network Analytics
-                    </div>
-                    <p style="color: var(--text-secondary); margin-bottom: 20px;">
-                        Comprehensive analytics and insights about the CarTrace Pro community network.
-                    </p>
-                    <button class="btn btn-primary" onclick="generateReport()">
-                        📊 Generate Report
-                    </button>
                 </div>
             </div>
 
             <!-- Settings Section -->
-            <div id="settings-section" class="content-section">
-                <div class="profile-card">
-                    <div class="profile-avatar">👤</div>
-                    <div class="profile-info">
-                        <div class="profile-name">CarTrace User</div>
-                        <div class="profile-email" id="settings-email">user@example.com</div>
+            <div class="content-section" id="settings-section">
+                <div class="header">
+                    <h1 class="header-title">Account Settings</h1>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="card-icon">👤</span>
+                        Profile Information
                     </div>
-                    <div class="profile-details">
-                        <div class="profile-detail-row">
-                            <span class="profile-detail-label">Member Since</span>
-                            <span class="profile-detail-value" id="member-since">--</span>
-                        </div>
-                        <div class="profile-detail-row">
-                            <span class="profile-detail-label">Protected Vehicles</span>
-                            <span class="profile-detail-value" id="settings-vehicle-count">0</span>
-                        </div>
-                        <div class="profile-detail-row">
-                            <span class="profile-detail-label">Account Status</span>
-                            <span class="profile-detail-value" style="color: var(--success); font-weight: 600;">✅ Active</span>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" id="settings-email" readonly>
                     </div>
-                    <button class="btn btn-danger mt-20" style="width: 100%;" onclick="signOut()">
-                        🚪 Sign Out
-                    </button>
+                    <div class="form-group">
+                        <label class="form-label">Member Since</label>
+                        <input type="text" class="form-input" id="member-since" readonly>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="card-icon">🔔</span>
+                        Notification Preferences
+                    </div>
+                    <div style="padding: 10px 0;">
+                        <label style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <input type="checkbox" checked style="margin-right: 10px;">
+                            <span>Email notifications for stolen vehicle alerts</span>
+                        </label>
+                        <label style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <input type="checkbox" checked style="margin-right: 10px;">
+                            <span>Push notifications for nearby alerts</span>
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="checkbox" checked style="margin-right: 10px;">
+                            <span>Weekly network activity summaries</span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add Vehicle Modal -->
-    <div class="modal" id="vehicle-modal">
+    <!-- Edit Vehicle Modal -->
+    <div class="modal" id="edit-vehicle-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <span class="modal-header-icon">🚗</span>
-                Add New Vehicle
+                <h2 class="modal-title">Edit Vehicle</h2>
+                <button class="close-modal" onclick="closeEditModal()">&times;</button>
             </div>
-            <form id="vehicle-form" onsubmit="handleVehicleSubmit(event)">
+            <form id="edit-vehicle-form">
+                <input type="hidden" id="edit-vehicle-id">
+                
                 <div class="form-group">
-                    <label class="form-label">Year</label>
-                    <select class="form-control" id="vehicleYear" required>
-                        <option value="">Select year</option>
-                    </select>
+                    <label class="form-label">VIN (Optional)</label>
+                    <input type="text" class="form-input" id="edit-vin" maxlength="17" placeholder="Enter 17-digit VIN">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Make</label>
-                    <select class="form-control" id="vehicleMake" required onchange="updateModelDropdown()">
-                        <option value="">Select make</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Model</label>
-                    <select class="form-control" id="vehicleModel" required>
-                        <option value="">Select model</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Color</label>
-                    <select class="form-control" id="vehicleColor" required>
-                        <option value="">Select color</option>
+                    <label class="form-label">Protection Plan</label>
+                    <select class="form-select" id="edit-plan" required>
+                        <option value="basic">Basic - $17.99/mo</option>
+                        <option value="gold">Gold - $24.99/mo</option>
+                        <option value="platinum">Platinum - $29.99/mo</option>
+                        <option value="diamond">Diamond - $35.00/mo</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">License Plate</label>
-                    <input type="text" class="form-control" id="vehicleLicense" placeholder="Enter license plate" required>
+                    <input type="text" class="form-input" id="edit-plate" readonly>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">VIN (Vehicle Identification Number) - <span style="color: var(--success); font-weight: 600;">Optional</span></label>
-                    <input type="text" class="form-control" id="vehicleVIN" placeholder="17-character VIN" maxlength="17" style="text-transform: uppercase;">
-                    <small style="color: var(--text-secondary); font-size: 12px;">💡 Optional - Add VIN for FREE Carfax Car Care maintenance tracking</small>
+                    <label class="form-label">Vehicle</label>
+                    <input type="text" class="form-input" id="edit-vehicle-display" readonly>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Special Features / Trim Details (Optional)</label>
-                    <textarea class="form-control" id="vehicleFeatures" placeholder="e.g., Black Wing Edition, 20&quot; wheels, Sport Package, Sunroof, etc."></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Vehicle Photos (Optional)</label>
-                    <div class="photo-upload-section">
-                        <input type="file" id="vehiclePhotos" accept="image/*" multiple style="display: none;" onchange="handlePhotoSelection(event)">
-                        <button type="button" class="btn btn-photo-upload" onclick="document.getElementById('vehiclePhotos').click()">
-                            📸 Add Photos of Your Vehicle
-                        </button>
-                        <small style="color: var(--text-secondary); font-size: 12px; display: block; margin-top: 8px;">
-                            💡 Tip: Add multiple angles - front, back, sides, interior, unique features
-                        </small>
-                    </div>
-                    <div id="photoPreviewContainer" class="photo-preview-container"></div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Protection Plan</label>
-                    <div class="plan-selector">
-                        <div class="plan-option" data-plan="BASIC" onclick="selectPlan('BASIC')">
-                            <div class="plan-emoji">🥉</div>
-                            <div class="plan-name">BASIC</div>
-                            <div class="plan-price">$17.99/month</div>
-                            <div class="plan-reward">$200 Reward</div>
-                        </div>
-                        <div class="plan-option" data-plan="GOLD" onclick="selectPlan('GOLD')">
-                            <div class="plan-emoji">🥈</div>
-                            <div class="plan-name">GOLD</div>
-                            <div class="plan-price">$24.99/month</div>
-                            <div class="plan-reward">$300 Reward</div>
-                        </div>
-                        <div class="plan-option" data-plan="PLATINUM" onclick="selectPlan('PLATINUM')">
-                            <div class="plan-emoji">🥇</div>
-                            <div class="plan-name">PLATINUM</div>
-                            <div class="plan-price">$29.99/month</div>
-                            <div class="plan-reward">$500 Reward</div>
-                        </div>
-                        <div class="plan-option" data-plan="DIAMOND" onclick="selectPlan('DIAMOND')">
-                            <div class="plan-emoji">💎</div>
-                            <div class="plan-name">DIAMOND</div>
-                            <div class="plan-price">$35.00/month</div>
-                            <div class="plan-reward">$750 Reward</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-buttons">
-                    <button type="button" class="btn btn-secondary" onclick="closeVehicleModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Vehicle</button>
-                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
             </form>
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Notification Toast -->
+    <div class="notification-toast" id="notification-toast">
+        <div class="notification-header">
+            <div class="notification-title">🚨 STOLEN VEHICLE ALERT</div>
+            <button class="close-modal" onclick="closeNotification()" style="font-size: 20px;">&times;</button>
+        </div>
+        <div class="notification-body" id="notification-body">
+            A vehicle has been reported stolen in your area!
+        </div>
+        <div class="notification-actions">
+            <button class="btn-small btn-primary" onclick="viewAlertDetails()">View Details</button>
+            <button class="btn-small btn-edit" onclick="closeNotification()">Dismiss</button>
+        </div>
+    </div>
+
     <script>
-        // Vehicle Data
-        const vehicleData = {
-            makes: {
-                'Acura': ['ILX', 'TLX', 'RDX', 'MDX', 'NSX'],
-                'Alfa Romeo': ['Giulia', 'Stelvio', 'Tonale'],
-                'Audi': ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron'],
-                'BMW': ['2 Series', '3 Series', '4 Series', '5 Series', '7 Series', '8 Series', 'X1', 'X3', 'X5', 'X7', 'M3', 'M5'],
-                'Buick': ['Encore', 'Encore GX', 'Envision', 'Enclave'],
-                'Cadillac': ['CT4', 'CT5', 'XT4', 'XT5', 'XT6', 'Escalade', 'Lyriq'],
-                'Chevrolet': ['Spark', 'Malibu', 'Camaro', 'Corvette', 'Trax', 'Equinox', 'Blazer', 'Traverse', 'Tahoe', 'Suburban', 'Colorado', 'Silverado'],
-                'Chrysler': ['300', 'Pacifica', 'Voyager'],
-                'Dodge': ['Charger', 'Challenger', 'Durango', 'Hornet'],
-                'Ford': ['Mustang', 'Escape', 'Edge', 'Explorer', 'Expedition', 'Bronco', 'F-150', 'F-250', 'Ranger', 'Maverick'],
-                'Genesis': ['G70', 'G80', 'G90', 'GV60', 'GV70', 'GV80'],
-                'GMC': ['Terrain', 'Acadia', 'Yukon', 'Canyon', 'Sierra', 'Hummer EV'],
-                'Honda': ['Civic', 'Accord', 'Insight', 'HR-V', 'CR-V', 'Pilot', 'Passport', 'Ridgeline', 'Odyssey'],
-                'Hyundai': ['Accent', 'Elantra', 'Sonata', 'Venue', 'Kona', 'Tucson', 'Santa Fe', 'Palisade', 'Ioniq'],
-                'Infiniti': ['Q50', 'Q60', 'QX50', 'QX55', 'QX60', 'QX80'],
-                'Jaguar': ['XE', 'XF', 'F-Type', 'E-Pace', 'F-Pace', 'I-Pace'],
-                'Jeep': ['Renegade', 'Compass', 'Cherokee', 'Grand Cherokee', 'Wrangler', 'Gladiator', 'Wagoneer'],
-                'Kia': ['Rio', 'Forte', 'K5', 'Stinger', 'Seltos', 'Sportage', 'Sorento', 'Telluride', 'Carnival', 'EV6'],
-                'Lamborghini': ['Huracán', 'Aventador', 'Urus', 'Revuelto'],
-                'Land Rover': ['Defender', 'Discovery', 'Discovery Sport', 'Range Rover', 'Range Rover Sport', 'Range Rover Velar'],
-                'Lexus': ['IS', 'ES', 'GS', 'LS', 'RC', 'LC', 'UX', 'NX', 'RX', 'GX', 'LX'],
-                'Lincoln': ['Corsair', 'Nautilus', 'Aviator', 'Navigator'],
-                'Mazda': ['Mazda3', 'Mazda6', 'CX-30', 'CX-5', 'CX-50', 'CX-9', 'CX-90', 'MX-5 Miata'],
-                'Mercedes-Benz': ['A-Class', 'C-Class', 'E-Class', 'S-Class', 'CLA', 'CLS', 'GLA', 'GLC', 'GLE', 'GLS', 'G-Class'],
-                'Mini': ['Cooper', 'Cooper S', 'Clubman', 'Countryman'],
-                'Mitsubishi': ['Mirage', 'Eclipse Cross', 'Outlander', 'Outlander Sport'],
-                'Nissan': ['Versa', 'Sentra', 'Altima', 'Maxima', 'Kicks', 'Rogue', 'Murano', 'Pathfinder', 'Armada', 'Frontier', 'Titan', 'Leaf', 'Ariya'],
-                'Porsche': ['718 Cayman', '718 Boxster', '911', 'Panamera', 'Macan', 'Cayenne', 'Taycan'],
-                'Ram': ['1500', '2500', '3500', 'ProMaster'],
-                'Subaru': ['Impreza', 'Legacy', 'WRX', 'BRZ', 'Crosstrek', 'Forester', 'Outback', 'Ascent'],
-                'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
-                'Toyota': ['Corolla', 'Camry', 'Avalon', 'Prius', 'GR86', 'Supra', 'C-HR', 'RAV4', 'Venza', 'Highlander', '4Runner', 'Sequoia', 'Tacoma', 'Tundra'],
-                'Volkswagen': ['Jetta', 'Passat', 'Arteon', 'Golf', 'Golf GTI', 'Taos', 'Tiguan', 'Atlas'],
-                'Volvo': ['S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90']
-            }
-        };
+        // Initialize Stripe
+        const stripe = Stripe('pk_test_51QeTZeRxPKUgpxLKOOPLpxDGJoCF3u7QmGqBjsVqRJZuEcAzQ1JW4iqh6XxGIONhL9o7JnqkdPcXzFYt8bPbvC6x009cz5i5rT');
 
         // Global variables
-        let selectedPlan = null;
-        let currentUser = null;
-        let userVehicles = [];
-        let carfaxConnected = false;
-        let carfaxData = null;
-        let vehiclePhotos = []; // Store selected photos
-        
-        // ⭐ BACKEND CONFIGURATION - UPDATED FOR RENDER ⭐
-        const BACKEND_URL = 'https://cartrace-backend.onrender.com';
-        
-        // Stripe Configuration
-        const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Rnl8WF2AvYulrbMus9slPTf8DuDEpkpW9r5j58u4458C5CQIRYRmKL94j5TEeIyYDkdARjurJQEtsbJ9srCI4cW00GzBsKoqy';
-        let stripe = null;
-        
-        // Stripe Price IDs for each plan (CONFIGURED ✅)
-        const STRIPE_PRICES = {
-            'BASIC': 'price_1SMMxUF2AvYulrbMsp0HsUoR',
-            'GOLD': 'price_1SMN2NF2AvYulrbMGEtgUtFH',
-            'PLATINUM': 'price_1SMN3IF2AvYulrbMxdbO4LdF',
-            'DIAMOND': 'price_1SMN4LF2AvYulrbMs3tLiU6f'
-        };
-        
-        // Plan pricing (for display)
-        const PLAN_PRICES = {
-            'BASIC': 17.99,
-            'GOLD': 24.99,
-            'PLATINUM': 29.99,
-            'DIAMOND': 35.00
-        };
-        
-        // Pending vehicle data (used during Stripe checkout)
-        let pendingVehicleData = null;
+        let map = null;
+        let userMarker = null;
+        let alertMarkers = [];
+        let stolenVehicles = [];
+        let alertNotificationInterval = null;
 
-        // Real-time data variables
-        let networkUptime = 99.97;
-        let responseTime = 0.8;
-        let securityScore = 95;
-        let dataPoints = 1247;
-        let activeUsers = 47892;
-
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            console.log('Dashboard loaded, initializing...');
-            
-            // Initialize Stripe
-            try {
-                stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
-                console.log('Stripe initialized successfully');
-                console.log('Backend URL:', BACKEND_URL);
-            } catch (error) {
-                console.error('Error initializing Stripe:', error);
-                alert('⚠️ Payment system initialization failed. Please refresh the page or contact support.');
+        // Mock stolen vehicles data (in production, this comes from Firebase)
+        const mockStolenVehicles = [
+            {
+                id: '1',
+                plate: 'ABC123',
+                make: 'Toyota',
+                model: 'Camry',
+                year: '2020',
+                color: 'Silver',
+                lat: 26.142,
+                lng: -81.795,
+                reportedAt: Date.now() - 3600000,
+                status: 'active',
+                reward: 500
+            },
+            {
+                id: '2',
+                plate: 'XYZ789',
+                make: 'Honda',
+                model: 'Civic',
+                year: '2019',
+                color: 'Blue',
+                lat: 26.650,
+                lng: -81.872,
+                reportedAt: Date.now() - 7200000,
+                status: 'active',
+                reward: 300
             }
-            
-            // Load vehicles from localStorage first (immediate display while Firebase loads)
-            const localVehicles = localStorage.getItem('cartraceVehicles');
-            if (localVehicles) {
-                try {
-                    userVehicles = JSON.parse(localVehicles);
-                    console.log('Loaded vehicles from localStorage:', userVehicles);
-                    updateVehicleDisplay();
-                    updateVehicleCount();
-                } catch (e) {
-                    console.error('Error parsing localStorage vehicles:', e);
-                }
-            }
-            
-            // Check for payment success/cancel from Stripe redirect
-            checkStripePaymentStatus();
-            
-            initializeDropdowns();
-            startRealTimeUpdates();
-            updateSyncStatus();
-            checkCarfaxConnection();
-        });
+        ];
 
-        // Navigation function
-        function showSection(sectionId, event) {
-            if (event) event.preventDefault();
-            
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
             });
             
+            // Remove active class from all nav links
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
             });
             
-            document.getElementById(sectionId).classList.add('active');
+            // Show selected section
+            document.getElementById(sectionId + '-section').classList.add('active');
             
-            if (event && event.target) {
-                event.target.closest('.nav-link').classList.add('active');
+            // Add active class to clicked nav link
+            event.target.closest('.nav-link').classList.add('active');
+
+            // Initialize map if showing map section
+            if (sectionId === 'map-alerts' && !map) {
+                setTimeout(initializeMap, 100);
             }
         }
 
-        // Initialize dropdowns
-        function initializeDropdowns() {
-            const yearSelect = document.getElementById('vehicleYear');
-            const makeSelect = document.getElementById('vehicleMake');
-            const colorSelect = document.getElementById('vehicleColor');
-            
-            // Populate years (2015-2025)
-            for (let year = 2025; year >= 2015; year--) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
-            }
-            
-            // Populate makes
-            Object.keys(vehicleData.makes).sort().forEach(make => {
-                const option = document.createElement('option');
-                option.value = make;
-                option.textContent = make;
-                makeSelect.appendChild(option);
-            });
-            
-            // Populate colors
-            const colors = ['White', 'Black', 'Silver', 'Gray', 'Red', 'Blue', 'Green', 'Yellow', 'Orange', 'Brown', 'Gold', 'Purple', 'Other'];
-            colors.forEach(color => {
-                const option = document.createElement('option');
-                option.value = color;
-                option.textContent = color;
-                colorSelect.appendChild(option);
-            });
-        }
+        // Initialize Map
+        function initializeMap() {
+            if (map) return;
 
-        // Update model dropdown based on selected make
-        function updateModelDropdown() {
-            const makeSelect = document.getElementById('vehicleMake');
-            const modelSelect = document.getElementById('vehicleModel');
-            const selectedMake = makeSelect.value;
-            
-            // Clear existing options
-            modelSelect.innerHTML = '<option value="">Select model</option>';
-            
-            if (selectedMake && vehicleData.makes[selectedMake]) {
-                vehicleData.makes[selectedMake].forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model;
-                    option.textContent = model;
-                    modelSelect.appendChild(option);
-                });
-            }
-        }
+            // Default to Naples, FL
+            const defaultLat = 26.1420;
+            const defaultLng = -81.7948;
 
-        // Photo handling functions
-        function handlePhotoSelection(event) {
-            const files = Array.from(event.target.files);
-            const container = document.getElementById('photoPreviewContainer');
-            
-            files.forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        vehiclePhotos.push(e.target.result);
-                        displayPhotoPreview(e.target.result, vehiclePhotos.length - 1);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
+            map = L.map('map').setView([defaultLat, defaultLng], 12);
 
-        function displayPhotoPreview(dataUrl, index) {
-            const container = document.getElementById('photoPreviewContainer');
-            const photoDiv = document.createElement('div');
-            photoDiv.className = 'photo-preview';
-            photoDiv.innerHTML = `
-                <img src="${dataUrl}" alt="Vehicle photo ${index + 1}">
-                <button type="button" class="photo-preview-remove" onclick="removePhoto(${index})">✕</button>
-            `;
-            container.appendChild(photoDiv);
-        }
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
 
-        function removePhoto(index) {
-            vehiclePhotos.splice(index, 1);
-            const container = document.getElementById('photoPreviewContainer');
-            container.innerHTML = '';
-            vehiclePhotos.forEach((photo, i) => displayPhotoPreview(photo, i));
-        }
-
-        // Select plan
-        function selectPlan(plan) {
-            selectedPlan = plan;
-            
-            document.querySelectorAll('.plan-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            document.querySelector(`.plan-option[data-plan="${plan}"]`).classList.add('selected');
-        }
-
-        // Modal functions
-        function openVehicleModal() {
-            document.getElementById('vehicle-modal').classList.add('active');
-        }
-
-        function closeVehicleModal() {
-            document.getElementById('vehicle-modal').classList.remove('active');
-            document.getElementById('vehicle-form').reset();
-            selectedPlan = null;
-            vehiclePhotos = [];
-            document.getElementById('photoPreviewContainer').innerHTML = '';
-            document.querySelectorAll('.plan-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-        }
-
-        // Update vehicle count
-        function updateVehicleCount() {
-            const count = userVehicles.length;
-            document.getElementById('vehicle-count').textContent = count;
-            document.getElementById('settings-vehicle-count').textContent = count;
-        }
-
-        // Check Stripe Payment Status
-        function checkStripePaymentStatus() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const paymentStatus = urlParams.get('payment');
-            
-            if (paymentStatus === 'success') {
-                // Clear URL parameter
-                window.history.replaceState({}, document.title, window.location.pathname);
-                
-                // Retrieve pending vehicle data
-                const pendingData = localStorage.getItem('pendingVehicleData');
-                if (pendingData) {
-                    try {
-                        const vehicle = JSON.parse(pendingData);
+            // Try to get user's actual location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
                         
-                        // Add vehicle to Firebase and localStorage
-                        addVehicleToStorage(vehicle);
+                        map.setView([lat, lng], 13);
                         
-                        // Clear pending data
-                        localStorage.removeItem('pendingVehicleData');
-                        
-                        // Show success message
-                        alert(`✅ PAYMENT SUCCESSFUL!\n\n` +
-                              `Your ${vehicle.year} ${vehicle.make} ${vehicle.model} has been added!\n\n` +
-                              `🛡️ Protection Plan: ${vehicle.plan}\n` +
-                              `💰 Monthly: $${PLAN_PRICES[vehicle.plan].toFixed(2)}\n\n` +
-                              `Your vehicle is now protected by our community network!`);
-                        
-                        // Switch to vehicles section
-                        showSection('vehicles-section');
-                    } catch (error) {
-                        console.error('Error processing payment success:', error);
+                        // Add user marker
+                        userMarker = L.marker([lat, lng], {
+                            icon: L.divIcon({
+                                className: 'user-marker',
+                                html: '<div style="background: #4f46e5; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3);"></div>',
+                                iconSize: [20, 20]
+                            })
+                        }).addTo(map).bindPopup('Your Location');
+
+                        // Update location display
+                        document.getElementById('user-location').textContent = 
+                            `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    },
+                    error => {
+                        console.log('Location access denied, using default location');
+                        document.getElementById('user-location').textContent = 'Naples, FL';
                     }
+                );
+            }
+
+            // Add stolen vehicle markers
+            loadStolenVehicleMarkers();
+        }
+
+        // Load stolen vehicle markers on map
+        function loadStolenVehicleMarkers() {
+            stolenVehicles = mockStolenVehicles;
+            
+            stolenVehicles.forEach(vehicle => {
+                const marker = L.marker([vehicle.lat, vehicle.lng], {
+                    icon: L.divIcon({
+                        className: 'alert-marker',
+                        html: '<div style="background: #ef4444; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">!</div>',
+                        iconSize: [30, 30]
+                    })
+                }).addTo(map);
+
+                const timeSince = Math.floor((Date.now() - vehicle.reportedAt) / 60000);
+                marker.bindPopup(`
+                    <div class="alert-popup">
+                        <h4>🚨 ${vehicle.year} ${vehicle.make} ${vehicle.model}</h4>
+                        <p><strong>Plate:</strong> ${vehicle.plate}</p>
+                        <p><strong>Color:</strong> ${vehicle.color}</p>
+                        <p><strong>Reported:</strong> ${timeSince} minutes ago</p>
+                        <p><strong>Reward:</strong> $${vehicle.reward}</p>
+                        <button class="btn-small btn-primary" onclick="reportSighting('${vehicle.id}')">
+                            Report Sighting
+                        </button>
+                    </div>
+                `);
+
+                alertMarkers.push(marker);
+            });
+
+            updateAlertCounts();
+            displayAlertsList();
+        }
+
+        // Update alert counts
+        function updateAlertCounts() {
+            const count = stolenVehicles.length;
+            document.getElementById('active-alerts-count').textContent = count;
+            document.getElementById('alert-badge').textContent = count;
+            
+            if (count > 0) {
+                document.getElementById('alert-badge').style.display = 'block';
+            }
+        }
+
+        // Display alerts list
+        function displayAlertsList() {
+            const alertsList = document.getElementById('alerts-list');
+            
+            if (stolenVehicles.length === 0) {
+                alertsList.innerHTML = `
+                    <p style="text-align: center; color: var(--text-secondary); padding: 20px;">
+                        No active alerts at this time.
+                    </p>
+                `;
+                return;
+            }
+
+            alertsList.innerHTML = stolenVehicles.map(vehicle => {
+                const timeSince = Math.floor((Date.now() - vehicle.reportedAt) / 60000);
+                return `
+                    <div class="alert-card">
+                        <div class="alert-header">
+                            <div>
+                                <h3 style="color: var(--danger); margin-bottom: 5px;">
+                                    ${vehicle.year} ${vehicle.make} ${vehicle.model}
+                                </h3>
+                                <p class="alert-time">${timeSince} minutes ago</p>
+                            </div>
+                            <span class="alert-status status-active">ACTIVE</span>
+                        </div>
+                        <div class="vehicle-details">
+                            <div class="detail-item">
+                                <span class="detail-label">License Plate</span>
+                                <span>${vehicle.plate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Color</span>
+                                <span>${vehicle.color}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Reward</span>
+                                <span style="color: var(--success); font-weight: bold;">$${vehicle.reward}</span>
+                            </div>
+                        </div>
+                        <button class="btn-small btn-primary" style="margin-top: 10px; width: auto;" onclick="reportSighting('${vehicle.id}')">
+                            Report Sighting
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            // Also update recent alerts on dashboard
+            const recentAlerts = document.getElementById('recent-alerts');
+            recentAlerts.innerHTML = alertsList.innerHTML;
+        }
+
+        // Report vehicle sighting
+        function reportSighting(vehicleId) {
+            alert('Thank you! Your sighting report has been submitted. If verified, you\'ll receive the reward payment via Zelle within 2-5 business days.');
+        }
+
+        // Show real-time notification
+        function showNotification(vehicle) {
+            const toast = document.getElementById('notification-toast');
+            const body = document.getElementById('notification-body');
+            
+            body.textContent = `A ${vehicle.year} ${vehicle.make} ${vehicle.model} (${vehicle.plate}) was just reported stolen near your location! Reward: $${vehicle.reward}`;
+            
+            toast.classList.add('show');
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                closeNotification();
+            }, 10000);
+        }
+
+        function closeNotification() {
+            document.getElementById('notification-toast').classList.remove('show');
+        }
+
+        function viewAlertDetails() {
+            closeNotification();
+            showSection('map-alerts');
+        }
+
+        // Simulate real-time alerts (in production, use Firebase real-time listeners)
+        function startAlertMonitoring() {
+            // Show a test notification after 5 seconds
+            setTimeout(() => {
+                if (mockStolenVehicles.length > 0) {
+                    showNotification(mockStolenVehicles[0]);
                 }
-            } else if (paymentStatus === 'cancel') {
-                // Clear URL parameter
-                window.history.replaceState({}, document.title, window.location.pathname);
-                
-                // Clear pending data
-                localStorage.removeItem('pendingVehicleData');
-                
-                alert(`❌ PAYMENT CANCELLED\n\n` +
-                      `Your payment was cancelled. No charges were made.\n\n` +
-                      `Your vehicle was NOT added. You can try again anytime!`);
-            }
+            }, 5000);
         }
 
-        // Add vehicle to storage
-        function addVehicleToStorage(vehicle) {
-            // Add to local array
-            userVehicles.push(vehicle);
+        // Vehicle Management
+        function updateVehicleDisplay() {
+            const vehicleList = document.getElementById('vehicle-list');
             
-            // Save to localStorage
-            localStorage.setItem('cartraceVehicles', JSON.stringify(userVehicles));
-            
-            // Save to Firebase if available
-            if (window.currentUser && window.firebaseRef && window.firebaseSet) {
-                const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicle.id}`);
-                window.firebaseSet(vehicleRef, vehicle).then(() => {
-                    console.log('Vehicle saved to Firebase:', vehicle);
-                }).catch((error) => {
-                    console.error('Error saving to Firebase:', error);
-                });
+            if (!window.userVehicles || window.userVehicles.length === 0) {
+                vehicleList.innerHTML = `
+                    <p style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                        No vehicles added yet. Click "Add Vehicle" to get started!
+                    </p>
+                `;
+                return;
             }
-            
-            // Update display
-            updateVehicleDisplay();
-            updateVehicleCount();
+
+            vehicleList.innerHTML = window.userVehicles.map(vehicle => `
+                <div class="vehicle-card">
+                    <div class="vehicle-header">
+                        <div class="vehicle-info">
+                            <h3>${vehicle.year} ${vehicle.make} ${vehicle.model}</h3>
+                            <p style="color: var(--text-secondary);">${vehicle.color}</p>
+                        </div>
+                        <div class="vehicle-actions">
+                            <button class="btn-small btn-edit" onclick="openEditModal('${vehicle.id}')">
+                                ✏️ Edit
+                            </button>
+                            <button class="btn-small btn-delete" onclick="deleteVehicle('${vehicle.id}')">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="vehicle-details">
+                        <div class="detail-item">
+                            <span class="detail-label">License Plate</span>
+                            <span>${vehicle.licensePlate}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">VIN</span>
+                            <span>${vehicle.vin || 'Not provided'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Protection Plan</span>
+                            <span style="color: var(--primary); font-weight: bold; text-transform: capitalize;">
+                                ${vehicle.plan || 'Basic'}
+                            </span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status</span>
+                            <span style="color: var(--success); font-weight: bold;">
+                                ✅ Protected
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Handle vehicle submission
-        async function handleVehicleSubmit(event) {
-            event.preventDefault();
+        function updateVehicleCount() {
+            const count = window.userVehicles ? window.userVehicles.length : 0;
+            document.getElementById('vehicle-count').textContent = count;
+        }
+
+        // Edit Vehicle Modal
+        function openEditModal(vehicleId) {
+            const vehicle = window.userVehicles.find(v => v.id === vehicleId);
+            if (!vehicle) return;
+
+            document.getElementById('edit-vehicle-id').value = vehicle.id;
+            document.getElementById('edit-vin').value = vehicle.vin || '';
+            document.getElementById('edit-plan').value = vehicle.plan || 'basic';
+            document.getElementById('edit-plate').value = vehicle.licensePlate;
+            document.getElementById('edit-vehicle-display').value = 
+                `${vehicle.year} ${vehicle.make} ${vehicle.model} - ${vehicle.color}`;
+
+            document.getElementById('edit-vehicle-modal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-vehicle-modal').classList.remove('active');
+        }
+
+        // Handle edit form submission
+        document.getElementById('edit-vehicle-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            if (!selectedPlan) {
-                alert('Please select a protection plan');
+            const vehicleId = document.getElementById('edit-vehicle-id').value;
+            const vin = document.getElementById('edit-vin').value.trim();
+            const plan = document.getElementById('edit-plan').value;
+
+            if (!window.currentUser) {
+                alert('Please log in to edit vehicles');
                 return;
             }
-            
-            // Get form values
-            const year = document.getElementById('vehicleYear').value;
-            const make = document.getElementById('vehicleMake').value;
-            const model = document.getElementById('vehicleModel').value;
-            const color = document.getElementById('vehicleColor').value;
-            const license = document.getElementById('vehicleLicense').value;
-            const vin = document.getElementById('vehicleVIN').value;
-            const features = document.getElementById('vehicleFeatures').value;
-            
-            // Create vehicle object
-            const vehicle = {
-                id: Date.now().toString(),
-                year,
-                make,
-                model,
-                color,
-                license,
-                vin: vin || null,
-                features: features || null,
-                plan: selectedPlan,
-                photos: vehiclePhotos,
-                addedDate: new Date().toISOString(),
-                subscriptionId: null // Will be updated after payment
-            };
-            
-            // Store vehicle data temporarily in localStorage
-            pendingVehicleData = vehicle;
-            localStorage.setItem('pendingVehicleData', JSON.stringify(vehicle));
-            
-            // Show confirmation before redirecting to payment
-            const planPrice = PLAN_PRICES[selectedPlan];
-            if (!confirm(`💳 PROCEED TO SECURE PAYMENT\n\n` +
-                        `Vehicle: ${year} ${make} ${model}\n` +
-                        `Plan: ${selectedPlan}\n` +
-                        `Price: $${planPrice.toFixed(2)}/month\n\n` +
-                        `You'll be redirected to Stripe's secure payment page.\n\n` +
-                        `Click OK to continue to payment.`)) {
-                return;
-            }
-            
+
             try {
-                // Show loading indicator
-                const submitButton = event.target.querySelector('button[type="submit"]');
-                const originalButtonText = submitButton.textContent;
-                submitButton.textContent = '⏳ Redirecting to payment...';
-                submitButton.disabled = true;
+                // Update in Firebase
+                const vehicleRef = window.firebaseRef(
+                    window.firebaseDatabase, 
+                    `vehicles/${window.currentUser.uid}/${vehicleId}`
+                );
                 
-                // Create Stripe Checkout Session
-                const response = await createStripeCheckoutSession(vehicle);
-                
-                if (response.error) {
-                    throw new Error(response.error);
-                }
-                
-                // Redirect to Stripe Checkout
-                const result = await stripe.redirectToCheckout({
-                    sessionId: response.sessionId
+                await window.firebaseUpdate(vehicleRef, {
+                    vin: vin,
+                    plan: plan,
+                    updatedAt: Date.now()
                 });
+
+                alert('✅ Vehicle updated successfully!');
+                closeEditModal();
                 
-                if (result.error) {
-                    throw new Error(result.error.message);
-                }
-                
+                // The onValue listener will automatically update the display
             } catch (error) {
-                console.error('Payment error:', error);
-                alert(`❌ PAYMENT ERROR\n\n` +
-                      `There was a problem processing your payment:\n${error.message}\n\n` +
-                      `Your vehicle was NOT added. Please try again or contact support.`);
+                console.error('Error updating vehicle:', error);
+                alert('❌ Error updating vehicle. Please try again.');
+            }
+        });
+
+        // Delete Vehicle
+        async function deleteVehicle(vehicleId) {
+            if (!confirm('Are you sure you want to delete this vehicle? This cannot be undone.')) {
+                return;
+            }
+
+            if (!window.currentUser) {
+                alert('Please log in to delete vehicles');
+                return;
+            }
+
+            try {
+                const vehicleRef = window.firebaseRef(
+                    window.firebaseDatabase, 
+                    `vehicles/${window.currentUser.uid}/${vehicleId}`
+                );
                 
-                // Restore button
-                const submitButton = event.target.querySelector('button[type="submit"]');
-                submitButton.textContent = 'Add Vehicle';
-                submitButton.disabled = false;
+                await window.firebaseRemove(vehicleRef);
                 
-                // Clear pending data
-                localStorage.removeItem('pendingVehicleData');
-                pendingVehicleData = null;
+                alert('✅ Vehicle deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting vehicle:', error);
+                alert('❌ Error deleting vehicle. Please try again.');
             }
         }
-        
-        // Create Stripe Checkout Session
-        async function createStripeCheckoutSession(vehicle) {
-            // Get Stripe Price ID for selected plan
-            const priceId = STRIPE_PRICES[vehicle.plan];
-            
-            if (!priceId || priceId.includes('price_') && priceId.includes('_monthly')) {
-                return {
-                    error: 'Invalid plan configuration. Please contact support.'
-                };
+
+        // Insurance Portal
+        function showInsuranceTab(tab) {
+            document.querySelectorAll('.portal-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'login') {
+                document.getElementById('insurance-login-tab').style.display = 'block';
+                document.getElementById('insurance-signup-tab').style.display = 'none';
+            } else {
+                document.getElementById('insurance-login-tab').style.display = 'none';
+                document.getElementById('insurance-signup-tab').style.display = 'block';
             }
+        }
+
+        // Insurance login
+        document.getElementById('insurance-login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('✅ Insurance company login successful! Redirecting to dashboard...');
+            document.getElementById('insurance-login-tab').style.display = 'none';
+            document.getElementById('insurance-signup-tab').style.display = 'none';
+            document.getElementById('insurance-dashboard').classList.add('active');
+        });
+
+        // Insurance signup
+        document.getElementById('insurance-signup-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('✅ Insurance company registration submitted! Our team will review and contact you within 24-48 hours.');
+        });
+
+        // Found Vehicle Form
+        document.getElementById('found-vehicle-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            // Get current URL for success/cancel redirects
-            const currentUrl = window.location.href.split('?')[0];
-            const successUrl = `${currentUrl}?payment=success`;
-            const cancelUrl = `${currentUrl}?payment=cancel`;
-            
+            const plate = document.getElementById('found-plate').value.trim();
+            const location = document.getElementById('found-location').value.trim();
+            const report = document.getElementById('found-report').value.trim();
+            const department = document.getElementById('found-department').value.trim();
+            const witness = document.getElementById('found-witness').value.trim();
+            const zelle = document.getElementById('found-zelle').value.trim();
+
+            const reportId = 'FR-' + Date.now();
+
+            alert(
+                `✅ FOUND VEHICLE REPORT SUBMITTED!\n\n` +
+                `📋 Report ID: ${reportId}\n` +
+                `🏷️ License Plate: ${plate.toUpperCase()}\n` +
+                `📍 Location: ${location}\n` +
+                `🔢 Police Report: ${report}\n` +
+                `👮 Department: ${department}\n` +
+                `👤 Witness: ${witness}\n` +
+                `💰 Zelle Contact: ${zelle}\n\n` +
+                `⏳ VERIFICATION PROCESS:\n\n` +
+                `1️⃣ Our team will verify with ${department}\n` +
+                `2️⃣ We'll confirm report #${report}\n` +
+                `3️⃣ Match with vehicle owner's theft report\n` +
+                `4️⃣ Process reward payment via Zelle\n\n` +
+                `⏰ Verification typically takes 2-5 business days\n` +
+                `💵 Reward amount: Based on vehicle's protection plan\n` +
+                `   • Basic: $200\n` +
+                `   • Gold: $300\n` +
+                `   • Platinum: $500\n` +
+                `   • Diamond: $750\n\n` +
+                `📧 You'll receive email updates\n\n` +
+                `🙏 Thank you for helping our community!\n\n` +
+                `Your report ID: ${reportId}\n` +
+                `Save this number for reference.`
+            );
+
+            e.target.reset();
+        });
+
+        // Stripe Checkout
+        async function startCheckout(plan) {
+            const priceIds = {
+                basic: 'price_1QeTcRRxPKUgpxLKFsjv4iZC',
+                gold: 'price_1QeTcnRxPKUgpxLKRvvfzC3Q',
+                platinum: 'price_1QeTd4RxPKUgpxLKJKZyaG0O',
+                diamond: 'price_1QeTdFRxPKUgpxLKU1oXUa9w'
+            };
+
             try {
-                // ⭐ UPDATED: Using BACKEND_URL instead of relative path ⭐
-                const response = await fetch(`${BACKEND_URL}/create-checkout-session`, {
+                const response = await fetch('https://YOUR_BACKEND_URL/create-checkout-session', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        priceId: priceId,
-                        vehicleId: vehicle.id,
-                        userId: window.currentUser ? window.currentUser.uid : 'anonymous',
-                        successUrl: successUrl,
-                        cancelUrl: cancelUrl,
-                        metadata: {
-                            vehicleId: vehicle.id,
-                            year: vehicle.year,
-                            make: vehicle.make,
-                            model: vehicle.model,
-                            license: vehicle.license,
-                            plan: vehicle.plan
-                        }
+                        priceId: priceIds[plan],
+                        userId: window.currentUser ? window.currentUser.uid : null,
+                        userEmail: window.currentUser ? window.currentUser.email : null
                     })
                 });
+
+                const session = await response.json();
                 
-                if (!response.ok) {
-                    throw new Error(`Backend error: ${response.status} ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                return data;
-                
-            } catch (error) {
-                console.error('Error creating checkout session:', error);
-                
-                return { 
-                    error: `Unable to connect to payment server. Please check your internet connection and try again. Error: ${error.message}` 
-                };
-            }
-        }
-
-        function syncVehicleWithCarfax(vehicle) {
-            alert(`🔄 SYNCING WITH CARFAX CAR CARE...\n\n` +
-                  `VIN: ${vehicle.vin}\n` +
-                  `Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}\n\n` +
-                  `Retrieving maintenance history from Carfax Car Care...`);
-            
-            // Simulate fetching Carfax Car Care data
-            setTimeout(() => {
-                alert(`✅ CARFAX CAR CARE SYNC COMPLETE!\n\n` +
-                      `Found 5 service records\n` +
-                      `No open recalls\n` +
-                      `Next service due in 2,847 miles\n\n` +
-                      `View full details at carfax.com/service`);
-                
-                // Refresh maintenance display
-                if (carfaxData) {
-                    displayServiceHistory();
-                }
-            }, 2000);
-        }
-
-        // Update Vehicle Display
-        function updateVehicleDisplay() {
-            const vehiclesList = document.getElementById('vehicles-list');
-            if (!vehiclesList) return;
-            
-            vehiclesList.innerHTML = '';
-            
-            if (!userVehicles || userVehicles.length === 0) {
-                vehiclesList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px;"><span style="font-size: 64px;">🚗</span><br><br>No vehicles added yet<br><small>Add your first vehicle to start community protection!</small></p>';
-                return;
-            }
-
-            userVehicles.forEach(vehicle => {
-                const vehicleCard = createVehicleCard(vehicle);
-                vehiclesList.appendChild(vehicleCard);
-            });
-        }
-
-        // Create Vehicle Card
-        function createVehicleCard(vehicle) {
-            const card = document.createElement('div');
-            card.className = 'vehicle-card';
-            
-            // Handle vehicles without a plan (old vehicles before payment system)
-            const vehiclePlan = vehicle.plan || 'BASIC';
-            
-            const planEmoji = {
-                'BASIC': '🥉',
-                'GOLD': '🥈',
-                'PLATINUM': '🥇',
-                'DIAMOND': '💎'
-            }[vehiclePlan] || '🚗';
-
-            const rewardAmount = {
-                'BASIC': '$200',
-                'GOLD': '$300',
-                'PLATINUM': '$500',
-                'DIAMOND': '$750'
-            }[vehiclePlan] || '$200';
-
-            let vehicleDetails = `🎨 Color: ${vehicle.color || 'N/A'}
-🏷️ License: ${vehicle.license || 'N/A'}`;
-
-            if (vehicle.vin) {
-                vehicleDetails += `
-🔑 VIN: ${vehicle.vin}`;
-                
-                if (carfaxConnected) {
-                    vehicleDetails += `
-📋 Carfax Car Care: Connected`;
-                }
-            }
-
-            if (vehicle.features) {
-                vehicleDetails += `
-✨ Features: ${vehicle.features}`;
-            }
-
-            vehicleDetails += `
-${planEmoji} Plan: ${vehiclePlan} (${rewardAmount} reward)
-📍 Status: ACTIVE`;
-
-            // Create photo gallery HTML if photos exist
-            let photoGalleryHTML = '';
-            if (vehicle.photos && vehicle.photos.length > 0) {
-                photoGalleryHTML = '<div class="photo-gallery">';
-                vehicle.photos.forEach((photo, index) => {
-                    photoGalleryHTML += `<img src="${photo}" alt="Vehicle photo ${index + 1}" class="photo-thumbnail" onclick="viewFullPhoto('${photo}')">`;
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.id
                 });
-                photoGalleryHTML += '</div>';
-            }
 
-            const planClass = `plan-${vehiclePlan.toLowerCase()}`;
-
-            card.innerHTML = `
-                <div class="vehicle-header">
-                    <div class="vehicle-title">${vehicle.year} ${vehicle.make} ${vehicle.model}</div>
-                    <div class="vehicle-plan-badge ${planClass}">${planEmoji} ${vehiclePlan}</div>
-                </div>
-                <div class="vehicle-details">${vehicleDetails}</div>
-                ${photoGalleryHTML}
-                <div class="vehicle-actions">
-                    ${vehicle.vin ? `<button class="btn btn-success" onclick="syncVehicleWithCarfax(${JSON.stringify(vehicle).replace(/"/g, '&quot;')})">🔄 Sync Carfax</button>` : ''}
-                    <button class="btn btn-danger" onclick="removeVehicle('${vehicle.id}')">🗑️ Remove</button>
-                </div>
-            `;
-
-            return card;
-        }
-
-        function viewFullPhoto(photoUrl) {
-            window.open(photoUrl, '_blank');
-        }
-
-        // Remove vehicle
-        async function removeVehicle(vehicleId) {
-            const vehicle = userVehicles.find(v => v.id === vehicleId);
-            if (!vehicle) return;
-            
-            if (!confirm(`⚠️ REMOVE VEHICLE\n\n` +
-                        `Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}\n` +
-                        `Plan: ${vehicle.plan}\n\n` +
-                        `This will:\n` +
-                        `✅ Cancel your subscription\n` +
-                        `✅ Remove the vehicle from protection\n` +
-                        `✅ Stop future charges\n\n` +
-                        `Are you sure you want to continue?`)) {
-                return;
-            }
-            
-            try {
-                // Cancel subscription if exists
-                if (vehicle.subscriptionId) {
-                    console.log('Cancelling subscription:', vehicle.subscriptionId);
-                    
-                    // ⭐ UPDATED: Using BACKEND_URL instead of relative path ⭐
-                    const response = await fetch(`${BACKEND_URL}/cancel-subscription`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            subscriptionId: vehicle.subscriptionId,
-                            userId: window.currentUser ? window.currentUser.uid : 'anonymous'
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        console.error('Failed to cancel subscription:', response.status);
-                    } else {
-                        console.log('Subscription cancelled successfully');
-                    }
+                if (result.error) {
+                    alert(result.error.message);
                 }
-                
-                // Remove from local array
-                userVehicles = userVehicles.filter(v => v.id !== vehicleId);
-                
-                // Update localStorage
-                localStorage.setItem('cartraceVehicles', JSON.stringify(userVehicles));
-                
-                // Remove from Firebase if available
-                if (window.currentUser && window.firebaseRef && window.firebaseRemove) {
-                    const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
-                    await window.firebaseRemove(vehicleRef);
-                    console.log('Vehicle removed from Firebase');
-                }
-                
-                // Update display
-                updateVehicleDisplay();
-                updateVehicleCount();
-                
-                alert(`✅ VEHICLE REMOVED\n\n` +
-                      `Your ${vehicle.year} ${vehicle.make} ${vehicle.model} has been removed.\n\n` +
-                      `Subscription cancelled - no future charges will be made.`);
-                
             } catch (error) {
-                console.error('Error removing vehicle:', error);
-                alert(`⚠️ Error removing vehicle: ${error.message}\n\nPlease try again or contact support.`);
+                console.error('Error:', error);
+                alert('Unable to start checkout. Please try again.');
             }
         }
 
-        // Carfax functions
-        function checkCarfaxConnection() {
-            const notConnected = document.getElementById('carfax-not-connected');
-            const connected = document.getElementById('carfax-connected');
-            
-            if (carfaxConnected) {
-                notConnected.style.display = 'none';
-                connected.style.display = 'block';
-                loadCarfaxData();
-            } else {
-                notConnected.style.display = 'block';
-                connected.style.display = 'none';
-            }
-        }
-
+        // Carfax Connection
         function connectCarfax() {
-            // Simulate Carfax OAuth flow
-            alert(`🔗 CONNECTING TO CARFAX CAR CARE...\n\n` +
-                  `You'll be redirected to Carfax to authorize access to your Car Care account.\n\n` +
-                  `This is FREE and provides:\n` +
-                  `✅ Service history tracking\n` +
-                  `✅ Maintenance reminders\n` +
-                  `✅ Recall notifications\n` +
-                  `✅ Vehicle health reports\n\n` +
-                  `Click OK to continue to Carfax.com`);
-            
-            // Simulate successful connection
-            setTimeout(() => {
-                carfaxConnected = true;
-                localStorage.setItem('carfaxConnected', 'true');
-                
-                // Save to Firebase if available
-                if (window.firebaseRef && window.firebaseSet && window.currentUser) {
-                    const carfaxRef = window.firebaseRef(window.firebaseDatabase, `carfax/${window.currentUser.uid}`);
-                    window.firebaseSet(carfaxRef, {
-                        connected: true,
-                        connectedAt: new Date().toISOString()
-                    });
-                }
-                
-                checkCarfaxConnection();
-                alert(`✅ CARFAX CAR CARE CONNECTED!\n\n` +
-                      `Your account is now connected.\n\n` +
-                      `Add VINs to your vehicles to automatically sync maintenance data!`);
-            }, 2000);
-        }
-
-        function generateSampleServiceHistory() {
-            return [
-                {
-                    date: '10/15/2024',
-                    type: 'Oil Change',
-                    mileage: '45,230',
-                    cost: '$54.99',
-                    provider: 'Quick Lube Plus',
-                    details: 'Full synthetic oil, new filter, tire pressure check'
-                },
-                {
-                    date: '07/22/2024',
-                    type: 'Tire Rotation',
-                    mileage: '42,100',
-                    cost: '$29.99',
-                    provider: 'Tire World',
-                    details: 'Rotated all 4 tires, checked alignment'
-                },
-                {
-                    date: '04/10/2024',
-                    type: 'Brake Service',
-                    mileage: '39,500',
-                    cost: '$189.00',
-                    provider: 'AutoCare Center',
-                    details: 'Replaced front brake pads, resurfaced rotors'
-                },
-                {
-                    date: '01/05/2024',
-                    type: 'State Inspection',
-                    mileage: '37,200',
-                    cost: '$35.00',
-                    provider: 'State Inspection Station',
-                    details: 'Annual safety inspection - passed'
-                },
-                {
-                    date: '10/12/2023',
-                    type: 'Oil Change',
-                    mileage: '34,890',
-                    cost: '$52.99',
-                    provider: 'Quick Lube Plus',
-                    details: 'Full synthetic oil, new filter'
-                }
-            ];
-        }
-
-        function generateMaintenanceAlerts() {
-            return [
-                {
-                    title: 'Open Recall - Airbag System',
-                    description: 'NHTSA Recall #23V-456: Passenger airbag may not deploy properly',
-                    severity: 'high',
-                    action: 'Schedule Recall Repair'
-                },
-                {
-                    title: 'Service Due Soon',
-                    description: 'Next oil change recommended in 847 miles or by 12/15/2024',
-                    severity: 'medium',
-                    action: 'Schedule Service'
-                }
-            ];
-        }
-
-        function generateUpcomingMaintenance() {
-            return [
-                {
-                    service: 'Oil Change',
-                    due: 'In 2,847 miles',
-                    estimated: '$45-65',
-                    priority: 'Medium'
-                },
-                {
-                    service: 'Tire Rotation',
-                    due: 'In 4,900 miles',
-                    estimated: '$25-35',
-                    priority: 'Low'
-                },
-                {
-                    service: 'Air Filter',
-                    due: 'In 6,500 miles',
-                    estimated: '$30-45',
-                    priority: 'Low'
-                },
-                {
-                    service: 'Transmission Service',
-                    due: 'In 14,770 miles',
-                    estimated: '$150-200',
-                    priority: 'Low'
-                }
-            ];
-        }
-
-        function displayServiceHistory() {
-            if (!carfaxData || !carfaxData.serviceHistory) return;
-            
-            const historyList = document.getElementById('service-history-list');
-            if (!historyList) return;
-            
-            historyList.innerHTML = '';
-            carfaxData.serviceHistory.forEach(record => {
-                const recordDiv = document.createElement('div');
-                recordDiv.className = 'service-record';
-                recordDiv.innerHTML = `
-                    <div class="service-header">
-                        <div class="service-type">${record.type}</div>
-                        <div class="service-date">${record.date}</div>
-                    </div>
-                    <div class="service-details">
-                        <strong>Provider:</strong> ${record.provider}<br>
-                        <strong>Mileage:</strong> ${record.mileage} miles<br>
-                        <strong>Details:</strong> ${record.details}
-                    </div>
-                    <div class="service-cost">${record.cost}</div>
-                `;
-                historyList.appendChild(recordDiv);
-            });
-        }
-
-        function displayMaintenanceAlerts() {
-            if (!carfaxData || !carfaxData.maintenanceAlerts) return;
-            
-            const alertsList = document.getElementById('maintenance-alerts-list');
-            if (!alertsList) return;
-            
-            alertsList.innerHTML = '';
-            carfaxData.maintenanceAlerts.forEach(alert => {
-                const alertDiv = document.createElement('div');
-                alertDiv.className = alert.severity === 'high' ? 'maintenance-alert' : 'maintenance-warning';
-                alertDiv.innerHTML = `
-                    <strong>${alert.title}</strong><br>
-                    <small>${alert.description}</small><br>
-                    <button class="btn btn-sm" style="margin-top: 8px; padding: 4px 12px; font-size: 12px;">
-                        ${alert.action}
-                    </button>
-                `;
-                alertsList.appendChild(alertDiv);
-            });
-        }
-
-        function displayUpcomingMaintenance() {
-            if (!carfaxData || !carfaxData.upcomingMaintenance) return;
-            
-            const upcomingList = document.getElementById('upcoming-maintenance-list');
-            if (!upcomingList) return;
-            
-            upcomingList.innerHTML = '';
-            carfaxData.upcomingMaintenance.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'maintenance-info';
-                itemDiv.innerHTML = `
-                    <strong>${item.service}</strong><br>
-                    <small>Due: ${item.due} • Est. Cost: ${item.estimated} • Priority: ${item.priority}</small>
-                `;
-                upcomingList.appendChild(itemDiv);
-            });
-        }
-
-        function syncCarfaxData() {
-            const syncBtn = event.target;
-            syncBtn.disabled = true;
-            syncBtn.innerHTML = '⏳ Syncing...';
-            
-            // Simulate sync process
-            setTimeout(() => {
-                // Update last sync time
-                carfaxData.lastSync = new Date().toISOString();
-                
-                // Add a new recent service record
-                if (Math.random() > 0.7) {
-                    carfaxData.serviceHistory.unshift({
-                        date: new Date().toLocaleDateString(),
-                        type: 'System Check',
-                        mileage: '48,000',
-                        cost: '$0.00',
-                        provider: 'CarTrace Pro',
-                        details: 'Automated vehicle health check via OBD-II'
-                    });
-                }
-                
-                // Update displays
-                displayServiceHistory();
-                displayMaintenanceAlerts();
-                displayUpcomingMaintenance();
-                
-                syncBtn.disabled = false;
-                syncBtn.innerHTML = '🔄 Sync Car Care Data';
-                
-                alert('✅ Carfax Car Care data synced successfully!');
-            }, 2000);
-        }
-
-        function loadCarfaxData() {
-            // Load from Firebase if available
-            if (window.firebaseRef && window.firebaseGet && window.currentUser) {
-                const carfaxRef = window.firebaseRef(window.firebaseDatabase, `carfax/${window.currentUser.uid}`);
-                window.firebaseGet(carfaxRef).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const data = snapshot.val();
-                        carfaxConnected = data.connected || false;
-                        carfaxData = data.data || null;
-                        updateCarfaxDisplay();
-                    }
-                });
-            } else {
-                // Load sample data if connected
-                if (carfaxConnected) {
-                    carfaxData = {
-                        serviceHistory: generateSampleServiceHistory(),
-                        maintenanceAlerts: generateMaintenanceAlerts(),
-                        upcomingMaintenance: generateUpcomingMaintenance()
-                    };
-                    updateCarfaxDisplay();
-                }
-            }
-        }
-
-        function openCarfaxDashboard() {
-            window.open('https://www.carfax.com/service', '_blank');
-        }
-
-        function addServiceRecord() {
-            const service = prompt('Enter service type (e.g., Oil Change, Tire Rotation):');
-            if (!service) return;
-            
-            const mileage = prompt('Enter current mileage:');
-            const cost = prompt('Enter service cost:');
-            const provider = prompt('Enter service provider:');
-            const details = prompt('Enter service details:');
-            
-            if (service && mileage) {
-                const newRecord = {
-                    date: new Date().toLocaleDateString(),
-                    type: service,
-                    mileage: mileage,
-                    cost: cost ? `$${cost}` : 'N/A',
-                    provider: provider || 'Self',
-                    details: details || 'Manual entry'
-                };
-                
-                if (!carfaxData) carfaxData = { serviceHistory: [] };
-                if (!carfaxData.serviceHistory) carfaxData.serviceHistory = [];
-                
-                carfaxData.serviceHistory.unshift(newRecord);
-                displayServiceHistory();
-                
-                alert('✅ Service record added successfully!');
-            }
-        }
-
-        function disconnectCarfax() {
-            if (confirm('Are you sure you want to disconnect your Carfax Car Care account?\n\nYou can reconnect anytime for free.')) {
-                carfaxConnected = false;
-                carfaxData = null;
-                localStorage.removeItem('carfaxConnected');
-                
-                if (window.firebaseRef && window.firebaseRemove && window.currentUser) {
-                    const carfaxRef = window.firebaseRef(window.firebaseDatabase, `carfax/${window.currentUser.uid}`);
-                    window.firebaseRemove(carfaxRef);
-                }
-                
-                updateCarfaxDisplay();
-                alert('✅ Carfax Car Care disconnected successfully\n\nYou can reconnect anytime at carfax.com/service');
-            }
-        }
-
-        function updateCarfaxDisplay() {
-            checkCarfaxConnection();
-            if (carfaxConnected && carfaxData) {
-                displayServiceHistory();
-                displayMaintenanceAlerts();
-                displayUpcomingMaintenance();
-            }
-        }
-
-        // Report Found Vehicle
-        function reportFoundVehicle() {
-            // Step 1: Safety instructions
-            if (!confirm(`⚠️ IMPORTANT SAFETY INSTRUCTIONS\n\n` +
-                        `Before reporting a found vehicle:\n\n` +
-                        `1️⃣ DO NOT APPROACH the vehicle if anyone is inside\n` +
-                        `2️⃣ CALL 911 IMMEDIATELY if you feel unsafe\n` +
-                        `3️⃣ Take photos from a SAFE DISTANCE only\n` +
-                        `4️⃣ DO NOT touch or enter the vehicle\n\n` +
-                        `Your safety is the #1 priority!\n\n` +
-                        `Click OK if you understand and can proceed safely.`)) {
-                return;
-            }
-            
-            // Step 2: 911 requirement
-            if (!confirm(`📞 CALL 911 FIRST\n\n` +
-                        `Have you already called 911 to report this vehicle?\n\n` +
-                        `⚠️ You MUST file a police report to be eligible for the community reward.\n\n` +
-                        `Click OK if you have called 911.\n` +
-                        `Click Cancel to call 911 now.`)) {
-                alert(`📞 PLEASE CALL 911 NOW\n\n` +
-                      `Call your local police non-emergency line or 911 to report the found vehicle.\n\n` +
-                      `After filing the police report, return to CarTrace Pro to complete your reward claim.`);
-                return;
-            }
-            
-            // Step 3: Get license plate
-            const licensePlate = prompt(`🏷️ ENTER LICENSE PLATE NUMBER\n\nEnter the license plate of the found vehicle:\n\n(Required for verification)`);
-            if (!licensePlate || licensePlate.trim() === '') {
-                alert('❌ License plate is required to report a found vehicle.');
-                return;
-            }
-            
-            // Step 4: Get location with GPS
-            let gpsCoordinates = null;
-            let gpsAccuracy = null;
-            
-            if (navigator.geolocation) {
-                // Try to get GPS coordinates
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        gpsCoordinates = {
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude
-                        };
-                        gpsAccuracy = position.coords.accuracy;
-                        continueReportWithLocation();
-                    },
-                    (error) => {
-                        console.error('GPS error:', error);
-                        continueReportWithLocation();
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
-                    }
-                );
-            } else {
-                continueReportWithLocation();
-            }
-            
-            function continueReportWithLocation() {
-                // Step 5: Get location details
-                const location = prompt(`📍 VEHICLE LOCATION\n\nProvide the specific location:\n\n` +
-                                       `Examples:\n` +
-                                       `- "Corner of Main St and 5th Ave"\n` +
-                                       `- "Walmart parking lot, 123 Shopping Blvd"\n` +
-                                       `- "1234 Residential Dr, near park"\n\n` +
-                                       `Enter location:`);
-                
-                if (!location || location.trim() === '') {
-                    alert('❌ Location details are required.');
-                    return;
-                }
-                
-                // Step 6: Photo confirmation
-                if (!confirm(`📸 VEHICLE PHOTOS\n\n` +
-                            `Take clear photos showing:\n\n` +
-                            `✅ License plate (close-up)\n` +
-                            `✅ Vehicle from multiple angles\n` +
-                            `✅ Location/surroundings\n` +
-                            `✅ Any visible damage or unique features\n\n` +
-                            `⚠️ Take photos from a SAFE DISTANCE\n` +
-                            `⚠️ DO NOT approach if anyone is inside\n\n` +
-                            `Have you taken the required photos?\n\n` +
-                            `Click OK to continue with report.`)) {
-                    return;
-                }
-                
-                // Step 7: Police report details
-                const policeReportNumber = prompt(`📋 POLICE REPORT NUMBER\n\nEnter the police report number or case number:\n\n` +
-                                                  `(You received this from 911/police dispatcher)`);
-                
-                if (!policeReportNumber || policeReportNumber.trim() === '') {
-                    alert('❌ Police report number is required for reward verification.');
-                    return;
-                }
-                
-                const policeDepartment = prompt(`👮 POLICE DEPARTMENT\n\nWhich police department did you file with?\n\n` +
-                                              `Examples:\n` +
-                                              `- "Naples Police Department"\n` +
-                                              `- "Collier County Sheriff"\n` +
-                                              `- "Fort Myers Police"` );
-                
-                if (!policeDepartment || policeDepartment.trim() === '') {
-                    alert('❌ Police department name is required.');
-                    return;
-                }
-                
-                // Step 8: Witness information
-                const witnessName = prompt(`👤 YOUR NAME\n\nEnter your full name for the police report:\n\n` +
-                                          `(Required for reward verification)`);
-                
-                if (!witnessName || witnessName.trim() === '') {
-                    alert('❌ Your name is required.');
-                    return;
-                }
-                
-                // Step 9: Zelle payment information
-                const zelleContact = prompt(`💰 REWARD PAYMENT - ZELLE\n\nEnter your Zelle phone number or email for reward payment:\n\n` +
-                                           `Community rewards are paid via Zelle after verification.\n\n` +
-                                           `Phone: (555) 123-4567\n` +
-                                           `OR Email: yourname@email.com`);
-                
-                if (!zelleContact || zelleContact.trim() === '') {
-                    alert('❌ Zelle contact information is required for reward payment.');
-                    return;
-                }
-                
-                // Step 10: Final confirmation
-                const reportId = `FV-${Date.now()}`;
-                
-                // Determine GPS accuracy rating
-                let accuracyRating = '';
-                if (gpsCoordinates && gpsAccuracy) {
-                    if (gpsAccuracy < 10) accuracyRating = '(Excellent)';
-                    else if (gpsAccuracy < 50) accuracyRating = '(Good)';
-                    else accuracyRating = '(Fair)';
-                }
-                
-                // Store report (would save to Firebase in production)
-                const report = {
-                    id: reportId,
-                    licensePlate: licensePlate.trim().toUpperCase(),
-                    location: location.trim(),
-                    gpsCoordinates: gpsCoordinates,
-                    gpsAccuracy: gpsAccuracy,
-                    policeReportNumber: policeReportNumber.trim(),
-                    policeDepartment: policeDepartment.trim(),
-                    witnessName: witnessName.trim(),
-                    zelleContact: zelleContact.trim(),
-                    submittedAt: new Date().toISOString(),
-                    status: 'pending_verification'
-                };
-                
-                console.log('Found vehicle report submitted:', report);
-                
-                // Build GPS info for display
-                let gpsInfo = '';
-                if (gpsCoordinates) {
-                    gpsInfo = `📡 GPS Location: Captured\n` +
-                             `   Lat: ${gpsCoordinates.latitude.toFixed(6)}\n` +
-                             `   Lng: ${gpsCoordinates.longitude.toFixed(6)}\n` +
-                             `   Accuracy: ${gpsAccuracy.toFixed(1)}m ${accuracyRating}\n`;
-                } else {
-                    gpsInfo = `📡 GPS Location: Manual Entry\n`;
-                }
-                
-                alert(`✅ FOUND VEHICLE REPORT SUBMITTED!\n\n` +
-                      `📋 Report ID: ${reportId}\n` +
-                      `🏷️ License Plate: ${licensePlate.trim().toUpperCase()}\n` +
-                      `📍 Location: ${location.trim()}\n` +
-                      gpsInfo +
-                      `🔢 Police Report: ${policeReportNumber.trim()}\n` +
-                      `👮 Department: ${policeDepartment.trim()}\n` +
-                      `👤 Witness: ${witnessName.trim()}\n` +
-                      `💰 Zelle Contact: ${zelleContact.trim()}\n\n` +
-                      `⏳ VERIFICATION PROCESS:\n\n` +
-                      `1️⃣ Our team will verify with ${policeDepartment.trim()}\n` +
-                      `2️⃣ We'll confirm report #${policeReportNumber.trim()}\n` +
-                      `3️⃣ Match with vehicle owner's theft report\n` +
-                      `4️⃣ Process reward payment via Zelle\n\n` +
-                      `⏰ Verification typically takes 2-5 business days\n` +
-                      `💵 Reward amount: Based on vehicle's protection plan\n` +
-                      `   • Basic: $200\n` +
-                      `   • Gold: $300\n` +
-                      `   • Platinum: $500\n` +
-                      `   • Diamond: $750\n\n` +
-                      `📧 You'll receive email updates at:\n${window.currentUser ? window.currentUser.email : 'your registered email'}\n\n` +
-                      `🙏 Thank you for helping our community recover stolen vehicles!\n\n` +
-                      `Your report ID: ${reportId}\n` +
-                      `Save this number for reference.`);
-            }
-        }
-
-        // Generate Report
-        function generateReport() {
-            alert(`📊 ANALYTICS REPORT\n\n` +
-                  `Report ID: RPT-${Date.now()}\n` +
-                  `Generated: ${new Date().toLocaleString()}\n\n` +
-                  `✅ Community performance report created\n` +
-                  `✅ Emailed to your registered address\n\n` +
-                  `The report includes:\n` +
-                  `• Community network statistics\n` +
-                  `• Recovery success metrics\n` +
-                  `• Network activity analysis\n` +
-                  (carfaxConnected ? `• Carfax Car Care maintenance summary\n` : '') +
-                  `\n🚧 Future: Advanced GPS analytics coming soon!`);
+            alert('🚧 Carfax integration coming soon! You\'ll be able to link your Carfax Car Care account for enhanced vehicle tracking.');
         }
 
         // Sign Out
@@ -2370,12 +1742,17 @@ ${planEmoji} Plan: ${vehiclePlan} (${rewardAmount} reward)
             }
         }
 
-        // Update Live Stats
+        // Live Stats Updates
+        let networkUptime = 99.95;
+        let responseTime = 0.8;
+        let securityScore = 98;
+        let dataPoints = 1234567;
+        let activeUsers = 47892;
+
         function updateLiveStats() {
-            // Simulate realistic variations
             const random = Math.random();
             
-            if (random < 0.4) { // 40% chance of update
+            if (random < 0.4) {
                 networkUptime = Math.max(99.90, Math.min(99.99, networkUptime + (Math.random() - 0.5) * 0.02));
                 responseTime = Math.max(0.5, Math.min(1.2, responseTime + (Math.random() - 0.5) * 0.1));
                 securityScore = Math.max(90, Math.min(100, securityScore + Math.floor((Math.random() - 0.5) * 3)));
@@ -2383,29 +1760,27 @@ ${planEmoji} Plan: ${vehiclePlan} (${rewardAmount} reward)
                 activeUsers = 47892 + Math.floor(Math.random() * 100);
             }
             
-            document.getElementById('network-uptime').textContent = networkUptime.toFixed(2) + '%';
-            document.getElementById('response-time').textContent = responseTime.toFixed(1) + 'ms';
+            document.getElementById('network-uptime').textContent = networkUptime.toFixed(2);
+            document.getElementById('response-time').textContent = responseTime.toFixed(1);
             document.getElementById('security-score').textContent = securityScore;
             document.getElementById('data-points').textContent = dataPoints.toLocaleString();
             document.getElementById('active-users').textContent = activeUsers.toLocaleString();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start real-time updates
+            setInterval(updateLiveStats, 3000);
             
-            const now = new Date();
-            document.getElementById('last-update').textContent = now.toLocaleTimeString();
-        }
-
-        // Start Real-Time Updates
-        function startRealTimeUpdates() {
-            updateLiveStats(); // Initial update
-            setInterval(updateLiveStats, 3000); // Update every 3 seconds
-        }
-
-        // Update Sync Status
-        function updateSyncStatus() {
+            // Start alert monitoring
+            startAlertMonitoring();
+            
+            // Update sync status
             setTimeout(() => {
                 document.getElementById('sync-status').textContent = '✅ Community network connected';
                 document.getElementById('sync-status').style.color = 'var(--success)';
             }, 2000);
-        }
+        });
     </script>
 
     <!-- Firebase Module Script -->
@@ -2414,7 +1789,6 @@ ${planEmoji} Plan: ${vehiclePlan} (${rewardAmount} reward)
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
         import { getDatabase, ref, set, get, push, remove, update, onValue, off } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
-        // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
             authDomain: "cartrace-pro.firebaseapp.com",
@@ -2426,12 +1800,10 @@ ${planEmoji} Plan: ${vehiclePlan} (${rewardAmount} reward)
             measurementId: "G-X01QW112CD"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Make Firebase functions globally available
         window.firebaseAuth = auth;
         window.firebaseDatabase = database;
         window.firebaseRef = ref;
@@ -2444,64 +1816,63 @@ ${planEmoji} Plan: ${vehiclePlan} (${rewardAmount} reward)
         window.firebaseOff = off;
         window.firebaseSignOut = signOut;
 
-        // Check authentication state
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 window.currentUser = user;
                 
-                // Update UI with user info
                 document.getElementById('user-email').textContent = user.email || 'User';
-                document.getElementById('settings-email').textContent = user.email || 'user@example.com';
-                document.getElementById('member-since').textContent = new Date(user.metadata.creationTime).toLocaleDateString();
+                document.getElementById('settings-email').value = user.email || 'user@example.com';
+                document.getElementById('member-since').value = new Date(user.metadata.creationTime).toLocaleDateString();
                 
-                // Load vehicles
+                // Load vehicles with real-time updates
                 const vehiclesRef = ref(database, `vehicles/${user.uid}`);
                 onValue(vehiclesRef, (snapshot) => {
-                    console.log('Firebase snapshot received:', snapshot.val());
                     const data = snapshot.val();
                     
                     if (data) {
-                        // Convert Firebase object to array properly
                         window.userVehicles = Object.keys(data).map(key => ({
                             ...data[key],
-                            id: data[key].id || key // Ensure id is preserved
+                            id: data[key].id || key
                         }));
-                        console.log('Vehicles loaded from Firebase:', window.userVehicles);
-                        
-                        // Sync to localStorage for offline access
                         localStorage.setItem('cartraceVehicles', JSON.stringify(window.userVehicles));
                     } else {
                         window.userVehicles = [];
-                        console.log('No vehicles found in Firebase');
                         localStorage.setItem('cartraceVehicles', JSON.stringify([]));
                     }
                     
                     updateVehicleDisplay();
                     updateVehicleCount();
-                }, (error) => {
-                    console.error('Firebase error loading vehicles:', error);
-                    // Fallback to local storage if Firebase fails
-                    const localVehicles = localStorage.getItem('cartraceVehicles');
-                    if (localVehicles) {
-                        window.userVehicles = JSON.parse(localVehicles);
-                        console.log('Loaded vehicles from local storage:', window.userVehicles);
-                        updateVehicleDisplay();
-                        updateVehicleCount();
-                    }
                 });
-                
-                // Load Carfax connection status
-                const carfaxRef = ref(database, `carfax/${user.uid}`);
-                get(carfaxRef).then((snapshot) => {
-                    if (snapshot.exists()) {
-                        const data = snapshot.val();
-                        window.carfaxConnected = data.connected || false;
-                        window.carfaxData = data.data || null;
-                        checkCarfaxConnection();
+
+                // Listen for stolen vehicle alerts in real-time
+                const alertsRef = ref(database, 'stolenVehicles');
+                onValue(alertsRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        const alerts = Object.keys(data).map(key => ({
+                            ...data[key],
+                            id: key
+                        }));
+                        
+                        // Check for new alerts
+                        alerts.forEach(alert => {
+                            if (!stolenVehicles.find(v => v.id === alert.id)) {
+                                showNotification(alert);
+                            }
+                        });
+                        
+                        stolenVehicles = alerts;
+                        if (map) {
+                            // Update map markers
+                            alertMarkers.forEach(marker => map.removeLayer(marker));
+                            alertMarkers = [];
+                            loadStolenVehicleMarkers();
+                        }
+                        updateAlertCounts();
+                        displayAlertsList();
                     }
                 });
             } else {
-                // Redirect to login page if not authenticated
                 window.location.href = 'cartrace_homepage.html';
             }
         });
