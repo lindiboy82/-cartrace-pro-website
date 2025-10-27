@@ -1683,22 +1683,25 @@
             const card = document.createElement('div');
             card.className = 'vehicle-card';
             
+            // Handle vehicles without a plan (old vehicles before payment system)
+            const vehiclePlan = vehicle.plan || 'BASIC';
+            
             const planEmoji = {
                 'BASIC': '🥉',
                 'GOLD': '🥈',
                 'PLATINUM': '🥇',
                 'DIAMOND': '💎'
-            }[vehicle.plan] || '🚗';
+            }[vehiclePlan] || '🚗';
 
             const rewardAmount = {
                 'BASIC': '$200',
                 'GOLD': '$300',
                 'PLATINUM': '$500',
                 'DIAMOND': '$750'
-            }[vehicle.plan] || '$200';
+            }[vehiclePlan] || '$200';
 
-            let vehicleDetails = `🎨 Color: ${vehicle.color}
-🏷️ License: ${vehicle.license}`;
+            let vehicleDetails = `🎨 Color: ${vehicle.color || 'N/A'}
+🏷️ License: ${vehicle.license || 'N/A'}`;
 
             if (vehicle.vin) {
                 vehicleDetails += `
@@ -1716,7 +1719,7 @@
             }
 
             vehicleDetails += `
-${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
+${planEmoji} Plan: ${vehiclePlan} (${rewardAmount} reward)
 📍 Status: ACTIVE`;
 
             // Create photo gallery HTML if photos exist
@@ -1729,12 +1732,12 @@ ${planEmoji} Plan: ${vehicle.plan} (${rewardAmount} reward)
                 photoGalleryHTML += '</div>';
             }
 
-            const planClass = `plan-${vehicle.plan.toLowerCase()}`;
+            const planClass = `plan-${vehiclePlan.toLowerCase()}`;
 
             card.innerHTML = `
                 <div class="vehicle-header">
                     <div class="vehicle-title">${vehicle.year} ${vehicle.make} ${vehicle.model}</div>
-                    <div class="vehicle-plan-badge ${planClass}">${planEmoji} ${vehicle.plan}</div>
+                    <div class="vehicle-plan-badge ${planClass}">${planEmoji} ${vehiclePlan}</div>
                 </div>
                 <div class="vehicle-details">${vehicleDetails}</div>
                 ${photoGalleryHTML}
