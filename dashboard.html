@@ -1167,6 +1167,59 @@
         </div>
     </div>
 
+    <!-- Add Vehicle Modal -->
+    <div class="modal" id="add-vehicle-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Vehicle</h2>
+                <button class="close-modal" onclick="closeAddVehicleModal()">&times;</button>
+            </div>
+            <form id="add-vehicle-form">
+                <div class="form-group">
+                    <label class="form-label">Year *</label>
+                    <input type="number" class="form-input" id="add-year" required min="1900" max="2025" placeholder="2020">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Make *</label>
+                    <input type="text" class="form-input" id="add-make" required placeholder="Toyota">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Model *</label>
+                    <input type="text" class="form-input" id="add-model" required placeholder="Camry">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Color *</label>
+                    <input type="text" class="form-input" id="add-color" required placeholder="Silver">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">License Plate *</label>
+                    <input type="text" class="form-input" id="add-plate" required placeholder="ABC123">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">VIN (Optional)</label>
+                    <input type="text" class="form-input" id="add-vin" maxlength="17" placeholder="17-digit VIN number">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Protection Plan *</label>
+                    <select class="form-select" id="add-plan" required>
+                        <option value="basic">Basic - $17.99/mo</option>
+                        <option value="gold">Gold - $24.99/mo</option>
+                        <option value="platinum">Platinum - $29.99/mo</option>
+                        <option value="diamond">Diamond - $35.00/mo</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Vehicle</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Edit Vehicle Modal -->
     <div class="modal" id="edit-vehicle-modal">
         <div class="modal-content">
@@ -1610,6 +1663,67 @@
                 alert('❌ Error deleting vehicle. Please try again.');
             }
         }
+
+        // Add Vehicle Modal Functions
+        function showAddVehicleModal() {
+            document.getElementById('add-vehicle-modal').classList.add('active');
+        }
+
+        function closeAddVehicleModal() {
+            document.getElementById('add-vehicle-modal').classList.remove('active');
+            document.getElementById('add-vehicle-form').reset();
+        }
+
+        // Handle Add Vehicle Form Submission
+        document.getElementById('add-vehicle-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!window.currentUser) {
+                alert('Please log in to add vehicles');
+                return;
+            }
+
+            const year = document.getElementById('add-year').value.trim();
+            const make = document.getElementById('add-make').value.trim();
+            const model = document.getElementById('add-model').value.trim();
+            const color = document.getElementById('add-color').value.trim();
+            const licensePlate = document.getElementById('add-plate').value.trim().toUpperCase();
+            const vin = document.getElementById('add-vin').value.trim();
+            const plan = document.getElementById('add-plan').value;
+
+            try {
+                // Create new vehicle in Firebase
+                const vehiclesRef = window.firebaseRef(
+                    window.firebaseDatabase, 
+                    `vehicles/${window.currentUser.uid}`
+                );
+                
+                const newVehicleRef = window.firebasePush(vehiclesRef);
+                
+                await window.firebaseSet(newVehicleRef, {
+                    id: newVehicleRef.key,
+                    year: year,
+                    make: make,
+                    model: model,
+                    color: color,
+                    licensePlate: licensePlate,
+                    vin: vin,
+                    plan: plan,
+                    stolen: false,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                });
+
+                alert('✅ Vehicle added successfully!');
+                closeAddVehicleModal();
+                
+                // The onValue listener will automatically update the display
+                
+            } catch (error) {
+                console.error('Error adding vehicle:', error);
+                alert('❌ Error adding vehicle. Please try again.');
+            }
+        });
 
         // Insurance Portal
         function showInsuranceTab(tab) {
