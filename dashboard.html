@@ -1774,9 +1774,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">🎨 What Stands Out From Your Car? *</label>
-                    <textarea class="form-textarea" id="distinguishing-features" placeholder="e.g., Large dent on driver door, Custom red rims, Bumper sticker that says 'I ❤️ Naples', Cracked windshield, Tinted windows, etc." required></textarea>
-                    <small style="color: var(--text-secondary);">List any unique features, damage, stickers, or modifications that make your car easy to identify</small>
+                    <label class="form-label">🎨 What Stands Out From Your Car? (Optional)</label>
+                    <textarea class="form-textarea" id="distinguishing-features" placeholder="e.g., Large dent on driver door, Custom red rims, Bumper sticker that says 'I ❤️ Naples', Cracked windshield, Tinted windows, etc."></textarea>
+                    <small style="color: var(--text-secondary);">List any unique features, damage, stickers, or modifications that make your car easy to identify (helps with recovery)</small>
                 </div>
 
                 <div class="form-group">
@@ -2445,25 +2445,7 @@
         }
 
         function toggleGPS(vehicleId) {
-            if (window.firebaseDatabase && window.currentUser) {
-                const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
-                window.firebaseGet(vehicleRef).then((snapshot) => {
-                    const vehicle = snapshot.val();
-                    if (vehicle) {
-                        window.firebaseUpdate(vehicleRef, {
-                            gpsEnabled: !vehicle.gpsEnabled
-                        });
-                    }
-                });
-            } else {
-                let vehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
-                const vehicle = vehicles.find(v => v.id === vehicleId);
-                if (vehicle) {
-                    vehicle.gpsEnabled = !vehicle.gpsEnabled;
-                    localStorage.setItem('cartraceVehicles', JSON.stringify(vehicles));
-                    updateVehicleDisplay();
-                }
-            }
+            alert('🚧 GPS Tracking Feature Coming Soon!\n\nThis feature will allow you to:\n\n✓ Track your vehicle in real-time\n✓ Set up geofencing alerts\n✓ View location history\n✓ Get instant theft notifications\n\nStay tuned for updates!');
         }
 
         // Initialize Map
