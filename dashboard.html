@@ -1112,7 +1112,7 @@
                 </div>
             </div>
 
-            <!-- Found Vehicle Section - NEW STEP-BY-STEP PROCESS -->
+            <!-- Found Vehicle Section - STEP-BY-STEP PROCESS -->
             <div class="content-section" id="found-vehicle-section">
                 <div class="header">
                     <h1 class="header-title">Found Vehicle Reporting</h1>
@@ -1159,7 +1159,6 @@
                                 <option value="TX">Texas</option>
                                 <option value="CA">California</option>
                                 <option value="NY">New York</option>
-                                <!-- Add more states as needed -->
                             </select>
                         </div>
 
@@ -1725,8 +1724,9 @@
                 <div id="lookup-status" class="lookup-status"></div>
 
                 <div class="form-group">
-                    <label class="form-label">VIN Number *</label>
-                    <input type="text" class="form-input" id="vin" placeholder="17-digit VIN" maxlength="17" required />
+                    <label class="form-label">VIN Number (Optional)</label>
+                    <input type="text" class="form-input" id="vin" placeholder="17-digit VIN" maxlength="17" />
+                    <small style="color: var(--text-secondary);">VIN helps with insurance claims and theft recovery</small>
                 </div>
 
                 <div class="input-group">
@@ -2074,6 +2074,7 @@
         function closeAddVehicleModal() {
             document.getElementById('add-vehicle-modal').classList.remove('active');
             document.getElementById('add-vehicle-form').reset();
+            document.getElementById('vehicle-image-preview').innerHTML = '';
             clearLookupStatus();
         }
 
@@ -2089,7 +2090,7 @@
             }
         }
 
-        // Initialize Make Dropdown
+        // Initialize Make Dropdown with expanded models
         function initializeMakeDropdown() {
             const makes = ['Acura', 'Audi', 'BMW', 'Buick', 'Cadillac', 'Chevrolet', 'Chrysler', 'Dodge', 'Ford', 'GMC', 'Honda', 'Hyundai', 'Infiniti', 'Jeep', 'Kia', 'Lexus', 'Lincoln', 'Mazda', 'Mercedes-Benz', 'Nissan', 'Ram', 'Subaru', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo'];
             
@@ -2101,26 +2102,55 @@
                 makeSelect.appendChild(option);
             });
 
-            makeSelect.addEventListener('change', (e) => {
-                updateModelDropdown(e.target.value);
+            // Add change event listener
+            makeSelect.addEventListener('change', function(e) {
+                const selectedMake = e.target.value;
+                console.log('Make selected:', selectedMake); // Debug log
+                if (selectedMake) {
+                    updateModelDropdown(selectedMake);
+                }
             });
         }
 
-        // Update Model Dropdown based on Make
+        // Update Model Dropdown based on Make - EXPANDED MODEL LIST
         function updateModelDropdown(make) {
+            console.log('Updating models for:', make); // Debug log
+            
             const models = {
-                'Honda': ['Accord', 'Civic', 'CR-V', 'Pilot', 'Ridgeline'],
-                'Toyota': ['Camry', 'Corolla', 'RAV4', 'Tacoma', 'Tundra'],
-                'Ford': ['F-150', 'Mustang', 'Explorer', 'Escape', 'Edge'],
-                'Chevrolet': ['Silverado', 'Malibu', 'Equinox', 'Tahoe', 'Camaro'],
-                'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y'],
-                'BMW': ['3 Series', '5 Series', 'X3', 'X5', 'M3'],
+                'Acura': ['ILX', 'TLX', 'RLX', 'MDX', 'RDX', 'NSX'],
+                'Audi': ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron'],
+                'BMW': ['2 Series', '3 Series', '4 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X7', 'M3', 'M5'],
+                'Buick': ['Encore', 'Envision', 'Enclave'],
+                'Cadillac': ['CT4', 'CT5', 'XT4', 'XT5', 'XT6', 'Escalade'],
+                'Chevrolet': ['Spark', 'Malibu', 'Impala', 'Camaro', 'Corvette', 'Trax', 'Equinox', 'Traverse', 'Tahoe', 'Suburban', 'Silverado', 'Colorado'],
+                'Chrysler': ['300', 'Pacifica', 'Voyager'],
+                'Dodge': ['Charger', 'Challenger', 'Durango', 'Journey'],
+                'Ford': ['Fiesta', 'Focus', 'Fusion', 'Mustang', 'EcoSport', 'Escape', 'Edge', 'Explorer', 'Expedition', 'F-150', 'F-250', 'F-350', 'Ranger', 'Bronco'],
+                'GMC': ['Terrain', 'Acadia', 'Yukon', 'Sierra 1500', 'Sierra 2500', 'Canyon'],
+                'Honda': ['Fit', 'Civic', 'Accord', 'Insight', 'HR-V', 'CR-V', 'Passport', 'Pilot', 'Ridgeline'],
+                'Hyundai': ['Accent', 'Elantra', 'Sonata', 'Veloster', 'Venue', 'Kona', 'Tucson', 'Santa Fe', 'Palisade'],
+                'Infiniti': ['Q50', 'Q60', 'QX50', 'QX60', 'QX80'],
+                'Jeep': ['Renegade', 'Compass', 'Cherokee', 'Grand Cherokee', 'Wrangler', 'Gladiator'],
+                'Kia': ['Rio', 'Forte', 'K5', 'Stinger', 'Soul', 'Seltos', 'Sportage', 'Sorento', 'Telluride'],
+                'Lexus': ['IS', 'ES', 'GS', 'LS', 'UX', 'NX', 'RX', 'GX', 'LX'],
+                'Lincoln': ['Corsair', 'Nautilus', 'Aviator', 'Navigator'],
+                'Mazda': ['Mazda3', 'Mazda6', 'CX-3', 'CX-30', 'CX-5', 'CX-9', 'MX-5 Miata'],
+                'Mercedes-Benz': ['A-Class', 'C-Class', 'E-Class', 'S-Class', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS'],
+                'Nissan': ['Versa', 'Sentra', 'Altima', 'Maxima', '370Z', 'Kicks', 'Rogue', 'Murano', 'Pathfinder', 'Armada', 'Frontier', 'Titan'],
+                'Ram': ['1500', '2500', '3500', 'ProMaster'],
+                'Subaru': ['Impreza', 'Legacy', 'WRX', 'Crosstrek', 'Forester', 'Outback', 'Ascent'],
+                'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
+                'Toyota': ['Yaris', 'Corolla', 'Camry', 'Avalon', 'Prius', '86', 'Supra', 'C-HR', 'RAV4', 'Venza', 'Highlander', '4Runner', 'Sequoia', 'Land Cruiser', 'Tacoma', 'Tundra'],
+                'Volkswagen': ['Jetta', 'Passat', 'Arteon', 'Golf', 'GTI', 'Taos', 'Tiguan', 'Atlas'],
+                'Volvo': ['S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90']
             };
 
             const modelSelect = document.getElementById('model');
+            // Clear existing options
             modelSelect.innerHTML = '<option value="">Select Model</option>';
 
             if (models[make]) {
+                console.log('Found models:', models[make]); // Debug log
                 models[make].forEach(model => {
                     const option = document.createElement('option');
                     option.value = model;
@@ -2128,6 +2158,7 @@
                     modelSelect.appendChild(option);
                 });
             } else {
+                console.log('No models found, adding Other option'); // Debug log
                 const option = document.createElement('option');
                 option.value = 'Other';
                 option.textContent = 'Other/Custom';
@@ -2182,7 +2213,10 @@
                     document.getElementById('year').value = vehicleData.year;
                     document.getElementById('make').value = vehicleData.make;
                     
+                    // Trigger model update
                     updateModelDropdown(vehicleData.make);
+                    
+                    // Set model after a brief delay to ensure dropdown is populated
                     setTimeout(() => {
                         document.getElementById('model').value = vehicleData.model;
                     }, 100);
@@ -2305,13 +2339,13 @@
             const vehicleData = {
                 id: 'V' + Date.now(),
                 licensePlate: document.getElementById('license-plate').value,
-                vin: document.getElementById('vin').value,
+                vin: document.getElementById('vin').value || 'Not provided',
                 year: document.getElementById('year').value,
                 make: document.getElementById('make').value,
                 model: document.getElementById('model').value,
                 color: document.getElementById('color').value,
                 distinguishingFeatures: document.getElementById('distinguishing-features').value,
-                protectionPlan: document.getElementById('protection-plan').value.split(' - ')[0], // Extract plan name
+                protectionPlan: document.getElementById('protection-plan').value.split(' - ')[0],
                 gpsEnabled: false,
                 isStolen: false,
                 addedDate: new Date().toISOString()
