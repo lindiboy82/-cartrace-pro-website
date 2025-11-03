@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CarTrace Pro - Ultimate Enhanced Dashboard</title>
+    <title>CarTrace Pro - Ultimate Enhanced Dashboard v2</title>
     
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
@@ -377,6 +377,16 @@
             color: white;
         }
 
+        .btn-secondary {
+            background: var(--text-secondary);
+            color: white;
+        }
+
+        .btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -576,6 +586,15 @@
             color: var(--text-secondary);
         }
 
+        .plan-reward {
+            background: #dcfce7;
+            color: #166534;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 600;
+        }
+
         .plan-features {
             text-align: left;
             margin: 20px 0;
@@ -654,6 +673,130 @@
             background: var(--success);
             border-radius: 50%;
             animation: pulse 1.5s infinite;
+        }
+
+        /* Step-by-step process */
+        .step-container {
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .step-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-number {
+            background: white;
+            color: var(--primary);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .warning-box.danger {
+            background: #fee2e2;
+            border-left-color: var(--danger);
+        }
+
+        .warning-box h3 {
+            color: var(--danger);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .safety-instructions {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .safety-instructions h3 {
+            color: var(--success);
+            margin-bottom: 15px;
+        }
+
+        .safety-instructions ul {
+            margin-left: 20px;
+        }
+
+        .safety-instructions li {
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .check-result {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .check-result.stolen {
+            background: #fee2e2;
+            border: 2px solid var(--danger);
+        }
+
+        .check-result.not-stolen {
+            background: #f0fdf4;
+            border: 2px solid var(--success);
+        }
+
+        .check-result h2 {
+            margin-bottom: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-label:hover {
+            border-color: var(--primary);
+            background: #f9fafb;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
         }
 
         /* Responsive */
@@ -907,152 +1050,375 @@
                         <!-- Basic Plan -->
                         <div class="plan-card">
                             <div class="plan-name">Basic</div>
-                            <div class="plan-price">$4.99<span>/month</span></div>
+                            <div class="plan-price">$17.99<span>/month</span></div>
+                            <div class="plan-reward">💰 $200 Recovery Reward</div>
                             <div class="plan-features">
                                 <div class="plan-feature">GPS Tracking</div>
                                 <div class="plan-feature">Community Alerts</div>
                                 <div class="plan-feature">Basic Support</div>
                                 <div class="plan-feature">App Access</div>
+                                <div class="plan-feature">$200 Finder Reward</div>
                             </div>
                             <button class="btn btn-primary" onclick="startCheckout('basic')">Choose Basic</button>
                         </div>
 
-                        <!-- Plus Plan -->
-                        <div class="plan-card">
-                            <div class="plan-name">Plus</div>
-                            <div class="plan-price">$9.99<span>/month</span></div>
+                        <!-- Gold Plan -->
+                        <div class="plan-card featured">
+                            <div class="plan-badge">POPULAR</div>
+                            <div class="plan-name">Gold</div>
+                            <div class="plan-price">$24.99<span>/month</span></div>
+                            <div class="plan-reward">💰 $300 Recovery Reward</div>
                             <div class="plan-features">
                                 <div class="plan-feature">Everything in Basic</div>
                                 <div class="plan-feature">SMS Alerts</div>
                                 <div class="plan-feature">Priority Support</div>
-                                <div class="plan-feature">$1,000 Recovery Reward</div>
-                            </div>
-                            <button class="btn btn-primary" onclick="startCheckout('gold')">Choose Plus</button>
-                        </div>
-
-                        <!-- Premium Plan -->
-                        <div class="plan-card featured">
-                            <div class="plan-badge">POPULAR</div>
-                            <div class="plan-name">Premium</div>
-                            <div class="plan-price">$19.99<span>/month</span></div>
-                            <div class="plan-features">
-                                <div class="plan-feature">Everything in Plus</div>
                                 <div class="plan-feature">Real-time Tracking</div>
-                                <div class="plan-feature">24/7 Support</div>
-                                <div class="plan-feature">$3,000 Recovery Reward</div>
-                                <div class="plan-feature">Insurance Integration</div>
+                                <div class="plan-feature">$300 Finder Reward</div>
                             </div>
-                            <button class="btn btn-primary" onclick="startCheckout('platinum')">Choose Premium</button>
+                            <button class="btn btn-primary" onclick="startCheckout('gold')">Choose Gold</button>
                         </div>
 
                         <!-- Diamond Plan -->
                         <div class="plan-card">
                             <div class="plan-name">Diamond</div>
-                            <div class="plan-price">$39.99<span>/month</span></div>
+                            <div class="plan-price">$29.99<span>/month</span></div>
+                            <div class="plan-reward">💰 $500 Recovery Reward</div>
                             <div class="plan-features">
-                                <div class="plan-feature">Everything in Premium</div>
+                                <div class="plan-feature">Everything in Gold</div>
+                                <div class="plan-feature">24/7 Support</div>
+                                <div class="plan-feature">Insurance Integration</div>
                                 <div class="plan-feature">Dedicated Agent</div>
-                                <div class="plan-feature">Priority Recovery</div>
-                                <div class="plan-feature">$5,000 Recovery Reward</div>
-                                <div class="plan-feature">Premium Support</div>
-                                <div class="plan-feature">Carfax Reports</div>
+                                <div class="plan-feature">$500 Finder Reward</div>
                             </div>
                             <button class="btn btn-primary" onclick="startCheckout('diamond')">Choose Diamond</button>
+                        </div>
+
+                        <!-- Platinum Plan -->
+                        <div class="plan-card">
+                            <div class="plan-name">Platinum</div>
+                            <div class="plan-price">$35.00<span>/month</span></div>
+                            <div class="plan-reward">💰 $750 Recovery Reward</div>
+                            <div class="plan-features">
+                                <div class="plan-feature">Everything in Diamond</div>
+                                <div class="plan-feature">Priority Recovery</div>
+                                <div class="plan-feature">Premium Support</div>
+                                <div class="plan-feature">Carfax Reports</div>
+                                <div class="plan-feature">Concierge Service</div>
+                                <div class="plan-feature">$750 Finder Reward</div>
+                            </div>
+                            <button class="btn btn-primary" onclick="startCheckout('platinum')">Choose Platinum</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Found Vehicle Section -->
+            <!-- Found Vehicle Section - NEW STEP-BY-STEP PROCESS -->
             <div class="content-section" id="found-vehicle-section">
                 <div class="header">
-                    <h1 class="header-title">Found Vehicle</h1>
+                    <h1 class="header-title">Found Vehicle Reporting</h1>
                 </div>
 
                 <div class="card">
                     <h2 class="card-title">
                         <span class="card-icon">🔍</span>
-                        Report a Stolen Vehicle Sighting
+                        Report a Stolen Vehicle Sighting - Safety First!
                     </h2>
-                    <p style="color: var(--text-secondary); margin-bottom: 30px;">
-                        Help reunite owners with their stolen vehicles and earn rewards! Provide as much detail as possible.
-                    </p>
 
-                    <form id="found-vehicle-form">
+                    <!-- Step 1: License Plate Check -->
+                    <div class="step active" id="step1">
+                        <div class="step-header">
+                            <div class="step-number">1</div>
+                            <div>
+                                <h3 style="margin: 0;">Check License Plate</h3>
+                                <p style="margin: 5px 0 0; opacity: 0.9; font-size: 14px;">Verify if the vehicle is reported stolen</p>
+                            </div>
+                        </div>
+
+                        <div class="warning-box danger">
+                            <h3>⚠️ IMPORTANT SAFETY WARNING</h3>
+                            <p><strong>DO NOT approach the vehicle or put yourself in danger!</strong></p>
+                            <ul style="margin: 10px 0 0 20px;">
+                                <li>Maintain a safe distance from the vehicle</li>
+                                <li>Do not confront anyone in or around the vehicle</li>
+                                <li>Your safety is more important than any reward</li>
+                            </ul>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">🚗 Enter License Plate Number *</label>
+                            <input type="text" class="form-input" id="check-plate" placeholder="ABC1234" style="font-size: 18px; text-transform: uppercase;" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">📍 Select State *</label>
+                            <select class="form-select" id="check-state">
+                                <option value="">Select State</option>
+                                <option value="FL">Florida</option>
+                                <option value="AL">Alabama</option>
+                                <option value="GA">Georgia</option>
+                                <option value="TX">Texas</option>
+                                <option value="CA">California</option>
+                                <option value="NY">New York</option>
+                                <!-- Add more states as needed -->
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="checkLicensePlate()" style="width: 100%; font-size: 16px; padding: 15px;">
+                            🔍 Check If Vehicle Is Stolen
+                        </button>
+
+                        <div id="plate-check-result"></div>
+                    </div>
+
+                    <!-- Step 2: Call 911 -->
+                    <div class="step" id="step2">
+                        <div class="step-header">
+                            <div class="step-number">2</div>
+                            <div>
+                                <h3 style="margin: 0;">Call 911 Immediately</h3>
+                                <p style="margin: 5px 0 0; opacity: 0.9; font-size: 14px;">Report to law enforcement first</p>
+                            </div>
+                        </div>
+
+                        <div class="warning-box danger">
+                            <h3>🚨 CRITICAL: Call 911 Now</h3>
+                            <p style="font-size: 18px; font-weight: 600; margin: 15px 0;">
+                                Before proceeding, you MUST call 911 and report the stolen vehicle location to police.
+                            </p>
+                        </div>
+
+                        <div class="safety-instructions">
+                            <h3>📞 What to Tell 911:</h3>
+                            <ul>
+                                <li><strong>Say:</strong> "I found a stolen vehicle"</li>
+                                <li><strong>License Plate:</strong> <span id="display-plate" style="font-weight: bold;"></span></li>
+                                <li><strong>Your exact location</strong> (street address or nearest intersection)</li>
+                                <li><strong>Vehicle description:</strong> <span id="display-vehicle" style="font-weight: bold;"></span></li>
+                                <li><strong>Your full name and callback number</strong></li>
+                                <li><strong>Stay on the line</strong> and follow dispatcher instructions</li>
+                            </ul>
+                        </div>
+
+                        <div class="warning-box">
+                            <h3>⚠️ Safety Reminders While on Call:</h3>
+                            <ul style="margin: 10px 0 0 20px;">
+                                <li>Stay at a safe distance from the vehicle</li>
+                                <li>Do not approach or touch the vehicle</li>
+                                <li>Stay in a well-lit, public area if possible</li>
+                                <li>If you feel unsafe at any time, leave immediately</li>
+                            </ul>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 30px;">
+                            <label class="form-label">📝 Your Full Name (as given to 911) *</label>
+                            <input type="text" class="form-input" id="reporter-name" placeholder="John Smith" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="called-911" required />
+                                <span><strong>I confirm that I have called 911 and reported this stolen vehicle to police</strong></span>
+                            </label>
+                        </div>
+
+                        <div class="input-group" style="margin-top: 20px;">
+                            <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+                            <button class="btn btn-primary" onclick="goToStep(3)" id="proceed-step3">
+                                Continue After Calling 911 →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Wait for Police -->
+                    <div class="step" id="step3">
+                        <div class="step-header">
+                            <div class="step-number">3</div>
+                            <div>
+                                <h3 style="margin: 0;">Wait for Police Arrival</h3>
+                                <p style="margin: 5px 0 0; opacity: 0.9; font-size: 14px;">Stay safe while officers respond</p>
+                            </div>
+                        </div>
+
+                        <div class="safety-instructions">
+                            <h3>👮 While Waiting for Police:</h3>
+                            <ul>
+                                <li><strong>Maintain safe distance</strong> - Stay at least 50 feet away from the vehicle</li>
+                                <li><strong>Stay in a visible location</strong> - Be where police can easily find you</li>
+                                <li><strong>Keep your phone accessible</strong> - In case 911 calls you back</li>
+                                <li><strong>Do not approach the vehicle</strong> - Even if it appears empty</li>
+                                <li><strong>If anyone approaches the vehicle</strong> - Do not intervene, call 911 again</li>
+                                <li><strong>Take photos from safe distance</strong> - Only if it's safe to do so</li>
+                            </ul>
+                        </div>
+
+                        <div class="warning-box danger">
+                            <h3>🚨 If You Feel Unsafe:</h3>
+                            <p><strong>Leave the area immediately!</strong> Your safety is the priority. Police can still recover the vehicle with your initial report.</p>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 30px;">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="police-arrived" required />
+                                <span><strong>Police have arrived at the scene</strong></span>
+                            </label>
+                        </div>
+
+                        <div class="input-group" style="margin-top: 20px;">
+                            <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+                            <button class="btn btn-primary" onclick="goToStep(4)" id="proceed-step4">
+                                Police Arrived - Continue →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Get Police Report Number -->
+                    <div class="step" id="step4">
+                        <div class="step-header">
+                            <div class="step-number">4</div>
+                            <div>
+                                <h3 style="margin: 0;">Get Police Report Information</h3>
+                                <p style="margin: 5px 0 0; opacity: 0.9; font-size: 14px;">Required for reward processing</p>
+                            </div>
+                        </div>
+
+                        <div class="safety-instructions">
+                            <h3>📋 When Police Arrive - Ask For:</h3>
+                            <ul>
+                                <li><strong>Police Report Number</strong> - They will give you a report number or case number</li>
+                                <li><strong>OR Report Card</strong> - Some departments give a physical card with the report #</li>
+                                <li><strong>Officer's Name and Badge Number</strong> - For verification purposes</li>
+                                <li><strong>Police Department Name</strong> - Which agency responded</li>
+                            </ul>
+                            <p style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">
+                                <strong>💡 Tip:</strong> Tell the officer: "I need the report number for the vehicle recovery reward program"
+                            </p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">📋 Police Report Number / Case Number *</label>
+                            <input type="text" class="form-input" id="report-number" placeholder="e.g., 2025-12345 or R-987654" required />
+                            <small style="color: var(--text-secondary);">This is usually on the report card or receipt given by the officer</small>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="form-group">
+                                <label class="form-label">👮 Officer's Name *</label>
+                                <input type="text" class="form-input" id="officer-name" placeholder="Officer Smith" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">🔢 Badge Number</label>
+                                <input type="text" class="form-input" id="badge-number" placeholder="12345" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">🏢 Police Department *</label>
+                            <input type="text" class="form-input" id="police-department" placeholder="Naples Police Department" required />
+                        </div>
+
+                        <div class="input-group" style="margin-top: 20px;">
+                            <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+                            <button class="btn btn-primary" onclick="goToStep(5)">
+                                Continue to Photos →
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Upload Photos & Location -->
+                    <div class="step" id="step5">
+                        <div class="step-header">
+                            <div class="step-number">5</div>
+                            <div>
+                                <h3 style="margin: 0;">Photo Evidence & Location</h3>
+                                <p style="margin: 5px 0 0; opacity: 0.9; font-size: 14px;">Document the vehicle (if safe to do so)</p>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="form-label">📸 Upload Photos (Up to 4)</label>
                             <div class="image-upload" id="found-image-upload">
                                 <div>📷 Click or drag photos here</div>
                                 <div style="color: var(--text-secondary); font-size: 12px; margin-top: 10px;">
-                                    Clear photos help verify the vehicle
+                                    Clear photos of the vehicle, license plate, and location help with verification
                                 </div>
                             </div>
                             <input type="file" id="found-photos" accept="image/*" multiple style="display: none;" />
                             <div id="found-image-preview" class="image-preview"></div>
                         </div>
 
-                        <div class="input-group">
-                            <div class="form-group">
-                                <label class="form-label">🚗 License Plate Number *</label>
-                                <input type="text" class="form-input" id="found-plate" placeholder="ABC1234" required />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">📍 State *</label>
-                                <select class="form-select" id="found-state" required>
-                                    <option value="">Select State</option>
-                                    <option value="FL">Florida</option>
-                                    <option value="AL">Alabama</option>
-                                    <option value="GA">Georgia</option>
-                                    <option value="TX">Texas</option>
-                                    <option value="CA">California</option>
-                                    <option value="NY">New York</option>
-                                    <!-- Add more states as needed -->
-                                </select>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">📍 Exact Location Where Found *</label>
+                            <input type="text" class="form-input" id="found-location" placeholder="123 Main St, Naples, FL or nearest intersection" required />
+                            <small style="color: var(--text-secondary);">Be as specific as possible (street address, parking lot name, etc.)</small>
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">📍 Location Found *</label>
-                            <input type="text" class="form-input" id="found-location" placeholder="Street address or intersection" required />
+                            <label class="form-label">📝 Additional Details</label>
+                            <textarea class="form-textarea" id="additional-details" placeholder="Any additional information about the vehicle's condition, damage, occupants, etc."></textarea>
                         </div>
 
-                        <div class="input-group">
-                            <div class="form-group">
-                                <label class="form-label">👮 Police Report Number</label>
-                                <input type="text" class="form-input" id="found-report" placeholder="Report #" />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">🏢 Police Department</label>
-                                <input type="text" class="form-input" id="found-department" placeholder="Department Name" />
-                            </div>
+                        <div class="input-group" style="margin-top: 20px;">
+                            <button class="btn btn-secondary" onclick="goToStep(4)">← Back</button>
+                            <button class="btn btn-primary" onclick="goToStep(6)">
+                                Continue to Reward Info →
+                            </button>
                         </div>
+                    </div>
 
-                        <div class="input-group">
-                            <div class="form-group">
-                                <label class="form-label">👤 Your Name (for reward)</label>
-                                <input type="text" class="form-input" id="found-witness" placeholder="Your name" />
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">💰 Zelle Contact (for reward)</label>
-                                <input type="text" class="form-input" id="found-zelle" placeholder="Phone or email" />
+                    <!-- Step 6: Reward Payment Information -->
+                    <div class="step" id="step6">
+                        <div class="step-header">
+                            <div class="step-number">6</div>
+                            <div>
+                                <h3 style="margin: 0;">Reward Payment Information</h3>
+                                <p style="margin: 5px 0 0; opacity: 0.9; font-size: 14px;">How you'll receive your reward</p>
                             </div>
                         </div>
 
-                        <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                            <h3 style="color: var(--success); margin-bottom: 10px;">💰 Reward Program</h3>
-                            <p style="color: var(--text-secondary); font-size: 14px;">
-                                Verified reports earn rewards based on the vehicle's protection plan:
-                                <br>• Basic: $200 | Plus: $1,000 | Premium: $3,000 | Diamond: $5,000
+                        <div style="background: #dcfce7; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                            <h3 style="color: var(--success); margin-bottom: 15px;">💰 Your Reward</h3>
+                            <p style="font-size: 18px; margin-bottom: 10px;">
+                                <strong>Vehicle Protection Plan:</strong> <span id="reward-plan">Gold Plan</span>
+                            </p>
+                            <p style="font-size: 24px; font-weight: bold; color: var(--success);">
+                                Reward Amount: $<span id="reward-amount">300</span>
+                            </p>
+                            <p style="margin-top: 15px; font-size: 14px;">
+                                ⏰ <strong>Processing Time:</strong> 2-5 business days after verification<br>
+                                ✅ <strong>Verification:</strong> We'll confirm with the police department and vehicle owner
                             </p>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            📤 Submit Report
-                        </button>
-                    </form>
+                        <div class="form-group">
+                            <label class="form-label">👤 Contact Name for Reward *</label>
+                            <input type="text" class="form-input" id="reward-contact-name" placeholder="Your full name" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">📧 Email Address *</label>
+                            <input type="email" class="form-input" id="reward-email" placeholder="your.email@example.com" required />
+                            <small style="color: var(--text-secondary);">We'll send updates about your reward status</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">📱 Phone Number *</label>
+                            <input type="tel" class="form-input" id="reward-phone" placeholder="(555) 123-4567" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">💰 Zelle Contact (Email or Phone) *</label>
+                            <input type="text" class="form-input" id="zelle-contact" placeholder="zelle@email.com or (555) 123-4567" required />
+                            <small style="color: var(--text-secondary);">We'll send your reward via Zelle to this email or phone number</small>
+                        </div>
+
+                        <div class="input-group" style="margin-top: 20px;">
+                            <button class="btn btn-secondary" onclick="goToStep(5)">← Back</button>
+                            <button class="btn btn-primary" onclick="submitFoundVehicleReport()" style="font-size: 16px;">
+                                📤 Submit Report & Claim Reward
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1408,18 +1774,24 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">🎨 What Stands Out From Your Car? *</label>
+                    <textarea class="form-textarea" id="distinguishing-features" placeholder="e.g., Large dent on driver door, Custom red rims, Bumper sticker that says 'I ❤️ Naples', Cracked windshield, Tinted windows, etc." required></textarea>
+                    <small style="color: var(--text-secondary);">List any unique features, damage, stickers, or modifications that make your car easy to identify</small>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Protection Plan *</label>
                     <select class="form-select" id="protection-plan" required>
                         <option value="">Select Plan</option>
-                        <option value="Basic">Basic - $4.99/month</option>
-                        <option value="Plus">Plus - $9.99/month</option>
-                        <option value="Premium">Premium - $19.99/month</option>
-                        <option value="Diamond">Diamond - $39.99/month</option>
+                        <option value="Basic">Basic - $17.99/month ($200 reward)</option>
+                        <option value="Gold">Gold - $24.99/month ($300 reward)</option>
+                        <option value="Diamond">Diamond - $29.99/month ($500 reward)</option>
+                        <option value="Platinum">Platinum - $35.00/month ($750 reward)</option>
                     </select>
                 </div>
 
                 <div class="input-group">
-                    <button type="button" class="btn btn-primary" onclick="closeAddVehicleModal()">Cancel</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAddVehicleModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">➕ Add Vehicle</button>
                 </div>
             </form>
@@ -1435,7 +1807,16 @@
         // Global Variables
         let map;
         let stolenVehicles = [];
+        let currentStep = 1;
+        let foundVehicleData = {};
         const API_URL = 'http://localhost:3000';
+
+        // Mock stolen vehicles database
+        const mockStolenVehicles = {
+            'ABC123': { year: '2021', make: 'Honda', model: 'Civic', plan: 'Gold', reward: 300 },
+            'XYZ789': { year: '2020', make: 'Tesla', model: 'Model S', plan: 'Diamond', reward: 500 },
+            'TEST99': { year: '2022', make: 'Chevrolet', model: 'Camaro', plan: 'Platinum', reward: 750 }
+        };
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
@@ -1447,6 +1828,19 @@
             // Update radius value display
             document.getElementById('alert-radius').addEventListener('input', (e) => {
                 document.getElementById('radius-value').textContent = e.target.value;
+            });
+
+            // Disable proceed buttons initially
+            document.getElementById('proceed-step3').disabled = true;
+            document.getElementById('proceed-step4').disabled = true;
+
+            // Enable proceed buttons when checkboxes are checked
+            document.getElementById('called-911').addEventListener('change', (e) => {
+                document.getElementById('proceed-step3').disabled = !e.target.checked;
+            });
+
+            document.getElementById('police-arrived').addEventListener('change', (e) => {
+                document.getElementById('proceed-step4').disabled = !e.target.checked;
             });
 
             // Update stats every 3 seconds
@@ -1472,6 +1866,204 @@
             if (sectionId === 'map-alerts' && map) {
                 setTimeout(() => map.invalidateSize(), 100);
             }
+
+            // Reset found vehicle form if leaving the section
+            if (sectionId !== 'found-vehicle') {
+                resetFoundVehicleForm();
+            }
+        }
+
+        // Found Vehicle Step Navigation
+        function goToStep(stepNumber) {
+            // Validation before proceeding
+            if (stepNumber === 3) {
+                const reporterName = document.getElementById('reporter-name').value.trim();
+                const called911 = document.getElementById('called-911').checked;
+                
+                if (!reporterName) {
+                    alert('Please enter your full name as given to 911');
+                    return;
+                }
+                if (!called911) {
+                    alert('You must confirm that you called 911 before proceeding');
+                    return;
+                }
+            }
+
+            if (stepNumber === 4) {
+                const policeArrived = document.getElementById('police-arrived').checked;
+                if (!policeArrived) {
+                    alert('Please confirm that police have arrived');
+                    return;
+                }
+            }
+
+            if (stepNumber === 5) {
+                const reportNumber = document.getElementById('report-number').value.trim();
+                const officerName = document.getElementById('officer-name').value.trim();
+                const policeDept = document.getElementById('police-department').value.trim();
+                
+                if (!reportNumber || !officerName || !policeDept) {
+                    alert('Please fill in all required police report information');
+                    return;
+                }
+            }
+
+            if (stepNumber === 6) {
+                const location = document.getElementById('found-location').value.trim();
+                if (!location) {
+                    alert('Please enter the location where the vehicle was found');
+                    return;
+                }
+            }
+
+            // Hide all steps
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show requested step
+            document.getElementById('step' + stepNumber).classList.add('active');
+            currentStep = stepNumber;
+
+            // Scroll to top of section
+            document.getElementById('found-vehicle-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function resetFoundVehicleForm() {
+            currentStep = 1;
+            foundVehicleData = {};
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('check-plate').value = '';
+            document.getElementById('check-state').value = '';
+            document.getElementById('plate-check-result').innerHTML = '';
+        }
+
+        // Check License Plate Against Stolen Database
+        function checkLicensePlate() {
+            const plate = document.getElementById('check-plate').value.trim().toUpperCase();
+            const state = document.getElementById('check-state').value;
+            const resultDiv = document.getElementById('plate-check-result');
+
+            if (!plate || !state) {
+                alert('Please enter both license plate and state');
+                return;
+            }
+
+            // Store for later steps
+            foundVehicleData.plate = plate;
+            foundVehicleData.state = state;
+
+            // Check mock database
+            if (mockStolenVehicles[plate]) {
+                const vehicle = mockStolenVehicles[plate];
+                foundVehicleData.vehicle = vehicle;
+                
+                resultDiv.innerHTML = `
+                    <div class="check-result stolen">
+                        <h2 style="color: var(--danger); margin-bottom: 15px;">🚨 STOLEN VEHICLE CONFIRMED!</h2>
+                        <div style="text-align: left; background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                            <p style="margin-bottom: 10px;"><strong>License Plate:</strong> ${plate}</p>
+                            <p style="margin-bottom: 10px;"><strong>Vehicle:</strong> ${vehicle.year} ${vehicle.make} ${vehicle.model}</p>
+                            <p style="margin-bottom: 10px;"><strong>Protection Plan:</strong> ${vehicle.plan}</p>
+                            <p style="font-size: 20px; font-weight: bold; color: var(--success); margin-top: 15px;">
+                                💰 Recovery Reward: $${vehicle.reward}
+                            </p>
+                        </div>
+                        <div class="warning-box danger" style="text-align: left;">
+                            <h3>⚠️ CRITICAL NEXT STEPS:</h3>
+                            <ol style="margin: 15px 0 0 20px;">
+                                <li style="margin-bottom: 10px;"><strong>DO NOT APPROACH THE VEHICLE</strong></li>
+                                <li style="margin-bottom: 10px;"><strong>CALL 911 IMMEDIATELY</strong></li>
+                                <li style="margin-bottom: 10px;"><strong>Maintain safe distance</strong></li>
+                                <li><strong>Follow our step-by-step process</strong></li>
+                            </ol>
+                        </div>
+                        <button class="btn btn-primary" onclick="proceedToCall911()" style="width: 100%; margin-top: 20px; font-size: 18px; padding: 15px;">
+                            Continue to Step 2: Call 911 →
+                        </button>
+                    </div>
+                `;
+                
+                // Update display placeholders for next steps
+                document.getElementById('display-plate').textContent = plate;
+                document.getElementById('display-vehicle').textContent = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+                document.getElementById('reward-plan').textContent = vehicle.plan + ' Plan';
+                document.getElementById('reward-amount').textContent = vehicle.reward;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="check-result not-stolen">
+                        <h2 style="color: var(--success); margin-bottom: 15px;">✅ Not In Our Database</h2>
+                        <p style="margin-bottom: 15px;">License plate <strong>${plate}</strong> is not currently reported as stolen in our system.</p>
+                        <div style="background: white; padding: 20px; border-radius: 8px; text-align: left; margin: 20px 0;">
+                            <h3 style="margin-bottom: 10px;">This could mean:</h3>
+                            <ul style="margin-left: 20px;">
+                                <li style="margin-bottom: 8px;">The vehicle is not stolen</li>
+                                <li style="margin-bottom: 8px;">It's stolen but not registered with CarTrace Pro</li>
+                                <li style="margin-bottom: 8px;">The owner hasn't reported it yet</li>
+                            </ul>
+                        </div>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 15px;">
+                            Try test plates: ABC123, XYZ789, or TEST99 to see the stolen vehicle workflow
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        function proceedToCall911() {
+            goToStep(2);
+        }
+
+        // Submit Found Vehicle Report
+        function submitFoundVehicleReport() {
+            const reportData = {
+                ...foundVehicleData,
+                reportNumber: document.getElementById('report-number').value,
+                officerName: document.getElementById('officer-name').value,
+                badgeNumber: document.getElementById('badge-number').value,
+                policeDepartment: document.getElementById('police-department').value,
+                location: document.getElementById('found-location').value,
+                additionalDetails: document.getElementById('additional-details').value,
+                contactName: document.getElementById('reward-contact-name').value,
+                email: document.getElementById('reward-email').value,
+                phone: document.getElementById('reward-phone').value,
+                zelleContact: document.getElementById('zelle-contact').value,
+                reportId: 'FR' + Date.now().toString().slice(-8),
+                timestamp: new Date().toISOString()
+            };
+
+            const vehicle = foundVehicleData.vehicle;
+
+            alert(
+                `✅ REPORT SUBMITTED SUCCESSFULLY!\n\n` +
+                `🚗 License Plate: ${foundVehicleData.plate}\n` +
+                `📍 Location: ${reportData.location}\n` +
+                `📋 Police Report: ${reportData.reportNumber}\n` +
+                `👮 Officer: ${reportData.officerName}\n` +
+                `🏢 Department: ${reportData.policeDepartment}\n\n` +
+                `💰 REWARD INFORMATION:\n` +
+                `   Protection Plan: ${vehicle.plan}\n` +
+                `   Reward Amount: $${vehicle.reward}\n` +
+                `   Payment Method: Zelle to ${reportData.zelleContact}\n\n` +
+                `⏳ VERIFICATION PROCESS:\n\n` +
+                `1️⃣ Our team will verify with ${reportData.policeDepartment}\n` +
+                `2️⃣ We'll confirm report #${reportData.reportNumber} with ${reportData.officerName}\n` +
+                `3️⃣ Match with vehicle owner's theft report\n` +
+                `4️⃣ Process $${vehicle.reward} reward payment via Zelle\n\n` +
+                `⏰ Timeline: 2-5 business days\n` +
+                `📧 Email updates sent to: ${reportData.email}\n\n` +
+                `🙏 Thank you for helping our community!\n` +
+                `Your safety-first approach is exemplary.\n\n` +
+                `Report ID: ${reportData.reportId}\n` +
+                `Save this number for reference.`
+            );
+
+            // Reset form
+            resetFoundVehicleForm();
         }
 
         // Modal Functions
@@ -1523,7 +2115,6 @@
                 'Chevrolet': ['Silverado', 'Malibu', 'Equinox', 'Tahoe', 'Camaro'],
                 'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y'],
                 'BMW': ['3 Series', '5 Series', 'X3', 'X5', 'M3'],
-                // Add more makes and models as needed
             };
 
             const modelSelect = document.getElementById('model');
@@ -1558,7 +2149,6 @@
             showLookupStatus('loading', '🔄 Looking up vehicle information...');
 
             try {
-                // Using mock data for demo
                 const mockData = {
                     'ABC123': {
                         vin: '1HGBH41JXMN109186',
@@ -1633,7 +2223,6 @@
                 }
             });
 
-            // Drag and drop
             uploadArea.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 uploadArea.classList.add('dragover');
@@ -1721,13 +2310,13 @@
                 make: document.getElementById('make').value,
                 model: document.getElementById('model').value,
                 color: document.getElementById('color').value,
-                protectionPlan: document.getElementById('protection-plan').value,
+                distinguishingFeatures: document.getElementById('distinguishing-features').value,
+                protectionPlan: document.getElementById('protection-plan').value.split(' - ')[0], // Extract plan name
                 gpsEnabled: false,
                 isStolen: false,
                 addedDate: new Date().toISOString()
             };
 
-            // Get photo if uploaded
             const photoFile = document.getElementById('vehicle-photo').files[0];
             if (photoFile) {
                 const reader = new FileReader();
@@ -1755,7 +2344,6 @@
                         alert('❌ Failed to save vehicle. Please try again.');
                     });
             } else {
-                // Fallback to localStorage
                 let vehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
                 vehicles.push(vehicleData);
                 localStorage.setItem('cartraceVehicles', JSON.stringify(vehicles));
@@ -1783,7 +2371,7 @@
 
             vehiclesList.innerHTML = vehicles.map(vehicle => `
                 <div class="vehicle-card ${vehicle.isStolen ? 'stolen' : ''}">
-                    ${vehicle.isStolen ? '<div class="stolen-badge">🚨 STOLEN</div>' : ''}
+                    ${vehicle.isStolen ? '<div style="position: absolute; top: 20px; right: 20px; background: var(--danger); color: white; padding: 5px 15px; border-radius: 20px; font-weight: 600;">🚨 STOLEN</div>' : ''}
                     <img src="${vehicle.photoURL || 'https://via.placeholder.com/150x150?text=No+Photo'}" alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" class="vehicle-image" />
                     <div class="vehicle-content">
                         <div class="vehicle-header">
@@ -1810,7 +2398,13 @@
                                 <span>${vehicle.gpsEnabled ? '✅ Active' : '⭕ Inactive'}</span>
                             </div>
                         </div>
-                        <div class="vehicle-actions">
+                        ${vehicle.distinguishingFeatures ? `
+                            <div style="margin-top: 15px; padding: 12px; background: #fef3c7; border-left: 3px solid var(--warning); border-radius: 6px;">
+                                <strong style="color: var(--text-primary);">🎨 Distinguishing Features:</strong>
+                                <p style="margin-top: 5px; color: var(--text-primary);">${vehicle.distinguishingFeatures}</p>
+                            </div>
+                        ` : ''}
+                        <div class="vehicle-actions" style="margin-top: 15px;">
                             <button class="btn btn-small btn-edit">✏️ Edit</button>
                             <button class="btn btn-small btn-delete" onclick="deleteVehicle('${vehicle.id}')">🗑️ Delete</button>
                             <button class="btn btn-small btn-report">🚨 Report Stolen</button>
@@ -1882,7 +2476,6 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Add some demo markers
             const demoLocations = [
                 { lat: 26.1420, lng: -81.7948, plate: 'ABC123', make: 'Honda Civic' },
                 { lat: 26.2159, lng: -81.7795, plate: 'XYZ789', make: 'Tesla Model S' }
@@ -1900,60 +2493,18 @@
                     <strong>🚨 Stolen Vehicle Alert</strong><br>
                     ${loc.make}<br>
                     License: ${loc.plate}<br>
-                    <button onclick="alert('Report sighting feature coming soon!')" style="margin-top: 10px; padding: 5px 10px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer;">Report Sighting</button>
+                    <button onclick="alert('Report sighting feature!')" style="margin-top: 10px; padding: 5px 10px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer;">Report Sighting</button>
                 `);
             });
         }
-
-        // Found Vehicle Form Submit
-        document.getElementById('found-vehicle-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const plate = document.getElementById('found-plate').value;
-            const location = document.getElementById('found-location').value;
-            const report = document.getElementById('found-report').value;
-            const department = document.getElementById('found-department').value;
-            const zelle = document.getElementById('found-zelle').value;
-            const witness = document.getElementById('found-witness').value;
-
-            const reportId = 'FR' + Date.now().toString().slice(-8);
-
-            alert(
-                `✅ REPORT SUBMITTED SUCCESSFULLY!\n\n` +
-                `🚗 License Plate: ${plate}\n` +
-                `📍 Location: ${location}\n` +
-                `📋 Police Report: ${report}\n` +
-                `👮 Department: ${department}\n` +
-                `👤 Witness: ${witness}\n` +
-                `💰 Zelle Contact: ${zelle}\n\n` +
-                `⏳ VERIFICATION PROCESS:\n\n` +
-                `1️⃣ Our team will verify with ${department}\n` +
-                `2️⃣ We'll confirm report #${report}\n` +
-                `3️⃣ Match with vehicle owner's theft report\n` +
-                `4️⃣ Process reward payment via Zelle\n\n` +
-                `⏰ Verification typically takes 2-5 business days\n` +
-                `💵 Reward amount: Based on vehicle's protection plan\n` +
-                `   • Basic: $200\n` +
-                `   • Plus: $1,000\n` +
-                `   • Premium: $3,000\n` +
-                `   • Diamond: $5,000\n\n` +
-                `📧 You'll receive email updates\n\n` +
-                `🙏 Thank you for helping our community!\n\n` +
-                `Your report ID: ${reportId}\n` +
-                `Save this number for reference.`
-            );
-
-            e.target.reset();
-            document.getElementById('found-image-preview').innerHTML = '';
-        });
 
         // Stripe Checkout
         async function startCheckout(plan) {
             const priceIds = {
                 basic: 'price_1QeTcRRxPKUgpxLKFsjv4iZC',
                 gold: 'price_1QeTcnRxPKUgpxLKRvvfzC3Q',
-                platinum: 'price_1QeTd4RxPKUgpxLKJKZyaG0O',
-                diamond: 'price_1QeTdFRxPKUgpxLKU1oXUa9w'
+                diamond: 'price_1QeTd4RxPKUgpxLKJKZyaG0O',
+                platinum: 'price_1QeTdFRxPKUgpxLKU1oXUa9w'
             };
 
             try {
@@ -2109,7 +2660,6 @@
                 document.getElementById('sync-status').textContent = '✅ Synced';
                 document.getElementById('sync-status').style.color = 'var(--success)';
                 
-                // Load vehicles with real-time updates
                 const vehiclesRef = ref(database, `vehicles/${user.uid}`);
                 onValue(vehiclesRef, (snapshot) => {
                     const data = snapshot.val();
@@ -2129,7 +2679,6 @@
                     updateVehicleCount();
                 });
 
-                // Listen for stolen vehicle alerts in real-time
                 const alertsRef = ref(database, 'stolenVehicles');
                 onValue(alertsRef, (snapshot) => {
                     const data = snapshot.val();
@@ -2139,7 +2688,6 @@
                             id: key
                         }));
                         
-                        // Update alert count
                         document.getElementById('alert-badge').textContent = alerts.length;
                         if (document.getElementById('active-alerts-count')) {
                             document.getElementById('active-alerts-count').textContent = alerts.length;
@@ -2149,12 +2697,10 @@
                     }
                 });
             } else {
-                // For development, allow access without login
                 console.log('No user logged in - using demo mode');
                 document.getElementById('user-email').textContent = 'Demo User';
                 document.getElementById('sync-status').textContent = '📍 Demo Mode';
                 
-                // Load from localStorage in demo mode
                 window.userVehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
                 updateVehicleDisplay();
                 updateVehicleCount();
