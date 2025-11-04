@@ -1800,7 +1800,7 @@
 
     <!-- Initialize Stripe -->
     <script>
-        const stripe = Stripe('pk_test_51QeT9gRxPKUgpxLKELTfDZT6HL4Z9qPRvlqsgzfOOZ0KGb2SkLgOaQYWQJYb2SdgjZmg8dSYNTjO6iWPMlAaAjEt00T8GU4Lbx');
+        const stripe = Stripe('pk_test_51Rnl8WF2AvYulrbMus9slPTf8DuDEpkpW9r5j58u4458C5CQIRYRmKL94j5TEeIyYDkdARjurJQEtsbJ9srCI4cW00GzBsKoqy');
     </script>
 
     <script>
@@ -1810,6 +1810,12 @@
         let currentStep = 1;
         let foundVehicleData = {};
         const API_URL = 'http://localhost:3000';
+        const STRIPE_PRICE_IDS = {
+    basic: 'price_1QeTcRRxPKUgpxLKFsjv4iZC',      // ← YOUR Basic price ID
+    gold: 'price_1QeTcnRxPKUgpxLKRvvfzC3Q',       // ← YOUR Gold price ID
+    diamond: 'price_1QeTd4RxPKUgpxLKJKZyaG0O',    // ← YOUR Diamond price ID
+    platinum: 'price_1QeTdFRxPKUgpxLKU1oXUa9w'    // ← YOUR Platinum price ID
+};
 
         // Mock stolen vehicles database
         const mockStolenVehicles = {
@@ -1820,6 +1826,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            handlePaymentRedirect();
             initializeYearDropdown();
             initializeMakeDropdown();
             setupImageUpload();
@@ -2334,22 +2341,56 @@
 
         // Add Vehicle Form Submit
         document.getElementById('add-vehicle-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+    e.preventDefault();
+    
+    console.log('📝 Form submitted - processing vehicle data...');
 
-            const vehicleData = {
-                id: 'V' + Date.now(),
-                licensePlate: document.getElementById('license-plate').value,
-                vin: document.getElementById('vin').value || 'Not provided',
-                year: document.getElementById('year').value,
-                make: document.getElementById('make').value,
-                model: document.getElementById('model').value,
-                color: document.getElementById('color').value,
-                distinguishingFeatures: document.getElementById('distinguishing-features').value,
-                protectionPlan: document.getElementById('protection-plan').value.split(' - ')[0],
-                gpsEnabled: false,
-                isStolen: false,
-                addedDate: new Date().toISOString()
-            };
+    const vehicleData = {
+        id: 'V' + Date.now(),
+        licensePlate: document.getElementById('license-plate').value,
+        vin: document.getElementById('vin').value || 'Not provided',
+        year: document.getElementById('year').value,
+        make: document.getElementById('make').value,
+        model: document.getElementById('model').value,
+        color: document.getElementById('color').value,
+        distinguishingFeatures: document.getElementById('distinguishing-features').value,
+        protectionPlan: document.getElementById('protection-plan').value.split(' - ')[0],
+        gpsEnabled: false,
+        isStolen: false,
+        addedDate: new Date().toISOString()
+    };
+
+    const protectionPlanFull = document.getElementById('protection-plan').value;
+    
+    if (!protectionPlanFull) {
+        alert('⚠️ Please select a protection plan');
+        return;
+    }
+
+    // Validate required fields
+    if (!vehicleData.licensePlate || !vehicleData.year || !vehicleData.make || !vehicleData.model) {
+        alert('⚠️ Please fill in all required fields');
+        return;
+    }
+
+    console.log('✅ Vehicle data collected:', vehicleData);
+
+    const photoFile = document.getElementById('vehicle-photo').files[0];
+    if (photoFile) {
+        console.log('📸 Processing vehicle photo...');
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            vehicleData.photoURL = e.target.result;
+            // ✅ REDIRECT TO PAYMENT FIRST!
+            await startCheckoutWithVehicle(protectionPlanFull, vehicleData);
+        };
+        reader.readAsDataURL(photoFile);
+    } else {
+        vehicleData.photoURL = 'https://via.placeholder.com/150x150?text=No+Photo';
+        // ✅ REDIRECT TO PAYMENT FIRST!
+        await startCheckoutWithVehicle(protectionPlanFull, vehicleData);
+    }
+});
 
             const photoFile = document.getElementById('vehicle-photo').files[0];
             if (photoFile) {
@@ -2722,6 +2763,132 @@
                 updateVehicleCount();
             }
         });
+
+        function handlePaymentRedirect() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('success') === 'true') {
+        console.log('✅ Payment successful! Processing vehicle...');
+        
+        const pendingVehicleJson = sessionStorage.getItem('pendingVehicle');
+        
+        if (pendingVehicleJson) {
+            try {
+                const vehicleData = JSON.parse(pendingVehicleJson);
+                console.log('Saving vehicle after successful payment:', vehicleData);
+                saveVehicleAfterPayment(vehicleData);
+                sessionStorage.removeItem('pendingVehicle');
+                
+                setTimeout(() => {
+                    alert('✅ Payment Successful!\n\n🚗 Your vehicle has been added.\n💳 Subscription activated.\n\nThank you for choosing CarTrace Pro!');
+                }, 500);
+            } catch (error) {
+                console.error('Error parsing pending vehicle:', error);
+                alert('⚠️ Payment successful but error adding vehicle. Contact support.');
+            }
+        }
+        
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    if (urlParams.get('canceled') === 'true') {
+        console.log('❌ Payment canceled');
+        sessionStorage.removeItem('pendingVehicle');
+        alert('❌ Payment Canceled\n\nYour vehicle was not added.\nNo charges were made.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}
+
+// Function 2: Start Checkout With Vehicle
+async function startCheckoutWithVehicle(protectionPlanFull, vehicleData) {
+    try {
+        const planName = protectionPlanFull.split(' - ')[0].toLowerCase();
+        console.log('💳 Starting checkout for plan:', planName);
+
+        const priceId = STRIPE_PRICE_IDS[planName];
+        
+        if (!priceId) {
+            alert('❌ Invalid protection plan selected: ' + planName);
+            return;
+        }
+
+        sessionStorage.setItem('pendingVehicle', JSON.stringify(vehicleData));
+        console.log('✅ Stored pending vehicle in session storage');
+
+        const response = await fetch(`${API_URL}/create-checkout-session`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                priceId: priceId,
+                userId: window.currentUser ? window.currentUser.uid : 'guest_' + Date.now(),
+                userEmail: window.currentUser ? window.currentUser.email : null,
+                vehicleData: vehicleData
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create checkout session');
+        }
+
+        const session = await response.json();
+        console.log('✅ Checkout session created:', session.id);
+        
+        closeAddVehicleModal();
+        
+        const confirmProceed = confirm(
+            '💳 Redirecting to Secure Payment\n\n' +
+            '✅ Your vehicle will be added after payment\n' +
+            '✅ Safe and secure with Stripe\n\n' +
+            'Click OK to proceed'
+        );
+
+        if (!confirmProceed) {
+            sessionStorage.removeItem('pendingVehicle');
+            return;
+        }
+
+        console.log('🔄 Redirecting to Stripe...');
+        const result = await stripe.redirectToCheckout({ sessionId: session.id });
+
+        if (result.error) {
+            alert('❌ Payment error: ' + result.error.message);
+            sessionStorage.removeItem('pendingVehicle');
+        }
+
+    } catch (error) {
+        console.error('❌ Error starting checkout:', error);
+        alert('❌ Unable to start checkout: ' + error.message);
+        sessionStorage.removeItem('pendingVehicle');
+    }
+}
+
+// Function 3: Save Vehicle After Payment
+function saveVehicleAfterPayment(vehicleData) {
+    console.log('💾 Saving vehicle to database:', vehicleData);
+    
+    if (window.firebaseDatabase && window.currentUser) {
+        const vehicleRef = window.firebaseRef(
+            window.firebaseDatabase, 
+            `vehicles/${window.currentUser.uid}/${vehicleData.id}`
+        );
+        
+        window.firebaseSet(vehicleRef, vehicleData)
+            .then(() => {
+                console.log('✅ Vehicle saved to Firebase');
+            })
+            .catch(error => {
+                console.error('❌ Error saving to Firebase:', error);
+                alert('⚠️ Error saving vehicle: ' + error.message);
+            });
+    } else {
+        console.log('💾 Saving to localStorage');
+        let vehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
+        vehicles.push(vehicleData);
+        localStorage.setItem('cartraceVehicles', JSON.stringify(vehicles));
+        updateVehicleDisplay();
+        updateVehicleCount();
+    }
+}
     </script>
 </body>
 </html>
