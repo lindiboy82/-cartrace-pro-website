@@ -2378,32 +2378,57 @@
         });
     }
 
-    function updateModelDropdown(make) {
-        const models = {
-            'Acura': ['ILX', 'TLX', 'RLX', 'MDX', 'RDX', 'NSX'],
-            'Audi': ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron'],
-            'BMW': ['2 Series', '3 Series', '4 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X7', 'M3', 'M5'],
-            'Chevrolet': ['Spark', 'Malibu', 'Impala', 'Camaro', 'Corvette', 'Trax', 'Equinox', 'Traverse', 'Tahoe', 'Suburban', 'Silverado', 'Colorado'],
-            'Ford': ['Fiesta', 'Focus', 'Fusion', 'Mustang', 'EcoSport', 'Escape', 'Edge', 'Explorer', 'Expedition', 'F-150', 'F-250', 'F-350', 'Ranger', 'Bronco'],
-            'Honda': ['Fit', 'Civic', 'Accord', 'Insight', 'HR-V', 'CR-V', 'Passport', 'Pilot', 'Ridgeline'],
-            'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
-            'Toyota': ['Yaris', 'Corolla', 'Camry', 'Avalon', 'Prius', '86', 'Supra', 'C-HR', 'RAV4', 'Venza', 'Highlander', '4Runner', 'Sequoia', 'Land Cruiser', 'Tacoma', 'Tundra']
-        };
+ function updateModelDropdown(make) {
+    const models = {
+        'Acura': ['ILX', 'TLX', 'RLX', 'MDX', 'RDX', 'NSX'],
+        'Audi': ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron', 'RS3', 'RS5', 'RS7', 'R8'],
+        'BMW': ['2 Series', '3 Series', '4 Series', '5 Series', '7 Series', '8 Series', 'X1', 'X2', 'X3', 'X4', 'X5', 'X6', 'X7', 'Z4', 'M3', 'M4', 'M5', 'M8', 'i4', 'iX'],
+        'Buick': ['Encore', 'Encore GX', 'Envision', 'Enclave'],
+        'Cadillac': ['CT4', 'CT5', 'CT6', 'XT4', 'XT5', 'XT6', 'Escalade', 'Escalade ESV'],
+        'Chevrolet': ['Spark', 'Sonic', 'Cruze', 'Malibu', 'Impala', 'Camaro', 'Corvette', 'Bolt', 'Trax', 'Trailblazer', 'Equinox', 'Blazer', 'Traverse', 'Tahoe', 'Suburban', 'Silverado 1500', 'Silverado 2500', 'Silverado 3500', 'Colorado'],
+        'Chrysler': ['300', 'Pacifica', 'Voyager'],
+        'Dodge': ['Charger', 'Challenger', 'Durango', 'Journey', 'Grand Caravan'],
+        'Ford': ['Fiesta', 'Focus', 'Fusion', 'Mustang', 'EcoSport', 'Escape', 'Edge', 'Explorer', 'Expedition', 'Bronco', 'Bronco Sport', 'F-150', 'F-250', 'F-350', 'F-450', 'Ranger', 'Maverick', 'Transit'],
+        'GMC': ['Terrain', 'Acadia', 'Yukon', 'Yukon XL', 'Sierra 1500', 'Sierra 2500', 'Sierra 3500', 'Canyon', 'Savana'],
+        'Honda': ['Fit', 'Civic', 'Accord', 'Insight', 'Clarity', 'HR-V', 'CR-V', 'Passport', 'Pilot', 'Ridgeline'],
+        'Hyundai': ['Accent', 'Elantra', 'Sonata', 'Veloster', 'Venue', 'Kona', 'Tucson', 'Santa Fe', 'Santa Cruz', 'Palisade', 'Ioniq 5'],
+        'Infiniti': ['Q50', 'Q60', 'QX50', 'QX55', 'QX60', 'QX80'],
+        'Jeep': ['Renegade', 'Compass', 'Cherokee', 'Grand Cherokee', 'Wrangler', 'Wrangler Unlimited', 'Gladiator', 'Grand Wagoneer', 'Wagoneer'],
+        'Kia': ['Rio', 'Forte', 'K5', 'Stinger', 'Soul', 'Seltos', 'Sportage', 'Sorento', 'Telluride', 'Carnival', 'EV6'],
+        'Lexus': ['IS', 'ES', 'GS', 'LS', 'RC', 'LC', 'UX', 'NX', 'RX', 'GX', 'LX'],
+        'Lincoln': ['Corsair', 'Nautilus', 'Aviator', 'Navigator'],
+        'Mazda': ['Mazda3', 'Mazda6', 'MX-5 Miata', 'CX-3', 'CX-30', 'CX-5', 'CX-50', 'CX-9', 'CX-90'],
+        'Mercedes-Benz': ['A-Class', 'C-Class', 'E-Class', 'S-Class', 'CLA', 'CLS', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS', 'G-Class', 'EQB', 'EQE', 'EQS'],
+        'Nissan': ['Versa', 'Sentra', 'Altima', 'Maxima', 'GT-R', '370Z', 'Kicks', 'Rogue', 'Rogue Sport', 'Murano', 'Pathfinder', 'Armada', 'Frontier', 'Titan', 'Leaf', 'Ariya'],
+        'Ram': ['1500', '2500', '3500', '4500', '5500', 'ProMaster', 'ProMaster City'],
+        'Subaru': ['Impreza', 'Legacy', 'WRX', 'BRZ', 'Crosstrek', 'Forester', 'Outback', 'Ascent', 'Solterra'],
+        'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
+        'Toyota': ['Yaris', 'Corolla', 'Camry', 'Avalon', 'Prius', 'Prius Prime', 'GR86', 'Supra', 'Mirai', 'C-HR', 'Corolla Cross', 'RAV4', 'Venza', 'Highlander', '4Runner', 'Sequoia', 'Land Cruiser', 'Tacoma', 'Tundra', 'Sienna', 'bZ4X'],
+        'Volkswagen': ['Jetta', 'Passat', 'Arteon', 'Golf', 'GTI', 'Golf R', 'Taos', 'Tiguan', 'Atlas', 'Atlas Cross Sport', 'ID.4'],
+        'Volvo': ['S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90', 'C40', 'Polestar 2']
+    };
 
-        const modelSelect = document.getElementById('model');
-        if (!modelSelect) return;
-        
-        modelSelect.innerHTML = '<option value="">Select Model</option>';
+    const modelSelect = document.getElementById('model');
+    if (!modelSelect) return;
+    
+    modelSelect.innerHTML = '<option value="">Select Model</option>';
 
-        if (models[make]) {
-            models[make].forEach(model => {
-                const option = document.createElement('option');
-                option.value = model;
-                option.textContent = model;
-                modelSelect.appendChild(option);
-            });
-        }
+    if (models[make]) {
+        console.log('Found models for', make, ':', models[make].length, 'models');
+        models[make].forEach(model => {
+            const option = document.createElement('option');
+            option.value = model;
+            option.textContent = model;
+            modelSelect.appendChild(option);
+        });
+    } else {
+        console.log('No models found for', make, '- adding Other option');
+        const option = document.createElement('option');
+        option.value = 'Other';
+        option.textContent = 'Other/Custom';
+        modelSelect.appendChild(option);
     }
+}
 
     // ============================================
     // VIN LOOKUP
