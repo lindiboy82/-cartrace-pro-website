@@ -1803,172 +1803,322 @@
         const stripe = Stripe('pk_test_51Rnl8WF2AvYulrbMus9slPTf8DuDEpkpW9r5j58u4458C5CQIRYRmKL94j5TEeIyYDkdARjurJQEtsbJ9srCI4cW00GzBsKoqy');
     </script>
 
-    <script>
-        // Global Variables
-        let map;
-        let stolenVehicles = [];
-        let currentStep = 1;
-        let foundVehicleData = {};
-        const API_URL = 'http://localhost:3000';
-        const STRIPE_PRICE_IDS = {
-    basic: 'price_1QeTcRRxPKUgpxLKFsjv4iZC',      // ← YOUR Basic price ID
-    gold: 'price_1QeTcnRxPKUgpxLKRvvfzC3Q',       // ← YOUR Gold price ID
-    diamond: 'price_1QeTd4RxPKUgpxLKJKZyaG0O',    // ← YOUR Diamond price ID
-    platinum: 'price_1QeTdFRxPKUgpxLKU1oXUa9w'    // ← YOUR Platinum price ID
-};
+<script>
+    // ============================================
+    // GLOBAL VARIABLES
+    // ============================================
+    let map;
+    let stolenVehicles = [];
+    let currentStep = 1;
+    let foundVehicleData = {};
+    const API_URL = 'http://localhost:3000';
+    const STRIPE_PRICE_IDS = {
+        basic: 'price_1QeTcRRxPKUgpxLKFsjv4iZC',
+        gold: 'price_1QeTcnRxPKUgpxLKRvvfzC3Q',
+        diamond: 'price_1QeTd4RxPKUgpxLKJKZyaG0O',
+        platinum: 'price_1QeTdFRxPKUgpxLKU1oXUa9w'
+    };
 
-        // Mock stolen vehicles database
-        const mockStolenVehicles = {
-            'ABC123': { year: '2021', make: 'Honda', model: 'Civic', plan: 'Gold', reward: 300 },
-            'XYZ789': { year: '2020', make: 'Tesla', model: 'Model S', plan: 'Diamond', reward: 500 },
-            'TEST99': { year: '2022', make: 'Chevrolet', model: 'Camaro', plan: 'Platinum', reward: 750 }
-        };
+    // Mock stolen vehicles database
+    const mockStolenVehicles = {
+        'ABC123': { year: '2021', make: 'Honda', model: 'Civic', plan: 'Gold', reward: 300 },
+        'XYZ789': { year: '2020', make: 'Tesla', model: 'Model S', plan: 'Diamond', reward: 500 },
+        'TEST99': { year: '2022', make: 'Chevrolet', model: 'Camaro', plan: 'Platinum', reward: 750 }
+    };
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            handlePaymentRedirect();
-            initializeYearDropdown();
-            initializeMakeDropdown();
-            setupImageUpload();
-            setupFoundVehicleImageUpload();
+    // ============================================
+    // PAYMENT REDIRECT HANDLER
+    // ============================================
+    function handlePaymentRedirect() {
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.get('success') === 'true') {
+            console.log('✅ Payment successful! Processing vehicle...');
             
-            // Update radius value display
-            document.getElementById('alert-radius').addEventListener('input', (e) => {
-                document.getElementById('radius-value').textContent = e.target.value;
-            });
-
-            // Disable proceed buttons initially
-            document.getElementById('proceed-step3').disabled = true;
-            document.getElementById('proceed-step4').disabled = true;
-
-            // Enable proceed buttons when checkboxes are checked
-            document.getElementById('called-911').addEventListener('change', (e) => {
-                document.getElementById('proceed-step3').disabled = !e.target.checked;
-            });
-
-            document.getElementById('police-arrived').addEventListener('change', (e) => {
-                document.getElementById('proceed-step4').disabled = !e.target.checked;
-            });
-
-            // Update stats every 3 seconds
-            setInterval(updateLiveStats, 3000);
-        });
-
-        // Navigation
-        function showSection(sectionId) {
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
+            const pendingVehicleJson = sessionStorage.getItem('pendingVehicle');
             
-            document.getElementById(sectionId + '-section').classList.add('active');
-            event.target.closest('.nav-link').classList.add('active');
-            
-            if (sectionId === 'map-alerts' && !map) {
-                initializeMap();
+            if (pendingVehicleJson) {
+                try {
+                    const vehicleData = JSON.parse(pendingVehicleJson);
+                    console.log('Saving vehicle after successful payment:', vehicleData);
+                    saveVehicleAfterPayment(vehicleData);
+                    sessionStorage.removeItem('pendingVehicle');
+                    
+                    setTimeout(() => {
+                        alert('✅ Payment Successful!\n\n🚗 Your vehicle has been added.\n💳 Subscription activated.\n\nThank you for choosing CarTrace Pro!');
+                    }, 500);
+                } catch (error) {
+                    console.error('Error parsing pending vehicle:', error);
+                    alert('⚠️ Payment successful but error adding vehicle. Contact support.');
+                }
             }
             
-            if (sectionId === 'map-alerts' && map) {
-                setTimeout(() => map.invalidateSize(), 100);
-            }
-
-            // Reset found vehicle form if leaving the section
-            if (sectionId !== 'found-vehicle') {
-                resetFoundVehicleForm();
-            }
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
+        
+        if (urlParams.get('canceled') === 'true') {
+            console.log('❌ Payment canceled');
+            sessionStorage.removeItem('pendingVehicle');
+            alert('❌ Payment Canceled\n\nYour vehicle was not added.\nNo charges were made.');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
 
-        // Found Vehicle Step Navigation
-        function goToStep(stepNumber) {
-            // Validation before proceeding
-            if (stepNumber === 3) {
-                const reporterName = document.getElementById('reporter-name').value.trim();
-                const called911 = document.getElementById('called-911').checked;
-                
-                if (!reporterName) {
-                    alert('Please enter your full name as given to 911');
-                    return;
-                }
-                if (!called911) {
-                    alert('You must confirm that you called 911 before proceeding');
-                    return;
-                }
-            }
+    // ============================================
+    // START CHECKOUT WITH VEHICLE
+    // ============================================
+    async function startCheckoutWithVehicle(protectionPlanFull, vehicleData) {
+        try {
+            const planName = protectionPlanFull.split(' - ')[0].toLowerCase();
+            console.log('💳 Starting checkout for plan:', planName);
 
-            if (stepNumber === 4) {
-                const policeArrived = document.getElementById('police-arrived').checked;
-                if (!policeArrived) {
-                    alert('Please confirm that police have arrived');
-                    return;
-                }
-            }
-
-            if (stepNumber === 5) {
-                const reportNumber = document.getElementById('report-number').value.trim();
-                const officerName = document.getElementById('officer-name').value.trim();
-                const policeDept = document.getElementById('police-department').value.trim();
-                
-                if (!reportNumber || !officerName || !policeDept) {
-                    alert('Please fill in all required police report information');
-                    return;
-                }
-            }
-
-            if (stepNumber === 6) {
-                const location = document.getElementById('found-location').value.trim();
-                if (!location) {
-                    alert('Please enter the location where the vehicle was found');
-                    return;
-                }
-            }
-
-            // Hide all steps
-            document.querySelectorAll('.step').forEach(step => {
-                step.classList.remove('active');
-            });
+            const priceId = STRIPE_PRICE_IDS[planName];
             
-            // Show requested step
-            document.getElementById('step' + stepNumber).classList.add('active');
-            currentStep = stepNumber;
-
-            // Scroll to top of section
-            document.getElementById('found-vehicle-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function resetFoundVehicleForm() {
-            currentStep = 1;
-            foundVehicleData = {};
-            document.querySelectorAll('.step').forEach(step => {
-                step.classList.remove('active');
-            });
-            document.getElementById('step1').classList.add('active');
-            document.getElementById('check-plate').value = '';
-            document.getElementById('check-state').value = '';
-            document.getElementById('plate-check-result').innerHTML = '';
-        }
-
-        // Check License Plate Against Stolen Database
-        function checkLicensePlate() {
-            const plate = document.getElementById('check-plate').value.trim().toUpperCase();
-            const state = document.getElementById('check-state').value;
-            const resultDiv = document.getElementById('plate-check-result');
-
-            if (!plate || !state) {
-                alert('Please enter both license plate and state');
+            if (!priceId) {
+                alert('❌ Invalid protection plan selected: ' + planName);
                 return;
             }
 
-            // Store for later steps
-            foundVehicleData.plate = plate;
-            foundVehicleData.state = state;
+            sessionStorage.setItem('pendingVehicle', JSON.stringify(vehicleData));
+            console.log('✅ Stored pending vehicle in session storage');
 
-            // Check mock database
-            if (mockStolenVehicles[plate]) {
-                const vehicle = mockStolenVehicles[plate];
-                foundVehicleData.vehicle = vehicle;
-                
+            const response = await fetch(`${API_URL}/create-checkout-session`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    priceId: priceId,
+                    userId: window.currentUser ? window.currentUser.uid : 'guest_' + Date.now(),
+                    userEmail: window.currentUser ? window.currentUser.email : null,
+                    vehicleData: vehicleData
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create checkout session');
+            }
+
+            const session = await response.json();
+            console.log('✅ Checkout session created:', session.id);
+            
+            closeAddVehicleModal();
+            
+            const confirmProceed = confirm(
+                '💳 Redirecting to Secure Payment\n\n' +
+                '✅ Your vehicle will be added after payment\n' +
+                '✅ Safe and secure with Stripe\n\n' +
+                'Click OK to proceed'
+            );
+
+            if (!confirmProceed) {
+                sessionStorage.removeItem('pendingVehicle');
+                return;
+            }
+
+            console.log('🔄 Redirecting to Stripe...');
+            const result = await stripe.redirectToCheckout({ sessionId: session.id });
+
+            if (result.error) {
+                alert('❌ Payment error: ' + result.error.message);
+                sessionStorage.removeItem('pendingVehicle');
+            }
+
+        } catch (error) {
+            console.error('❌ Error starting checkout:', error);
+            alert('❌ Unable to start checkout: ' + error.message);
+            sessionStorage.removeItem('pendingVehicle');
+        }
+    }
+
+    // ============================================
+    // SAVE VEHICLE AFTER PAYMENT
+    // ============================================
+    function saveVehicleAfterPayment(vehicleData) {
+        console.log('💾 Saving vehicle to database:', vehicleData);
+        
+        if (window.firebaseDatabase && window.currentUser) {
+            const vehicleRef = window.firebaseRef(
+                window.firebaseDatabase, 
+                `vehicles/${window.currentUser.uid}/${vehicleData.id}`
+            );
+            
+            window.firebaseSet(vehicleRef, vehicleData)
+                .then(() => {
+                    console.log('✅ Vehicle saved to Firebase');
+                })
+                .catch(error => {
+                    console.error('❌ Error saving to Firebase:', error);
+                    alert('⚠️ Error saving vehicle: ' + error.message);
+                });
+        } else {
+            console.log('💾 Saving to localStorage');
+            let vehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
+            vehicles.push(vehicleData);
+            localStorage.setItem('cartraceVehicles', JSON.stringify(vehicles));
+            updateVehicleDisplay();
+            updateVehicleCount();
+        }
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+        handlePaymentRedirect();
+        initializeYearDropdown();
+        initializeMakeDropdown();
+        setupImageUpload();
+        setupFoundVehicleImageUpload();
+        
+        const radiusSlider = document.getElementById('alert-radius');
+        if (radiusSlider) {
+            radiusSlider.addEventListener('input', (e) => {
+                document.getElementById('radius-value').textContent = e.target.value;
+            });
+        }
+
+        const proceed3 = document.getElementById('proceed-step3');
+        const proceed4 = document.getElementById('proceed-step4');
+        if (proceed3) proceed3.disabled = true;
+        if (proceed4) proceed4.disabled = true;
+
+        const called911 = document.getElementById('called-911');
+        if (called911) {
+            called911.addEventListener('change', (e) => {
+                if (proceed3) proceed3.disabled = !e.target.checked;
+            });
+        }
+
+        const policeArrived = document.getElementById('police-arrived');
+        if (policeArrived) {
+            policeArrived.addEventListener('change', (e) => {
+                if (proceed4) proceed4.disabled = !e.target.checked;
+            });
+        }
+
+        setInterval(updateLiveStats, 3000);
+    });
+
+    // ============================================
+    // NAVIGATION
+    // ============================================
+    function showSection(sectionId) {
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        document.getElementById(sectionId + '-section').classList.add('active');
+        event.target.closest('.nav-link').classList.add('active');
+        
+        if (sectionId === 'map-alerts' && !map) {
+            initializeMap();
+        }
+        
+        if (sectionId === 'map-alerts' && map) {
+            setTimeout(() => map.invalidateSize(), 100);
+        }
+
+        if (sectionId !== 'found-vehicle') {
+            resetFoundVehicleForm();
+        }
+    }
+
+    // ============================================
+    // FOUND VEHICLE STEP NAVIGATION
+    // ============================================
+    function goToStep(stepNumber) {
+        if (stepNumber === 3) {
+            const reporterName = document.getElementById('reporter-name').value.trim();
+            const called911 = document.getElementById('called-911').checked;
+            
+            if (!reporterName) {
+                alert('Please enter your full name as given to 911');
+                return;
+            }
+            if (!called911) {
+                alert('You must confirm that you called 911 before proceeding');
+                return;
+            }
+        }
+
+        if (stepNumber === 4) {
+            const policeArrived = document.getElementById('police-arrived').checked;
+            if (!policeArrived) {
+                alert('Please confirm that police have arrived');
+                return;
+            }
+        }
+
+        if (stepNumber === 5) {
+            const reportNumber = document.getElementById('report-number').value.trim();
+            const officerName = document.getElementById('officer-name').value.trim();
+            const policeDept = document.getElementById('police-department').value.trim();
+            
+            if (!reportNumber || !officerName || !policeDept) {
+                alert('Please fill in all required police report information');
+                return;
+            }
+        }
+
+        if (stepNumber === 6) {
+            const location = document.getElementById('found-location').value.trim();
+            if (!location) {
+                alert('Please enter the location where the vehicle was found');
+                return;
+            }
+        }
+
+        document.querySelectorAll('.step').forEach(step => {
+            step.classList.remove('active');
+        });
+        
+        const stepEl = document.getElementById('step' + stepNumber);
+        if (stepEl) {
+            stepEl.classList.add('active');
+        }
+        
+        currentStep = stepNumber;
+        document.getElementById('found-vehicle-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetFoundVehicleForm() {
+        currentStep = 1;
+        foundVehicleData = {};
+        document.querySelectorAll('.step').forEach(step => {
+            step.classList.remove('active');
+        });
+        const step1 = document.getElementById('step1');
+        if (step1) step1.classList.add('active');
+        
+        const checkPlate = document.getElementById('check-plate');
+        const checkState = document.getElementById('check-state');
+        const plateCheckResult = document.getElementById('plate-check-result');
+        
+        if (checkPlate) checkPlate.value = '';
+        if (checkState) checkState.value = '';
+        if (plateCheckResult) plateCheckResult.innerHTML = '';
+    }
+
+    function checkLicensePlate() {
+        const plate = document.getElementById('check-plate').value.trim().toUpperCase();
+        const state = document.getElementById('check-state').value;
+        const resultDiv = document.getElementById('plate-check-result');
+
+        if (!plate || !state) {
+            alert('Please enter both license plate and state');
+            return;
+        }
+
+        foundVehicleData.plate = plate;
+        foundVehicleData.state = state;
+
+        if (mockStolenVehicles[plate]) {
+            const vehicle = mockStolenVehicles[plate];
+            foundVehicleData.vehicle = vehicle;
+            
+            if (resultDiv) {
                 resultDiv.innerHTML = `
                     <div class="check-result stolen">
                         <h2 style="color: var(--danger); margin-bottom: 15px;">🚨 STOLEN VEHICLE CONFIRMED!</h2>
@@ -1994,13 +2144,19 @@
                         </button>
                     </div>
                 `;
-                
-                // Update display placeholders for next steps
-                document.getElementById('display-plate').textContent = plate;
-                document.getElementById('display-vehicle').textContent = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
-                document.getElementById('reward-plan').textContent = vehicle.plan + ' Plan';
-                document.getElementById('reward-amount').textContent = vehicle.reward;
-            } else {
+            }
+            
+            const displayPlate = document.getElementById('display-plate');
+            const displayVehicle = document.getElementById('display-vehicle');
+            const rewardPlan = document.getElementById('reward-plan');
+            const rewardAmount = document.getElementById('reward-amount');
+            
+            if (displayPlate) displayPlate.textContent = plate;
+            if (displayVehicle) displayVehicle.textContent = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+            if (rewardPlan) rewardPlan.textContent = vehicle.plan + ' Plan';
+            if (rewardAmount) rewardAmount.textContent = vehicle.reward;
+        } else {
+            if (resultDiv) {
                 resultDiv.innerHTML = `
                     <div class="check-result not-stolen">
                         <h2 style="color: var(--success); margin-bottom: 15px;">✅ Not In Our Database</h2>
@@ -2020,272 +2176,383 @@
                 `;
             }
         }
+    }
 
-        function proceedToCall911() {
-            goToStep(2);
+    function proceedToCall911() {
+        goToStep(2);
+    }
+
+    function submitFoundVehicleReport() {
+        const reportData = {
+            ...foundVehicleData,
+            reportNumber: document.getElementById('report-number').value,
+            officerName: document.getElementById('officer-name').value,
+            badgeNumber: document.getElementById('badge-number').value,
+            policeDepartment: document.getElementById('police-department').value,
+            location: document.getElementById('found-location').value,
+            additionalDetails: document.getElementById('additional-details').value,
+            contactName: document.getElementById('reward-contact-name').value,
+            email: document.getElementById('reward-email').value,
+            phone: document.getElementById('reward-phone').value,
+            zelleContact: document.getElementById('zelle-contact').value,
+            reportId: 'FR' + Date.now().toString().slice(-8),
+            timestamp: new Date().toISOString()
+        };
+
+        const vehicle = foundVehicleData.vehicle;
+
+        alert(
+            `✅ REPORT SUBMITTED SUCCESSFULLY!\n\n` +
+            `🚗 License Plate: ${foundVehicleData.plate}\n` +
+            `📍 Location: ${reportData.location}\n` +
+            `📋 Police Report: ${reportData.reportNumber}\n` +
+            `👮 Officer: ${reportData.officerName}\n` +
+            `🏢 Department: ${reportData.policeDepartment}\n\n` +
+            `💰 REWARD INFORMATION:\n` +
+            `   Protection Plan: ${vehicle.plan}\n` +
+            `   Reward Amount: $${vehicle.reward}\n` +
+            `   Payment Method: Zelle to ${reportData.zelleContact}\n\n` +
+            `⏳ VERIFICATION PROCESS:\n\n` +
+            `1️⃣ Our team will verify with ${reportData.policeDepartment}\n` +
+            `2️⃣ We'll confirm report #${reportData.reportNumber} with ${reportData.officerName}\n` +
+            `3️⃣ Match with vehicle owner's theft report\n` +
+            `4️⃣ Process $${vehicle.reward} reward payment via Zelle\n\n` +
+            `⏰ Timeline: 2-5 business days\n` +
+            `📧 Email updates sent to: ${reportData.email}\n\n` +
+            `🙏 Thank you for helping our community!\n\n` +
+            `Report ID: ${reportData.reportId}`
+        );
+
+        resetFoundVehicleForm();
+    }
+
+    // ============================================
+    // MODAL FUNCTIONS
+    // ============================================
+    function openAddVehicleModal() {
+        document.getElementById('add-vehicle-modal').classList.add('active');
+    }
+
+    function closeAddVehicleModal() {
+        document.getElementById('add-vehicle-modal').classList.remove('active');
+        document.getElementById('add-vehicle-form').reset();
+        document.getElementById('vehicle-image-preview').innerHTML = '';
+        clearLookupStatus();
+    }
+
+    // ============================================
+    // VEHICLE DISPLAY
+    // ============================================
+    function updateVehicleDisplay() {
+        const vehiclesList = document.getElementById('vehicles-list');
+        const vehicles = window.userVehicles || JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
+
+        if (vehicles.length === 0) {
+            vehiclesList.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                    <div style="font-size: 48px; margin-bottom: 20px;">🚗</div>
+                    <h3 style="margin-bottom: 10px;">No Vehicles Added Yet</h3>
+                    <p>Add your first vehicle to start protecting it with CarTrace Pro</p>
+                    <button class="btn btn-primary" onclick="openAddVehicleModal()" style="margin-top: 20px;">Add Your First Vehicle</button>
+                </div>
+            `;
+            return;
         }
 
-        // Submit Found Vehicle Report
-        function submitFoundVehicleReport() {
-            const reportData = {
-                ...foundVehicleData,
-                reportNumber: document.getElementById('report-number').value,
-                officerName: document.getElementById('officer-name').value,
-                badgeNumber: document.getElementById('badge-number').value,
-                policeDepartment: document.getElementById('police-department').value,
-                location: document.getElementById('found-location').value,
-                additionalDetails: document.getElementById('additional-details').value,
-                contactName: document.getElementById('reward-contact-name').value,
-                email: document.getElementById('reward-email').value,
-                phone: document.getElementById('reward-phone').value,
-                zelleContact: document.getElementById('zelle-contact').value,
-                reportId: 'FR' + Date.now().toString().slice(-8),
-                timestamp: new Date().toISOString()
-            };
+        vehiclesList.innerHTML = vehicles.map(vehicle => `
+            <div class="vehicle-card ${vehicle.isStolen ? 'stolen' : ''}">
+                ${vehicle.isStolen ? '<div style="position: absolute; top: 20px; right: 20px; background: var(--danger); color: white; padding: 5px 15px; border-radius: 20px; font-weight: 600;">🚨 STOLEN</div>' : ''}
+                <img src="${vehicle.photoURL || 'https://via.placeholder.com/150x150?text=No+Photo'}" alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" class="vehicle-image" />
+                <div class="vehicle-content">
+                    <div class="vehicle-header">
+                        <div class="vehicle-info">
+                            <h3>${vehicle.year} ${vehicle.make} ${vehicle.model}</h3>
+                            <p style="color: var(--text-secondary);">${vehicle.color || 'Color not specified'}</p>
+                        </div>
+                    </div>
+                    <div class="vehicle-details">
+                        <div class="detail-item">
+                            <span class="detail-label">License Plate</span>
+                            <span>${vehicle.licensePlate}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">VIN</span>
+                            <span>${vehicle.vin}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Protection Plan</span>
+                            <span>${vehicle.protectionPlan}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">GPS Status</span>
+                            <span>${vehicle.gpsEnabled ? '✅ Active' : '⭕ Inactive'}</span>
+                        </div>
+                    </div>
+                    ${vehicle.distinguishingFeatures ? `
+                        <div style="margin-top: 15px; padding: 12px; background: #fef3c7; border-left: 3px solid var(--warning); border-radius: 6px;">
+                            <strong style="color: var(--text-primary);">🎨 Distinguishing Features:</strong>
+                            <p style="margin-top: 5px; color: var(--text-primary);">${vehicle.distinguishingFeatures}</p>
+                        </div>
+                    ` : ''}
+                    <div class="vehicle-actions" style="margin-top: 15px;">
+                        <button class="btn btn-small btn-edit">✏️ Edit</button>
+                        <button class="btn btn-small btn-delete" onclick="deleteVehicle('${vehicle.id}')">🗑️ Delete</button>
+                        <button class="btn btn-small btn-report">🚨 Report Stolen</button>
+                        <button class="btn btn-small btn-gps" onclick="toggleGPS('${vehicle.id}')">
+                            ${vehicle.gpsEnabled ? '⭕ Disable GPS' : '📍 Enable GPS'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
 
-            const vehicle = foundVehicleData.vehicle;
-
-            alert(
-                `✅ REPORT SUBMITTED SUCCESSFULLY!\n\n` +
-                `🚗 License Plate: ${foundVehicleData.plate}\n` +
-                `📍 Location: ${reportData.location}\n` +
-                `📋 Police Report: ${reportData.reportNumber}\n` +
-                `👮 Officer: ${reportData.officerName}\n` +
-                `🏢 Department: ${reportData.policeDepartment}\n\n` +
-                `💰 REWARD INFORMATION:\n` +
-                `   Protection Plan: ${vehicle.plan}\n` +
-                `   Reward Amount: $${vehicle.reward}\n` +
-                `   Payment Method: Zelle to ${reportData.zelleContact}\n\n` +
-                `⏳ VERIFICATION PROCESS:\n\n` +
-                `1️⃣ Our team will verify with ${reportData.policeDepartment}\n` +
-                `2️⃣ We'll confirm report #${reportData.reportNumber} with ${reportData.officerName}\n` +
-                `3️⃣ Match with vehicle owner's theft report\n` +
-                `4️⃣ Process $${vehicle.reward} reward payment via Zelle\n\n` +
-                `⏰ Timeline: 2-5 business days\n` +
-                `📧 Email updates sent to: ${reportData.email}\n\n` +
-                `🙏 Thank you for helping our community!\n` +
-                `Your safety-first approach is exemplary.\n\n` +
-                `Report ID: ${reportData.reportId}\n` +
-                `Save this number for reference.`
-            );
-
-            // Reset form
-            resetFoundVehicleForm();
+    function updateVehicleCount() {
+        const vehicles = window.userVehicles || JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
+        const countEl = document.getElementById('vehicle-count');
+        if (countEl) {
+            countEl.textContent = vehicles.length;
         }
+    }
 
-        // Modal Functions
-        function openAddVehicleModal() {
-            document.getElementById('add-vehicle-modal').classList.add('active');
-        }
+    function deleteVehicle(vehicleId) {
+        if (!confirm('Are you sure you want to delete this vehicle?')) return;
 
-        function closeAddVehicleModal() {
-            document.getElementById('add-vehicle-modal').classList.remove('active');
-            document.getElementById('add-vehicle-form').reset();
-            document.getElementById('vehicle-image-preview').innerHTML = '';
-            clearLookupStatus();
-        }
-
-        // Initialize Year Dropdown (1990-2026)
-        function initializeYearDropdown() {
-            const yearSelect = document.getElementById('year');
-            const currentYear = new Date().getFullYear();
-            for (let year = currentYear + 1; year >= 1990; year--) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
-            }
-        }
-
-        // Initialize Make Dropdown with expanded models
-        function initializeMakeDropdown() {
-            const makes = ['Acura', 'Audi', 'BMW', 'Buick', 'Cadillac', 'Chevrolet', 'Chrysler', 'Dodge', 'Ford', 'GMC', 'Honda', 'Hyundai', 'Infiniti', 'Jeep', 'Kia', 'Lexus', 'Lincoln', 'Mazda', 'Mercedes-Benz', 'Nissan', 'Ram', 'Subaru', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo'];
-            
-            const makeSelect = document.getElementById('make');
-            makes.forEach(make => {
-                const option = document.createElement('option');
-                option.value = make;
-                option.textContent = make;
-                makeSelect.appendChild(option);
-            });
-
-            // Add change event listener
-            makeSelect.addEventListener('change', function(e) {
-                const selectedMake = e.target.value;
-                console.log('Make selected:', selectedMake); // Debug log
-                if (selectedMake) {
-                    updateModelDropdown(selectedMake);
-                }
-            });
-        }
-
-        // Update Model Dropdown based on Make - EXPANDED MODEL LIST
-        function updateModelDropdown(make) {
-            console.log('Updating models for:', make); // Debug log
-            
-            const models = {
-                'Acura': ['ILX', 'TLX', 'RLX', 'MDX', 'RDX', 'NSX'],
-                'Audi': ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron'],
-                'BMW': ['2 Series', '3 Series', '4 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X7', 'M3', 'M5'],
-                'Buick': ['Encore', 'Envision', 'Enclave'],
-                'Cadillac': ['CT4', 'CT5', 'XT4', 'XT5', 'XT6', 'Escalade'],
-                'Chevrolet': ['Spark', 'Malibu', 'Impala', 'Camaro', 'Corvette', 'Trax', 'Equinox', 'Traverse', 'Tahoe', 'Suburban', 'Silverado', 'Colorado'],
-                'Chrysler': ['300', 'Pacifica', 'Voyager'],
-                'Dodge': ['Charger', 'Challenger', 'Durango', 'Journey'],
-                'Ford': ['Fiesta', 'Focus', 'Fusion', 'Mustang', 'EcoSport', 'Escape', 'Edge', 'Explorer', 'Expedition', 'F-150', 'F-250', 'F-350', 'Ranger', 'Bronco'],
-                'GMC': ['Terrain', 'Acadia', 'Yukon', 'Sierra 1500', 'Sierra 2500', 'Canyon'],
-                'Honda': ['Fit', 'Civic', 'Accord', 'Insight', 'HR-V', 'CR-V', 'Passport', 'Pilot', 'Ridgeline'],
-                'Hyundai': ['Accent', 'Elantra', 'Sonata', 'Veloster', 'Venue', 'Kona', 'Tucson', 'Santa Fe', 'Palisade'],
-                'Infiniti': ['Q50', 'Q60', 'QX50', 'QX60', 'QX80'],
-                'Jeep': ['Renegade', 'Compass', 'Cherokee', 'Grand Cherokee', 'Wrangler', 'Gladiator'],
-                'Kia': ['Rio', 'Forte', 'K5', 'Stinger', 'Soul', 'Seltos', 'Sportage', 'Sorento', 'Telluride'],
-                'Lexus': ['IS', 'ES', 'GS', 'LS', 'UX', 'NX', 'RX', 'GX', 'LX'],
-                'Lincoln': ['Corsair', 'Nautilus', 'Aviator', 'Navigator'],
-                'Mazda': ['Mazda3', 'Mazda6', 'CX-3', 'CX-30', 'CX-5', 'CX-9', 'MX-5 Miata'],
-                'Mercedes-Benz': ['A-Class', 'C-Class', 'E-Class', 'S-Class', 'GLA', 'GLB', 'GLC', 'GLE', 'GLS'],
-                'Nissan': ['Versa', 'Sentra', 'Altima', 'Maxima', '370Z', 'Kicks', 'Rogue', 'Murano', 'Pathfinder', 'Armada', 'Frontier', 'Titan'],
-                'Ram': ['1500', '2500', '3500', 'ProMaster'],
-                'Subaru': ['Impreza', 'Legacy', 'WRX', 'Crosstrek', 'Forester', 'Outback', 'Ascent'],
-                'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
-                'Toyota': ['Yaris', 'Corolla', 'Camry', 'Avalon', 'Prius', '86', 'Supra', 'C-HR', 'RAV4', 'Venza', 'Highlander', '4Runner', 'Sequoia', 'Land Cruiser', 'Tacoma', 'Tundra'],
-                'Volkswagen': ['Jetta', 'Passat', 'Arteon', 'Golf', 'GTI', 'Taos', 'Tiguan', 'Atlas'],
-                'Volvo': ['S60', 'S90', 'V60', 'V90', 'XC40', 'XC60', 'XC90']
-            };
-
-            const modelSelect = document.getElementById('model');
-            // Clear existing options
-            modelSelect.innerHTML = '<option value="">Select Model</option>';
-
-            if (models[make]) {
-                console.log('Found models:', models[make]); // Debug log
-                models[make].forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model;
-                    option.textContent = model;
-                    modelSelect.appendChild(option);
+        if (window.firebaseDatabase && window.currentUser) {
+            const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
+            window.firebaseRemove(vehicleRef)
+                .then(() => {
+                    alert('✅ Vehicle deleted successfully');
+                })
+                .catch(error => {
+                    console.error('Error deleting vehicle:', error);
+                    alert('❌ Failed to delete vehicle');
                 });
-            } else {
-                console.log('No models found, adding Other option'); // Debug log
+        } else {
+            let vehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
+            vehicles = vehicles.filter(v => v.id !== vehicleId);
+            localStorage.setItem('cartraceVehicles', JSON.stringify(vehicles));
+            updateVehicleDisplay();
+            updateVehicleCount();
+        }
+    }
+
+    function toggleGPS(vehicleId) {
+        alert('🚧 GPS Tracking Feature Coming Soon!\n\nThis feature will allow you to:\n\n✓ Track your vehicle in real-time\n✓ Set up geofencing alerts\n✓ View location history\n✓ Get instant theft notifications\n\nStay tuned for updates!');
+    }
+
+    // ============================================
+    // YEAR / MAKE / MODEL DROPDOWNS
+    // ============================================
+    function initializeYearDropdown() {
+        const yearSelect = document.getElementById('year');
+        if (!yearSelect) return;
+        
+        const currentYear = new Date().getFullYear();
+        for (let year = currentYear + 1; year >= 1990; year--) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        }
+    }
+
+    function initializeMakeDropdown() {
+        const makes = ['Acura', 'Audi', 'BMW', 'Buick', 'Cadillac', 'Chevrolet', 'Chrysler', 'Dodge', 'Ford', 'GMC', 'Honda', 'Hyundai', 'Infiniti', 'Jeep', 'Kia', 'Lexus', 'Lincoln', 'Mazda', 'Mercedes-Benz', 'Nissan', 'Ram', 'Subaru', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo'];
+        
+        const makeSelect = document.getElementById('make');
+        if (!makeSelect) return;
+        
+        makes.forEach(make => {
+            const option = document.createElement('option');
+            option.value = make;
+            option.textContent = make;
+            makeSelect.appendChild(option);
+        });
+
+        makeSelect.addEventListener('change', function(e) {
+            const selectedMake = e.target.value;
+            if (selectedMake) {
+                updateModelDropdown(selectedMake);
+            }
+        });
+    }
+
+    function updateModelDropdown(make) {
+        const models = {
+            'Acura': ['ILX', 'TLX', 'RLX', 'MDX', 'RDX', 'NSX'],
+            'Audi': ['A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'Q3', 'Q5', 'Q7', 'Q8', 'e-tron'],
+            'BMW': ['2 Series', '3 Series', '4 Series', '5 Series', '7 Series', 'X1', 'X3', 'X5', 'X7', 'M3', 'M5'],
+            'Chevrolet': ['Spark', 'Malibu', 'Impala', 'Camaro', 'Corvette', 'Trax', 'Equinox', 'Traverse', 'Tahoe', 'Suburban', 'Silverado', 'Colorado'],
+            'Ford': ['Fiesta', 'Focus', 'Fusion', 'Mustang', 'EcoSport', 'Escape', 'Edge', 'Explorer', 'Expedition', 'F-150', 'F-250', 'F-350', 'Ranger', 'Bronco'],
+            'Honda': ['Fit', 'Civic', 'Accord', 'Insight', 'HR-V', 'CR-V', 'Passport', 'Pilot', 'Ridgeline'],
+            'Tesla': ['Model 3', 'Model S', 'Model X', 'Model Y', 'Cybertruck'],
+            'Toyota': ['Yaris', 'Corolla', 'Camry', 'Avalon', 'Prius', '86', 'Supra', 'C-HR', 'RAV4', 'Venza', 'Highlander', '4Runner', 'Sequoia', 'Land Cruiser', 'Tacoma', 'Tundra']
+        };
+
+        const modelSelect = document.getElementById('model');
+        if (!modelSelect) return;
+        
+        modelSelect.innerHTML = '<option value="">Select Model</option>';
+
+        if (models[make]) {
+            models[make].forEach(model => {
                 const option = document.createElement('option');
-                option.value = 'Other';
-                option.textContent = 'Other/Custom';
+                option.value = model;
+                option.textContent = model;
                 modelSelect.appendChild(option);
-            }
+            });
+        }
+    }
+
+    // ============================================
+    // VIN LOOKUP
+    // ============================================
+    async function lookupVIN() {
+        const licensePlate = document.getElementById('license-plate').value.trim();
+        const state = document.getElementById('plate-state').value;
+        const statusDiv = document.getElementById('lookup-status');
+
+        if (!licensePlate || !state) {
+            showLookupStatus('error', '❌ Please enter both license plate and state');
+            return;
         }
 
-        // VIN Lookup Function
-        async function lookupVIN() {
-            const licensePlate = document.getElementById('license-plate').value.trim();
-            const state = document.getElementById('plate-state').value;
-            const statusDiv = document.getElementById('lookup-status');
+        showLookupStatus('loading', '🔄 Looking up vehicle information...');
 
-            if (!licensePlate || !state) {
-                showLookupStatus('error', '❌ Please enter both license plate and state');
-                return;
+        try {
+            const mockData = {
+                'ABC123': { vin: '1HGBH41JXMN109186', year: '2021', make: 'Honda', model: 'Civic', color: 'Silver' },
+                'XYZ789': { vin: '5YJSA1E14HF123456', year: '2020', make: 'Tesla', model: 'Model S', color: 'White' },
+                'TEST99': { vin: '1G1ZD5ST8LF123789', year: '2022', make: 'Chevrolet', model: 'Camaro', color: 'Red' },
+                'DEF456': { vin: '1FTFW1ET9DFC12345', year: '2019', make: 'Ford', model: 'F-150', color: 'Black' }
+            };
+
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            const vehicleData = mockData[licensePlate.toUpperCase()];
+
+            if (vehicleData) {
+                document.getElementById('vin').value = vehicleData.vin;
+                document.getElementById('year').value = vehicleData.year;
+                document.getElementById('make').value = vehicleData.make;
+                updateModelDropdown(vehicleData.make);
+                setTimeout(() => {
+                    document.getElementById('model').value = vehicleData.model;
+                }, 100);
+                document.getElementById('color').value = vehicleData.color;
+
+                showLookupStatus('success', '✅ Vehicle found! Details auto-filled.');
+            } else {
+                showLookupStatus('error', '❌ Vehicle not found. Please enter details manually. Try: ABC123, XYZ789, or TEST99 for demo.');
             }
-
-            showLookupStatus('loading', '🔄 Looking up vehicle information...');
-
-            try {
-                const mockData = {
-                    'ABC123': {
-                        vin: '1HGBH41JXMN109186',
-                        year: '2021',
-                        make: 'Honda',
-                        model: 'Civic',
-                        color: 'Silver'
-                    },
-                    'XYZ789': {
-                        vin: '5YJSA1E14HF123456',
-                        year: '2020',
-                        make: 'Tesla',
-                        model: 'Model S',
-                        color: 'White'
-                    },
-                    'TEST99': {
-                        vin: '1G1ZD5ST8LF123789',
-                        year: '2022',
-                        make: 'Chevrolet',
-                        model: 'Camaro',
-                        color: 'Red'
-                    }
-                };
-
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                const vehicleData = mockData[licensePlate.toUpperCase()];
-
-                if (vehicleData) {
-                    document.getElementById('vin').value = vehicleData.vin;
-                    document.getElementById('year').value = vehicleData.year;
-                    document.getElementById('make').value = vehicleData.make;
-                    
-                    // Trigger model update
-                    updateModelDropdown(vehicleData.make);
-                    
-                    // Set model after a brief delay to ensure dropdown is populated
-                    setTimeout(() => {
-                        document.getElementById('model').value = vehicleData.model;
-                    }, 100);
-                    
-                    document.getElementById('color').value = vehicleData.color;
-
-                    showLookupStatus('success', '✅ Vehicle found! Details auto-filled.');
-                } else {
-                    showLookupStatus('error', '❌ Vehicle not found. Please enter details manually. Try: ABC123, XYZ789, or TEST99 for demo.');
-                }
-            } catch (error) {
-                showLookupStatus('error', '❌ Lookup failed. Please enter details manually.');
-            }
+        } catch (error) {
+            showLookupStatus('error', '❌ Lookup failed. Please enter details manually.');
         }
+    }
 
-        function showLookupStatus(type, message) {
-            const statusDiv = document.getElementById('lookup-status');
+    function showLookupStatus(type, message) {
+        const statusDiv = document.getElementById('lookup-status');
+        if (statusDiv) {
             statusDiv.className = 'lookup-status ' + type;
             statusDiv.textContent = message;
         }
+    }
 
-        function clearLookupStatus() {
-            const statusDiv = document.getElementById('lookup-status');
+    function clearLookupStatus() {
+        const statusDiv = document.getElementById('lookup-status');
+        if (statusDiv) {
             statusDiv.className = 'lookup-status';
             statusDiv.textContent = '';
         }
+    }
 
-        // Image Upload Setup
-        function setupImageUpload() {
-            const uploadArea = document.getElementById('vehicle-image-upload');
-            const fileInput = document.getElementById('vehicle-photo');
+    // ============================================
+    // IMAGE UPLOAD
+    // ============================================
+    function setupImageUpload() {
+        const uploadArea = document.getElementById('vehicle-image-upload');
+        const fileInput = document.getElementById('vehicle-photo');
 
-            uploadArea.addEventListener('click', () => fileInput.click());
+        if (!uploadArea || !fileInput) return;
 
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    displayVehicleImage(e.target.files[0]);
-                }
-            });
+        uploadArea.addEventListener('click', () => fileInput.click());
 
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                displayVehicleImage(e.target.files[0]);
+            }
+        });
 
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('dragover');
-            });
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
 
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                if (e.dataTransfer.files.length > 0) {
-                    displayVehicleImage(e.dataTransfer.files[0]);
-                }
-            });
-        }
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
 
-        function displayVehicleImage(file) {
-            const preview = document.getElementById('vehicle-image-preview');
-            preview.innerHTML = '';
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                displayVehicleImage(e.dataTransfer.files[0]);
+            }
+        });
+    }
 
+    function displayVehicleImage(file) {
+        const preview = document.getElementById('vehicle-image-preview');
+        if (!preview) return;
+        
+        preview.innerHTML = '';
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'preview-image';
+            preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function setupFoundVehicleImageUpload() {
+        const uploadArea = document.getElementById('found-image-upload');
+        const fileInput = document.getElementById('found-photos');
+
+        if (!uploadArea || !fileInput) return;
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            displayFoundImages(Array.from(e.target.files));
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            displayFoundImages(Array.from(e.dataTransfer.files));
+        });
+    }
+
+    function displayFoundImages(files) {
+        const preview = document.getElementById('found-image-preview');
+        if (!preview) return;
+        
+        preview.innerHTML = '';
+
+        files.slice(0, 4).forEach(file => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = document.createElement('img');
@@ -2294,601 +2561,338 @@
                 preview.appendChild(img);
             };
             reader.readAsDataURL(file);
-        }
-
-        // Found Vehicle Image Upload
-        function setupFoundVehicleImageUpload() {
-            const uploadArea = document.getElementById('found-image-upload');
-            const fileInput = document.getElementById('found-photos');
-
-            uploadArea.addEventListener('click', () => fileInput.click());
-
-            fileInput.addEventListener('change', (e) => {
-                displayFoundImages(Array.from(e.target.files));
-            });
-
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('dragover');
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                displayFoundImages(Array.from(e.dataTransfer.files));
-            });
-        }
-
-        function displayFoundImages(files) {
-            const preview = document.getElementById('found-image-preview');
-            preview.innerHTML = '';
-
-            files.slice(0, 4).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'preview-image';
-                    preview.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // Add Vehicle Form Submit
-        document.getElementById('add-vehicle-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    console.log('📝 Form submitted - processing vehicle data...');
-
-    const vehicleData = {
-        id: 'V' + Date.now(),
-        licensePlate: document.getElementById('license-plate').value,
-        vin: document.getElementById('vin').value || 'Not provided',
-        year: document.getElementById('year').value,
-        make: document.getElementById('make').value,
-        model: document.getElementById('model').value,
-        color: document.getElementById('color').value,
-        distinguishingFeatures: document.getElementById('distinguishing-features').value,
-        protectionPlan: document.getElementById('protection-plan').value.split(' - ')[0],
-        gpsEnabled: false,
-        isStolen: false,
-        addedDate: new Date().toISOString()
-    };
-
-    const protectionPlanFull = document.getElementById('protection-plan').value;
-    
-    if (!protectionPlanFull) {
-        alert('⚠️ Please select a protection plan');
-        return;
+        });
     }
 
-    // Validate required fields
-    if (!vehicleData.licensePlate || !vehicleData.year || !vehicleData.make || !vehicleData.model) {
-        alert('⚠️ Please fill in all required fields');
-        return;
-    }
+    // ============================================
+    // FORM SUBMIT HANDLER
+    // ============================================
+    const addVehicleForm = document.getElementById('add-vehicle-form');
+    if (addVehicleForm) {
+        addVehicleForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            console.log('📝 Form submitted - processing vehicle data...');
 
-    console.log('✅ Vehicle data collected:', vehicleData);
+            const vehicleData = {
+                id: 'V' + Date.now(),
+                licensePlate: document.getElementById('license-plate').value,
+                vin: document.getElementById('vin').value || 'Not provided',
+                year: document.getElementById('year').value,
+                make: document.getElementById('make').value,
+                model: document.getElementById('model').value,
+                color: document.getElementById('color').value,
+                distinguishingFeatures: document.getElementById('distinguishing-features').value,
+                protectionPlan: document.getElementById('protection-plan').value.split(' - ')[0],
+                gpsEnabled: false,
+                isStolen: false,
+                addedDate: new Date().toISOString()
+            };
 
-    const photoFile = document.getElementById('vehicle-photo').files[0];
-    if (photoFile) {
-        console.log('📸 Processing vehicle photo...');
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            vehicleData.photoURL = e.target.result;
-            // ✅ REDIRECT TO PAYMENT FIRST!
-            await startCheckoutWithVehicle(protectionPlanFull, vehicleData);
-        };
-        reader.readAsDataURL(photoFile);
-    } else {
-        vehicleData.photoURL = 'https://via.placeholder.com/150x150?text=No+Photo';
-        // ✅ REDIRECT TO PAYMENT FIRST!
-        await startCheckoutWithVehicle(protectionPlanFull, vehicleData);
-    }
-});
+            const protectionPlanFull = document.getElementById('protection-plan').value;
+            
+            if (!protectionPlanFull) {
+                alert('⚠️ Please select a protection plan');
+                return;
+            }
+
+            if (!vehicleData.licensePlate || !vehicleData.year || !vehicleData.make || !vehicleData.model) {
+                alert('⚠️ Please fill in all required fields');
+                return;
+            }
+
+            console.log('✅ Vehicle data collected:', vehicleData);
+            console.log('💳 Protection plan:', protectionPlanFull);
 
             const photoFile = document.getElementById('vehicle-photo').files[0];
             if (photoFile) {
+                console.log('📸 Processing vehicle photo...');
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = async (e) => {
                     vehicleData.photoURL = e.target.result;
-                    saveVehicle(vehicleData);
+                    await startCheckoutWithVehicle(protectionPlanFull, vehicleData);
                 };
                 reader.readAsDataURL(photoFile);
             } else {
                 vehicleData.photoURL = 'https://via.placeholder.com/150x150?text=No+Photo';
-                saveVehicle(vehicleData);
+                await startCheckoutWithVehicle(protectionPlanFull, vehicleData);
             }
         });
+    }
 
-        function saveVehicle(vehicleData) {
-            if (window.firebaseDatabase && window.currentUser) {
-                const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleData.id}`);
-                window.firebaseSet(vehicleRef, vehicleData)
-                    .then(() => {
-                        alert('✅ Vehicle added successfully!');
-                        closeAddVehicleModal();
-                    })
-                    .catch(error => {
-                        console.error('Error saving vehicle:', error);
-                        alert('❌ Failed to save vehicle. Please try again.');
-                    });
-            } else {
-                let vehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
-                vehicles.push(vehicleData);
-                localStorage.setItem('cartraceVehicles', JSON.stringify(vehicles));
-                alert('✅ Vehicle added successfully!');
-                closeAddVehicleModal();
-                updateVehicleDisplay();
-            }
-        }
+    // ============================================
+    // MAP INITIALIZATION
+    // ============================================
+    function initializeMap() {
+        if (map) return;
 
-        function updateVehicleDisplay() {
-            const vehiclesList = document.getElementById('vehicles-list');
-            const vehicles = window.userVehicles || JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
+        const mapEl = document.getElementById('map');
+        if (!mapEl) return;
 
-            if (vehicles.length === 0) {
-                vehiclesList.innerHTML = `
-                    <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
-                        <div style="font-size: 48px; margin-bottom: 20px;">🚗</div>
-                        <h3 style="margin-bottom: 10px;">No Vehicles Added Yet</h3>
-                        <p>Add your first vehicle to start protecting it with CarTrace Pro</p>
-                        <button class="btn btn-primary" onclick="openAddVehicleModal()" style="margin-top: 20px;">Add Your First Vehicle</button>
-                    </div>
-                `;
-                return;
-            }
+        map = L.map('map').setView([26.1420, -81.7948], 11);
 
-            vehiclesList.innerHTML = vehicles.map(vehicle => `
-                <div class="vehicle-card ${vehicle.isStolen ? 'stolen' : ''}">
-                    ${vehicle.isStolen ? '<div style="position: absolute; top: 20px; right: 20px; background: var(--danger); color: white; padding: 5px 15px; border-radius: 20px; font-weight: 600;">🚨 STOLEN</div>' : ''}
-                    <img src="${vehicle.photoURL || 'https://via.placeholder.com/150x150?text=No+Photo'}" alt="${vehicle.year} ${vehicle.make} ${vehicle.model}" class="vehicle-image" />
-                    <div class="vehicle-content">
-                        <div class="vehicle-header">
-                            <div class="vehicle-info">
-                                <h3>${vehicle.year} ${vehicle.make} ${vehicle.model}</h3>
-                                <p style="color: var(--text-secondary);">${vehicle.color || 'Color not specified'}</p>
-                            </div>
-                        </div>
-                        <div class="vehicle-details">
-                            <div class="detail-item">
-                                <span class="detail-label">License Plate</span>
-                                <span>${vehicle.licensePlate}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">VIN</span>
-                                <span>${vehicle.vin}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Protection Plan</span>
-                                <span>${vehicle.protectionPlan}</span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="detail-label">GPS Status</span>
-                                <span>${vehicle.gpsEnabled ? '✅ Active' : '⭕ Inactive'}</span>
-                            </div>
-                        </div>
-                        ${vehicle.distinguishingFeatures ? `
-                            <div style="margin-top: 15px; padding: 12px; background: #fef3c7; border-left: 3px solid var(--warning); border-radius: 6px;">
-                                <strong style="color: var(--text-primary);">🎨 Distinguishing Features:</strong>
-                                <p style="margin-top: 5px; color: var(--text-primary);">${vehicle.distinguishingFeatures}</p>
-                            </div>
-                        ` : ''}
-                        <div class="vehicle-actions" style="margin-top: 15px;">
-                            <button class="btn btn-small btn-edit">✏️ Edit</button>
-                            <button class="btn btn-small btn-delete" onclick="deleteVehicle('${vehicle.id}')">🗑️ Delete</button>
-                            <button class="btn btn-small btn-report">🚨 Report Stolen</button>
-                            <button class="btn btn-small btn-gps" onclick="toggleGPS('${vehicle.id}')">
-                                ${vehicle.gpsEnabled ? '⭕ Disable GPS' : '📍 Enable GPS'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
 
-        function updateVehicleCount() {
-            const vehicles = window.userVehicles || JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
-            document.getElementById('vehicle-count').textContent = vehicles.length;
-        }
+        const demoLocations = [
+            { lat: 26.1420, lng: -81.7948, plate: 'ABC123', make: 'Honda Civic' },
+            { lat: 26.2159, lng: -81.7795, plate: 'XYZ789', make: 'Tesla Model S' }
+        ];
 
-        function deleteVehicle(vehicleId) {
-            if (!confirm('Are you sure you want to delete this vehicle?')) return;
-
-            if (window.firebaseDatabase && window.currentUser) {
-                const vehicleRef = window.firebaseRef(window.firebaseDatabase, `vehicles/${window.currentUser.uid}/${vehicleId}`);
-                window.firebaseRemove(vehicleRef)
-                    .then(() => {
-                        alert('✅ Vehicle deleted successfully');
-                    })
-                    .catch(error => {
-                        console.error('Error deleting vehicle:', error);
-                        alert('❌ Failed to delete vehicle');
-                    });
-            } else {
-                let vehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
-                vehicles = vehicles.filter(v => v.id !== vehicleId);
-                localStorage.setItem('cartraceVehicles', JSON.stringify(vehicles));
-                updateVehicleDisplay();
-                updateVehicleCount();
-            }
-        }
-
-        function toggleGPS(vehicleId) {
-            alert('🚧 GPS Tracking Feature Coming Soon!\n\nThis feature will allow you to:\n\n✓ Track your vehicle in real-time\n✓ Set up geofencing alerts\n✓ View location history\n✓ Get instant theft notifications\n\nStay tuned for updates!');
-        }
-
-        // Initialize Map
-        function initializeMap() {
-            if (map) return;
-
-            map = L.map('map').setView([26.1420, -81.7948], 11);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-
-            const demoLocations = [
-                { lat: 26.1420, lng: -81.7948, plate: 'ABC123', make: 'Honda Civic' },
-                { lat: 26.2159, lng: -81.7795, plate: 'XYZ789', make: 'Tesla Model S' }
-            ];
-
-            demoLocations.forEach(loc => {
-                L.marker([loc.lat, loc.lng], {
-                    icon: L.divIcon({
-                        className: 'custom-marker',
-                        html: '<div style="background: #ef4444; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold;">🚨</div>'
-                    })
+        demoLocations.forEach(loc => {
+            L.marker([loc.lat, loc.lng], {
+                icon: L.divIcon({
+                    className: 'custom-marker',
+                    html: '<div style="background: #ef4444; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold;">🚨</div>'
                 })
-                .addTo(map)
-                .bindPopup(`
-                    <strong>🚨 Stolen Vehicle Alert</strong><br>
-                    ${loc.make}<br>
-                    License: ${loc.plate}<br>
-                    <button onclick="alert('Report sighting feature!')" style="margin-top: 10px; padding: 5px 10px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer;">Report Sighting</button>
-                `);
-            });
+            })
+            .addTo(map)
+            .bindPopup(`
+                <strong>🚨 Stolen Vehicle Alert</strong><br>
+                ${loc.make}<br>
+                License: ${loc.plate}<br>
+                <button onclick="alert('Report sighting feature!')" style="margin-top: 10px; padding: 5px 10px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer;">Report Sighting</button>
+            `);
+        });
+    }
+
+    // ============================================
+    // LIVE STATS UPDATES
+    // ============================================
+    let networkUptime = 99.95;
+    let responseTime = 0.8;
+    let securityScore = 98;
+    let activeUsers = 47892;
+
+    function updateLiveStats() {
+        const random = Math.random();
+        
+        if (random < 0.4) {
+            networkUptime = Math.max(99.90, Math.min(99.99, networkUptime + (Math.random() - 0.5) * 0.02));
+            responseTime = Math.max(0.5, Math.min(1.2, responseTime + (Math.random() - 0.5) * 0.1));
+            securityScore = Math.max(90, Math.min(100, securityScore + Math.floor((Math.random() - 0.5) * 3)));
+            activeUsers = 47892 + Math.floor(Math.random() * 100);
         }
+        
+        const uptimeEl = document.getElementById('network-uptime');
+        const responseEl = document.getElementById('response-time');
+        const scoreEl = document.getElementById('security-score');
+        const usersEl = document.getElementById('active-users');
+        const lastUpdateEl = document.getElementById('last-update');
+        
+        if (uptimeEl) uptimeEl.textContent = networkUptime.toFixed(2) + '%';
+        if (responseEl) responseEl.textContent = responseTime.toFixed(1);
+        if (scoreEl) scoreEl.textContent = securityScore;
+        if (usersEl) usersEl.textContent = activeUsers.toLocaleString();
+        
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString();
+        if (lastUpdateEl) lastUpdateEl.textContent = timeStr;
+    }
 
-        // Stripe Checkout
-        async function startCheckout(plan) {
-            const priceIds = {
-                basic: 'price_1QeTcRRxPKUgpxLKFsjv4iZC',
-                gold: 'price_1QeTcnRxPKUgpxLKRvvfzC3Q',
-                diamond: 'price_1QeTd4RxPKUgpxLKJKZyaG0O',
-                platinum: 'price_1QeTdFRxPKUgpxLKU1oXUa9w'
-            };
-
-            try {
-                const response = await fetch(`${API_URL}/create-checkout-session`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        priceId: priceIds[plan],
-                        userId: window.currentUser ? window.currentUser.uid : null,
-                        userEmail: window.currentUser ? window.currentUser.email : null
-                    })
-                });
-
-                const session = await response.json();
-                
-                const result = await stripe.redirectToCheckout({
-                    sessionId: session.id
-                });
-
-                if (result.error) {
-                    alert(result.error.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Unable to start checkout. Please make sure your backend server is running at ' + API_URL);
-            }
-        }
-
-        // Carfax Lookup
-        function lookupCarfax() {
-            const vin = document.getElementById('carfax-vin').value.trim();
-            if (!vin) {
-                alert('Please enter a VIN number');
-                return;
-            }
-            if (vin.length !== 17) {
-                alert('VIN must be exactly 17 characters');
-                return;
-            }
-            alert('🚧 Carfax integration coming soon! You\'ll be able to get full vehicle history reports including theft records.');
-        }
-
-        // Sign Out
-        function signOut() {
-            if (confirm('Are you sure you want to sign out?')) {
-                if (window.firebaseSignOut && window.firebaseAuth) {
-                    window.firebaseSignOut(window.firebaseAuth).then(() => {
-                        localStorage.clear();
-                        sessionStorage.clear();
-                        window.location.href = 'cartrace_homepage.html';
-                    }).catch((error) => {
-                        console.error('Logout error:', error);
-                        window.location.href = 'cartrace_homepage.html';
-                    });
-                } else {
-                    localStorage.clear();
-                    window.location.href = 'cartrace_homepage.html';
-                }
-            }
-        }
-
-        // Live Stats Updates
-        let networkUptime = 99.95;
-        let responseTime = 0.8;
-        let securityScore = 98;
-        let activeUsers = 47892;
-
-        function updateLiveStats() {
-            const random = Math.random();
-            
-            if (random < 0.4) {
-                networkUptime = Math.max(99.90, Math.min(99.99, networkUptime + (Math.random() - 0.5) * 0.02));
-                responseTime = Math.max(0.5, Math.min(1.2, responseTime + (Math.random() - 0.5) * 0.1));
-                securityScore = Math.max(90, Math.min(100, securityScore + Math.floor((Math.random() - 0.5) * 3)));
-                activeUsers = 47892 + Math.floor(Math.random() * 100);
-            }
-            
-            if (document.getElementById('network-uptime')) {
-                document.getElementById('network-uptime').textContent = networkUptime.toFixed(2) + '%';
-            }
-            if (document.getElementById('response-time')) {
-                document.getElementById('response-time').textContent = responseTime.toFixed(1);
-            }
-            if (document.getElementById('security-score')) {
-                document.getElementById('security-score').textContent = securityScore;
-            }
-            if (document.getElementById('active-users')) {
-                document.getElementById('active-users').textContent = activeUsers.toLocaleString();
-            }
-            
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString();
-            if (document.getElementById('last-update')) {
-                document.getElementById('last-update').textContent = timeStr;
-            }
-        }
-    </script>
-
-    <!-- Firebase Module Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-        import { getDatabase, ref, set, get, push, remove, update, onValue, off } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
-            authDomain: "cartrace-pro.firebaseapp.com",
-            databaseURL: "https://cartrace-pro-default-rtdb.firebaseio.com/",
-            projectId: "cartrace-pro",
-            storageBucket: "cartrace-pro.firebasestorage.app",
-            messagingSenderId: "341907523496",
-            appId: "1:341907523496:web:f10a87930d939cf3b8ff9d",
-            measurementId: "G-X01QW112CD"
+    // ============================================
+    // STRIPE CHECKOUT (PROTECTION PLANS)
+    // ============================================
+    async function startCheckout(plan) {
+        const priceIds = {
+            basic: 'price_1QeTcRRxPKUgpxLKFsjv4iZC',
+            gold: 'price_1QeTcnRxPKUgpxLKRvvfzC3Q',
+            diamond: 'price_1QeTd4RxPKUgpxLKJKZyaG0O',
+            platinum: 'price_1QeTdFRxPKUgpxLKU1oXUa9w'
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-        const storage = getStorage(app);
+        try {
+            const response = await fetch(`${API_URL}/create-checkout-session`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    priceId: priceIds[plan],
+                    userId: window.currentUser ? window.currentUser.uid : null,
+                    userEmail: window.currentUser ? window.currentUser.email : null
+                })
+            });
 
-        window.firebaseAuth = auth;
-        window.firebaseDatabase = database;
-        window.firebaseStorage = storage;
-        window.firebaseRef = ref;
-        window.firebaseSet = set;
-        window.firebaseGet = get;
-        window.firebasePush = push;
-        window.firebaseRemove = remove;
-        window.firebaseUpdate = update;
-        window.firebaseOnValue = onValue;
-        window.firebaseOff = off;
-        window.firebaseSignOut = signOut;
-        window.firebaseStorageRef = storageRef;
-        window.firebaseUploadBytes = uploadBytes;
-        window.firebaseGetDownloadURL = getDownloadURL;
-        window.firebaseDeleteObject = deleteObject;
+            const session = await response.json();
+            
+            const result = await stripe.redirectToCheckout({
+                sessionId: session.id
+            });
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                window.currentUser = user;
-                
-                document.getElementById('user-email').textContent = user.email || 'User';
-                if (document.getElementById('settings-email')) {
-                    document.getElementById('settings-email').value = user.email || 'user@example.com';
-                }
-                if (document.getElementById('member-since')) {
-                    document.getElementById('member-since').value = new Date(user.metadata.creationTime).toLocaleDateString();
-                }
-                
-                document.getElementById('sync-status').textContent = '✅ Synced';
-                document.getElementById('sync-status').style.color = 'var(--success)';
-                
-                const vehiclesRef = ref(database, `vehicles/${user.uid}`);
-                onValue(vehiclesRef, (snapshot) => {
-                    const data = snapshot.val();
-                    
-                    if (data) {
-                        window.userVehicles = Object.keys(data).map(key => ({
-                            ...data[key],
-                            id: data[key].id || key
-                        }));
-                        localStorage.setItem('cartraceVehicles', JSON.stringify(window.userVehicles));
-                    } else {
-                        window.userVehicles = [];
-                        localStorage.setItem('cartraceVehicles', JSON.stringify([]));
-                    }
-                    
-                    updateVehicleDisplay();
-                    updateVehicleCount();
-                });
+            if (result.error) {
+                alert(result.error.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Unable to start checkout. Please make sure your backend server is running at ' + API_URL);
+        }
+    }
 
-                const alertsRef = ref(database, 'stolenVehicles');
-                onValue(alertsRef, (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        const alerts = Object.keys(data).map(key => ({
-                            ...data[key],
-                            id: key
-                        }));
-                        
-                        document.getElementById('alert-badge').textContent = alerts.length;
-                        if (document.getElementById('active-alerts-count')) {
-                            document.getElementById('active-alerts-count').textContent = alerts.length;
-                        }
-                        
-                        stolenVehicles = alerts;
-                    }
+    // ============================================
+    // CARFAX LOOKUP
+    // ============================================
+    function lookupCarfax() {
+        const vin = document.getElementById('carfax-vin').value.trim();
+        if (!vin) {
+            alert('Please enter a VIN number');
+            return;
+        }
+        if (vin.length !== 17) {
+            alert('VIN must be exactly 17 characters');
+            return;
+        }
+        alert('🚧 Carfax integration coming soon! You\'ll be able to get full vehicle history reports including theft records.');
+    }
+
+    // ============================================
+    // SIGN OUT
+    // ============================================
+    function signOut() {
+        if (confirm('Are you sure you want to sign out?')) {
+            if (window.firebaseSignOut && window.firebaseAuth) {
+                window.firebaseSignOut(window.firebaseAuth).then(() => {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.href = 'cartrace_homepage.html';
+                }).catch((error) => {
+                    console.error('Logout error:', error);
+                    window.location.href = 'cartrace_homepage.html';
                 });
             } else {
-                console.log('No user logged in - using demo mode');
-                document.getElementById('user-email').textContent = 'Demo User';
-                document.getElementById('sync-status').textContent = '📍 Demo Mode';
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = 'cartrace_homepage.html';
+            }
+        }
+    }
+
+    console.log('✅ All functions loaded and ready');
+</script>
+
+  <!-- Firebase Module Script -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, push, remove, update, onValue, off } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB8iFriCB3kt4lWeXQUNj5LTsAXFZoXX0Y",
+        authDomain: "cartrace-pro.firebaseapp.com",
+        databaseURL: "https://cartrace-pro-default-rtdb.firebaseio.com/",
+        projectId: "cartrace-pro",
+        storageBucket: "cartrace-pro.firebasestorage.app",
+        messagingSenderId: "341907523496",
+        appId: "1:341907523496:web:f10a87930d939cf3b8ff9d",
+        measurementId: "G-X01QW112CD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+    const storage = getStorage(app);
+
+    // Make Firebase accessible globally
+    window.firebaseAuth = auth;
+    window.firebaseDatabase = database;
+    window.firebaseStorage = storage;
+    window.firebaseRef = ref;
+    window.firebaseSet = set;
+    window.firebaseGet = get;
+    window.firebasePush = push;
+    window.firebaseRemove = remove;
+    window.firebaseUpdate = update;
+    window.firebaseOnValue = onValue;
+    window.firebaseOff = off;
+    window.firebaseSignOut = signOut;
+    window.firebaseStorageRef = storageRef;
+    window.firebaseUploadBytes = uploadBytes;
+    window.firebaseGetDownloadURL = getDownloadURL;
+    window.firebaseDeleteObject = deleteObject;
+
+    // Listen for authentication state changes
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            // User is signed in
+            window.currentUser = user;
+            
+            // Update UI with user info
+            document.getElementById('user-email').textContent = user.email || 'User';
+            
+            const settingsEmail = document.getElementById('settings-email');
+            if (settingsEmail) {
+                settingsEmail.value = user.email || 'user@example.com';
+            }
+            
+            const memberSince = document.getElementById('member-since');
+            if (memberSince) {
+                memberSince.value = new Date(user.metadata.creationTime).toLocaleDateString();
+            }
+            
+            // Update sync status
+            document.getElementById('sync-status').textContent = '✅ Synced';
+            document.getElementById('sync-status').style.color = 'var(--success)';
+            
+            // Listen for user's vehicles in real-time
+            const vehiclesRef = ref(database, `vehicles/${user.uid}`);
+            onValue(vehiclesRef, (snapshot) => {
+                const data = snapshot.val();
                 
-                window.userVehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
+                if (data) {
+                    window.userVehicles = Object.keys(data).map(key => ({
+                        ...data[key],
+                        id: data[key].id || key
+                    }));
+                    localStorage.setItem('cartraceVehicles', JSON.stringify(window.userVehicles));
+                } else {
+                    window.userVehicles = [];
+                    localStorage.setItem('cartraceVehicles', JSON.stringify([]));
+                }
+                
                 updateVehicleDisplay();
                 updateVehicleCount();
-            }
-        });
-
-        function handlePaymentRedirect() {
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    if (urlParams.get('success') === 'true') {
-        console.log('✅ Payment successful! Processing vehicle...');
-        
-        const pendingVehicleJson = sessionStorage.getItem('pendingVehicle');
-        
-        if (pendingVehicleJson) {
-            try {
-                const vehicleData = JSON.parse(pendingVehicleJson);
-                console.log('Saving vehicle after successful payment:', vehicleData);
-                saveVehicleAfterPayment(vehicleData);
-                sessionStorage.removeItem('pendingVehicle');
-                
-                setTimeout(() => {
-                    alert('✅ Payment Successful!\n\n🚗 Your vehicle has been added.\n💳 Subscription activated.\n\nThank you for choosing CarTrace Pro!');
-                }, 500);
-            } catch (error) {
-                console.error('Error parsing pending vehicle:', error);
-                alert('⚠️ Payment successful but error adding vehicle. Contact support.');
-            }
-        }
-        
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-    
-    if (urlParams.get('canceled') === 'true') {
-        console.log('❌ Payment canceled');
-        sessionStorage.removeItem('pendingVehicle');
-        alert('❌ Payment Canceled\n\nYour vehicle was not added.\nNo charges were made.');
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-}
-
-// Function 2: Start Checkout With Vehicle
-async function startCheckoutWithVehicle(protectionPlanFull, vehicleData) {
-    try {
-        const planName = protectionPlanFull.split(' - ')[0].toLowerCase();
-        console.log('💳 Starting checkout for plan:', planName);
-
-        const priceId = STRIPE_PRICE_IDS[planName];
-        
-        if (!priceId) {
-            alert('❌ Invalid protection plan selected: ' + planName);
-            return;
-        }
-
-        sessionStorage.setItem('pendingVehicle', JSON.stringify(vehicleData));
-        console.log('✅ Stored pending vehicle in session storage');
-
-        const response = await fetch(`${API_URL}/create-checkout-session`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                priceId: priceId,
-                userId: window.currentUser ? window.currentUser.uid : 'guest_' + Date.now(),
-                userEmail: window.currentUser ? window.currentUser.email : null,
-                vehicleData: vehicleData
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to create checkout session');
-        }
-
-        const session = await response.json();
-        console.log('✅ Checkout session created:', session.id);
-        
-        closeAddVehicleModal();
-        
-        const confirmProceed = confirm(
-            '💳 Redirecting to Secure Payment\n\n' +
-            '✅ Your vehicle will be added after payment\n' +
-            '✅ Safe and secure with Stripe\n\n' +
-            'Click OK to proceed'
-        );
-
-        if (!confirmProceed) {
-            sessionStorage.removeItem('pendingVehicle');
-            return;
-        }
-
-        console.log('🔄 Redirecting to Stripe...');
-        const result = await stripe.redirectToCheckout({ sessionId: session.id });
-
-        if (result.error) {
-            alert('❌ Payment error: ' + result.error.message);
-            sessionStorage.removeItem('pendingVehicle');
-        }
-
-    } catch (error) {
-        console.error('❌ Error starting checkout:', error);
-        alert('❌ Unable to start checkout: ' + error.message);
-        sessionStorage.removeItem('pendingVehicle');
-    }
-}
-
-// Function 3: Save Vehicle After Payment
-function saveVehicleAfterPayment(vehicleData) {
-    console.log('💾 Saving vehicle to database:', vehicleData);
-    
-    if (window.firebaseDatabase && window.currentUser) {
-        const vehicleRef = window.firebaseRef(
-            window.firebaseDatabase, 
-            `vehicles/${window.currentUser.uid}/${vehicleData.id}`
-        );
-        
-        window.firebaseSet(vehicleRef, vehicleData)
-            .then(() => {
-                console.log('✅ Vehicle saved to Firebase');
-            })
-            .catch(error => {
-                console.error('❌ Error saving to Firebase:', error);
-                alert('⚠️ Error saving vehicle: ' + error.message);
             });
-    } else {
-        console.log('💾 Saving to localStorage');
-        let vehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
-        vehicles.push(vehicleData);
-        localStorage.setItem('cartraceVehicles', JSON.stringify(vehicles));
-        updateVehicleDisplay();
-        updateVehicleCount();
-    }
-}
-    </script>
+
+            // Listen for stolen vehicle alerts
+            const alertsRef = ref(database, 'stolenVehicles');
+            onValue(alertsRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const alerts = Object.keys(data).map(key => ({
+                        ...data[key],
+                        id: key
+                    }));
+                    
+                    const alertBadge = document.getElementById('alert-badge');
+                    if (alertBadge) {
+                        alertBadge.textContent = alerts.length;
+                    }
+                    
+                    const activeAlertsCount = document.getElementById('active-alerts-count');
+                    if (activeAlertsCount) {
+                        activeAlertsCount.textContent = alerts.length;
+                    }
+                    
+                    stolenVehicles = alerts;
+                }
+            });
+            
+        } else {
+            // No user signed in - demo mode
+            console.log('No user logged in - using demo mode');
+            document.getElementById('user-email').textContent = 'Demo User';
+            document.getElementById('sync-status').textContent = '📍 Demo Mode';
+            
+            // Load vehicles from localStorage for demo mode
+            window.userVehicles = JSON.parse(localStorage.getItem('cartraceVehicles') || '[]');
+            updateVehicleDisplay();
+            updateVehicleCount();
+        }
+    });
+
+    console.log('✅ Firebase initialized successfully');
+</script>
 </body>
 </html>
